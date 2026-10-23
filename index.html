@@ -188,6 +188,19 @@ async function loadInventoryFromCloud(){
     inventory=data.map(x=>({code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)}));
     localStorage.setItem(KEYS.inv,JSON.stringify(inventory));
   } else {
+    // Prevent duplicate product codes from breaking Supabase upsert.
+    const seenCodes = new Set();
+    let nextCode = Math.max(0, ...inventory.map(x => Number(x.code) || 0)) + 1;
+    inventory = inventory.map(x => {
+      let code = String(x.code);
+      if (seenCodes.has(code)) {
+        while (seenCodes.has(String(nextCode))) nextCode++;
+        code = String(nextCode++);
+      }
+      seenCodes.add(code);
+      return { ...x, code };
+    });
+    localStorage.setItem(KEYS.inv, JSON.stringify(inventory));
     const rows=inventory.map(x=>({code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)}));
     if(rows.length){
       const {error:upsertError}=await supabaseClient.from('shared_inventory').upsert(rows,{onConflict:'code'});
