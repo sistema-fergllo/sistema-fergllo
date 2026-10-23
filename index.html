@@ -38,7 +38,8 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
     <div class="logo" style="margin:auto">🛒</div>
     <h1>سيستم فرجللو</h1>
     <p id="loginText">تسجيل الدخول إلى النظام</p>
-    <input id="password" type="password" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter') doLogin()">
+    <input id="email" type="email" placeholder="البريد الإلكتروني" autocomplete="username" onkeydown="if(event.key==='Enter') doLogin()">
+    <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter') doLogin()">
     <div id="loginErr" class="err"></div>
     <button class="btn" onclick="doLogin()">دخول</button>
     <div style="margin-top:18px;color:#7890ab;font-size:12px">Farag El-Sayed • مشرف النظام</div>
@@ -163,7 +164,14 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
 
 <div id="modalBg" class="modal-bg hidden"><div class="modal"><h3 id="modalTitle">إضافة صنف</h3><input id="mCode" placeholder="الكود / الباركود"><input id="mName" placeholder="اسم الصنف"><input id="mPrice" type="number" step="0.01" placeholder="سعر البيع"><input id="mQty" type="number" step="1" placeholder="الكمية"><div class="modal-actions"><button class="btn green" onclick="saveItem()">حفظ</button><button class="btn gray" onclick="closeModal()">إلغاء</button></div></div></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const { createClient } = supabase;
+const supabaseClient = createClient(
+  'https://flrtvxxtlbpjhydtlrwd.supabase.co',
+  'sb_publishable_U-ufvBXkCEfVaZ-MNFProg_hcxI5LyR'
+);
+
 const ORIGINAL = [{"code": "101", "name": "كريسينا سمسم", "price": 30.0, "qty": 0.0}, {"code": "102", "name": "كريسينا سادة", "price": 30.0, "qty": 0.0}, {"code": "103", "name": "كريسينا سكر و قرفة", "price": 30.0, "qty": 0.0}, {"code": "104", "name": "كريسينا  حبة كاملة", "price": 35.0, "qty": 0.0}, {"code": "105", "name": "باتون حلواني", "price": 30.0, "qty": 0.0}, {"code": "106", "name": "باتون كامون", "price": 30.0, "qty": 0.0}, {"code": "107", "name": "باتون ملح", "price": 30.0, "qty": 0.0}, {"code": "108", "name": "باتون تركى", "price": 35.0, "qty": 0.0}, {"code": "109", "name": "باتون حبة كاملة", "price": 35.0, "qty": 0.0}, {"code": "110", "name": "سماسم", "price": 30.0, "qty": 0.0}, {"code": "111", "name": "عين يمامة", "price": 30.0, "qty": 0.0}, {"code": "112", "name": "برزيانة", "price": 30.0, "qty": 0.0}, {"code": "113", "name": "شرائح سمسم وحبة بركة", "price": 30.0, "qty": 0.0}, {"code": "114", "name": "شرائح تركى", "price": 45.0, "qty": 0.0}, {"code": "115", "name": "شرائح شوفان", "price": 35.0, "qty": 0.0}, {"code": "116", "name": "شرائح سبع حبوب", "price": 35.0, "qty": 0.0}, {"code": "117", "name": "توست كوركوم", "price": 30.0, "qty": 0.0}, {"code": "118", "name": "توست حبة كاملة", "price": 35.0, "qty": 0.0}, {"code": "119", "name": "حرف (s) سكر", "price": 30.0, "qty": 0.0}, {"code": "120", "name": "حرف (s) سكر و قرفة", "price": 30.0, "qty": 0.0}, {"code": "121", "name": "فايش صعيدي", "price": 35.0, "qty": 0.0}, {"code": "201", "name": "نشادر فانيليا", "price": 60.0, "qty": 0.0}, {"code": "202", "name": "نشادر برتقال", "price": 60.0, "qty": 0.0}, {"code": "203", "name": "نشادر شيكولاتة", "price": 60.0, "qty": 0.0}, {"code": "204", "name": "برازق", "price": 60.0, "qty": 0.0}, {"code": "205", "name": "بسكويت صخر", "price": 60.0, "qty": 0.0}, {"code": "206", "name": "بسكويت نسكافيه", "price": 60.0, "qty": 0.0}, {"code": "207", "name": "بسكويت قهوة", "price": 60.0, "qty": 0.0}, {"code": "208", "name": "بسكويت بندق", "price": 60.0, "qty": 0.0}, {"code": "209", "name": "بسكويت بندق حبة كاملة", "price": 70.0, "qty": 0.0}, {"code": "210", "name": "بسكويت قرفة", "price": 60.0, "qty": 0.0}, {"code": "211", "name": "بسكويت ينسون", "price": 60.0, "qty": 0.0}, {"code": "212", "name": "بسكويت ينسون حبة كاملة", "price": 70.0, "qty": 0.0}, {"code": "213", "name": "بسكويت انس", "price": 40.0, "qty": 0.0}, {"code": "214", "name": "كوكيز شيكولاتة", "price": 60.0, "qty": 0.0}, {"code": "215", "name": "كوكيز شيكولاتة حبة كاملة", "price": 70.0, "qty": 0.0}, {"code": "216", "name": "كوكيز فانيليا", "price": 60.0, "qty": 0.0}, {"code": "217", "name": "كوكيز فانيليا حبة كاملة", "price": 70.0, "qty": 0.0}, {"code": "218", "name": "بسكويت لوكسى", "price": 60.0, "qty": 0.0}, {"code": "219", "name": "قرفة حبة كاملة", "price": 70.0, "qty": 0.0}, {"code": "220", "name": "نسكافيه حبة كاملة", "price": 70.0, "qty": 0.0}, {"code": "301", "name": "قراقيش عجوة", "price": 50.0, "qty": 0.0}, {"code": "302", "name": "قراقيش عجوة حبة كاملة", "price": 60.0, "qty": 0.0}, {"code": "303", "name": "قراقيش ينسون", "price": 50.0, "qty": 0.0}, {"code": "304", "name": "قراقيش ملبن", "price": 50.0, "qty": 0.0}, {"code": "305", "name": "قراميش حبة البركة", "price": 60.0, "qty": 0.0}, {"code": "306", "name": "قراقيش سادة", "price": 50.0, "qty": 0.0}, {"code": "307", "name": "قرص عجوة", "price": 50.0, "qty": 0.0}, {"code": "308", "name": "قرص عجوة حبة كاملة", "price": 60.0, "qty": 0.0}, {"code": "309", "name": "قرص ملبن", "price": 50.0, "qty": 0.0}, {"code": "310", "name": "قرص سادة حبة كاملة", "price": 60.0, "qty": 0.0}, {"code": "311", "name": "معمولة عجوة", "price": 50.0, "qty": 0.0}, {"code": "312", "name": "معمولة ملبن", "price": 50.0, "qty": 0.0}, {"code": "401", "name": "باتيه جبنة بيضاء", "price": 25.0, "qty": 0.0}, {"code": "402", "name": "باتيه جبنة بيضاء زيتون", "price": 25.0, "qty": 0.0}, {"code": "403", "name": "باتيه تركىباتيه شيدر", "price": 25.0, "qty": 0.0}, {"code": "404", "name": "باتيه سوسيس", "price": 25.0, "qty": 0.0}, {"code": "405", "name": "باتيه جبنه بيضاء حبة كاملة", "price": 30.0, "qty": 0.0}, {"code": "406", "name": "باتيه جبنة تركي حبة كاملة", "price": 30.0, "qty": 0.0}, {"code": "407", "name": "كرواسون سادة", "price": 20.0, "qty": 0.0}, {"code": "408", "name": "كرواسون سادة حبة كاملة", "price": 25.0, "qty": 0.0}, {"code": "409", "name": "ميني بيتزا (طبق)", "price": 50.0, "qty": 0.0}, {"code": "410", "name": "ساليزون جبنة تركى (طبق)", "price": 50.0, "qty": 0.0}, {"code": "411", "name": "ساليزون جبنة بيضاء (طبق)", "price": 50.0, "qty": 0.0}, {"code": "412", "name": "بيتزا إيطالي", "price": 30.0, "qty": 0.0}, {"code": "501", "name": "انجلش كيك قالب", "price": 50.0, "qty": 0.0}, {"code": "502", "name": "انجلش كيك (طبق)", "price": 40.0, "qty": 0.0}, {"code": "503", "name": "كاب كيك", "price": 20.0, "qty": 0.0}, {"code": "504", "name": "فطير صغير", "price": 15.0, "qty": 0.0}, {"code": "505", "name": "فطير كبير", "price": 25.0, "qty": 0.0}, {"code": "601", "name": "كرواسون شيكولاتة", "price": 30.0, "qty": 0.0}, {"code": "602", "name": "دانش", "price": 25.0, "qty": 0.0}, {"code": "603", "name": "سابليه كبير", "price": 25.0, "qty": 0.0}, {"code": "604", "name": "ميني سابليه (الكيلو)", "price": 280.0, "qty": 0.0}, {"code": "605", "name": "تارت كبير", "price": 25.0, "qty": 0.0}, {"code": "606", "name": "ميني تارت (الكيلو)", "price": 280.0, "qty": 0.0}, {"code": "607", "name": "دونتس كبير", "price": 30.0, "qty": 0.0}, {"code": "608", "name": "ميني دونتس (الكيلو)", "price": 250.0, "qty": 0.0}, {"code": "609", "name": "باباظ", "price": 30.0, "qty": 0.0}, {"code": "610", "name": "ملفيه حلو", "price": 25.0, "qty": 0.0}, {"code": "611", "name": "ملفيه حادق (طبق)", "price": 50.0, "qty": 0.0}, {"code": "612", "name": "جاتوه", "price": 30.0, "qty": 0.0}, {"code": "613", "name": "فلوست", "price": 45.0, "qty": 0.0}, {"code": "614", "name": "هولنديز", "price": 25.0, "qty": 0.0}, {"code": "615", "name": "اكلير", "price": 25.0, "qty": 0.0}, {"code": "616", "name": "ميني اكلير (الكيلو)", "price": 250.0, "qty": 0.0}, {"code": "617", "name": "البولات", "price": 25.0, "qty": 0.0}, {"code": "618", "name": "بيتي فور (الكيلو)", "price": 280.0, "qty": 0.0}, {"code": "701", "name": "هريسة لوز", "price": 200.0, "qty": 0.0}, {"code": "702", "name": "هريسة فسدق كريزة", "price": 200.0, "qty": 0.0}, {"code": "703", "name": "هريسة سادة", "price": 180.0, "qty": 0.0}, {"code": "404", "name": "هريسة عين جمل", "price": 200.0, "qty": 0.0}, {"code": "705", "name": "هريسة بندق", "price": 200.0, "qty": 0.0}, {"code": "706", "name": "جلاش مكسرات", "price": 200.0, "qty": 0.0}, {"code": "707", "name": "جلاش  سادة", "price": 180.0, "qty": 0.0}, {"code": "708", "name": "جلاش نوتيلا", "price": 200.0, "qty": 0.0}, {"code": "709", "name": "جلاش سوستة", "price": 200.0, "qty": 0.0}, {"code": "710", "name": "كنافة كابات", "price": 15.0, "qty": 0.0}, {"code": "711", "name": "كنافة سيجار", "price": 180.0, "qty": 0.0}, {"code": "712", "name": "كنافة  بندق", "price": 200.0, "qty": 0.0}, {"code": "713", "name": "كنافة شيكولاتة نوتيلا", "price": 200.0, "qty": 0.0}, {"code": "714", "name": "كنافة مبروم", "price": 200.0, "qty": 0.0}, {"code": "715", "name": "كنافة مكسرات", "price": 200.0, "qty": 0.0}, {"code": "716", "name": "شكلمة كريز", "price": 180.0, "qty": 0.0}, {"code": "717", "name": "شكلمة مكسرات", "price": 200.0, "qty": 0.0}, {"code": "718", "name": "رموش الست مكسرات", "price": 200.0, "qty": 0.0}, {"code": "719", "name": "رموش الست عادي", "price": 180.0, "qty": 0.0}];
 const KEYS = {inv:'frg_inv', sales:'frg_sales', pass:'frg_pass'};
 let inventory = JSON.parse(localStorage.getItem(KEYS.inv)||'null') || ORIGINAL.map(x=>({...x, sold:0}));
@@ -177,11 +185,55 @@ function now(){return new Date().toLocaleString('ar-EG')}
 function updateClock(){let d=new Date();document.getElementById('date').textContent=d.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'2-digit',day:'2-digit'});document.getElementById('time').textContent=d.toLocaleTimeString('ar-EG')}
 setInterval(updateClock,1000);updateClock();
 
-function doLogin(){if(document.getElementById('password').value==='admin'){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');refreshAll();return}document.getElementById('loginErr').textContent='كلمة المرور الرئيسية غير صحيحة';}
-function requestPage(p){pendingPage=p;document.getElementById('loginText').textContent='أدخل كلمة مرور صفحة '+(p==='inventory'?'المخزون':'الكاشير');document.getElementById('password').value='';document.getElementById('login').classList.remove('hidden');document.getElementById('app').classList.add('hidden');document.getElementById('login').dataset.page=p}
-const oldLogin=doLogin;
-doLogin=function(){let p=document.getElementById('login').dataset.page;if(!p){oldLogin();return}if(document.getElementById('password').value===passes[p]){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');showPage(p);document.getElementById('login').dataset.page=''}else document.getElementById('loginErr').textContent='كلمة المرور غير صحيحة';};
-
+async function doLogin(){
+  const page = document.getElementById('login').dataset.page;
+  const password = document.getElementById('password').value;
+  const errorBox = document.getElementById('loginErr');
+  errorBox.textContent = '';
+  if(page){
+    if(password === passes[page]){
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      document.getElementById('email').classList.remove('hidden');
+      showPage(page);
+      document.getElementById('login').dataset.page = '';
+    } else errorBox.textContent = 'كلمة مرور الصفحة غير صحيحة';
+    return;
+  }
+  const email = document.getElementById('email').value.trim();
+  if(!email || !password){ errorBox.textContent = 'اكتب البريد الإلكتروني وكلمة المرور'; return; }
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if(error) throw error;
+    const { data: profile, error: profileError } = await supabaseClient
+      .from('user_profiles').select('full_name, role, branch_id')
+      .eq('user_id', data.user.id).single();
+    if(profileError || !profile){
+      await supabaseClient.auth.signOut();
+      throw new Error('الحساب موجود لكن ملف الصلاحيات غير موجود. راجع جدول user_profiles.');
+    }
+    if(profile.role !== 'admin'){
+      await supabaseClient.auth.signOut();
+      throw new Error('الدخول متاح حاليًا لحساب مدير النظام فقط. سنجهز صلاحيات الفروع لاحقًا.');
+    }
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('login').dataset.page = '';
+    refreshAll();
+  } catch(err) {
+    errorBox.textContent = err.message || 'تعذر تسجيل الدخول. راجع البريد وكلمة المرور.';
+  }
+}
+function requestPage(p){
+  pendingPage=p;
+  document.getElementById('loginText').textContent='أدخل كلمة مرور صفحة '+(p==='inventory'?'المخزون':'الكاشير');
+  document.getElementById('email').classList.add('hidden');
+  document.getElementById('password').value='';
+  document.getElementById('loginErr').textContent='';
+  document.getElementById('login').classList.remove('hidden');
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('login').dataset.page=p;
+}
 function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));if(id==='inventory')renderInventory();if(id==='sales')renderSales();if(id==='reports')renderReports();if(id==='cashier'){renderCart();setTimeout(()=>document.getElementById('scan').focus(),100)}}
 function refreshAll(){updateDashboard();renderInventory();renderSales();renderCart()}
 function updateDashboard(){let qty=inventory.reduce((a,x)=>a+Number(x.qty||0),0), value=inventory.reduce((a,x)=>a+Number(x.qty||0)*Number(x.price||0),0), st=sales.reduce((a,x)=>a+Number(x.total||0),0);document.getElementById('cItems').textContent=inventory.length;document.getElementById('cQty').textContent=qty.toLocaleString();document.getElementById('cSales').textContent=money(st);document.getElementById('cStock').textContent=money(value);document.getElementById('iCount').textContent=inventory.length;document.getElementById('iQty').textContent=qty.toLocaleString();document.getElementById('iValue').textContent=money(value);document.getElementById('iSales').textContent=money(st)}
