@@ -58,6 +58,7 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
   <button class="nav" data-page="cashier" onclick="requestPage('cashier')"><span>🧾</span>الكاشير</button>
   <button class="nav" data-page="sales" onclick="showPage('sales')"><span>📊</span>المبيعات</button>
   <button class="nav" data-page="reports" onclick="showPage('reports')"><span>📈</span>التقارير</button>
+  <button class="nav" data-page="coding" onclick="showPage('coding')"><span>▦</span>التكويدات والباركود</button>
   <button class="nav" data-page="settings" onclick="showPage('settings')"><span>⚙</span>الإعدادات</button>
   <button class="logout" onclick="location.reload()">⏻ تسجيل الخروج</button>
 </aside>
@@ -139,6 +140,20 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
     <h3>الأصناف الأكثر مبيعاً</h3>
     <div class="table-wrap"><table class="table"><thead><tr><th>الصنف</th><th>الكود</th><th>الكمية المباعة</th><th>قيمة المبيعات</th></tr></thead><tbody id="topBody"></tbody></table></div>
   </div>
+</div>
+
+<div id="coding" class="page hidden">
+  <div class="title"><div><h2>▦ التكويدات والباركود</h2><div class="sub">إدارة أكواد الأصناف وطباعة ملصقات قابلة للقراءة بالاسكانر</div></div>
+  <button class="btn gold" onclick="printAllBarcodes()">🖨 طباعة باركود كل الأصناف</button></div>
+  <div class="cards">
+    <div class="card"><div class="label">عدد الأصناف</div><div id="bcItemCount" class="value cyan">0</div></div>
+    <div class="card"><div class="label">أكواد مكررة</div><div id="bcDuplicateCount" class="value gold">0</div></div>
+    <div class="card"><div class="label">باركود جاهز للطباعة</div><div id="bcReadyCount" class="value green">0</div></div>
+    <div class="card"><div class="label">صيغة الباركود</div><div class="value">CODE 128</div></div>
+  </div>
+  <div class="toolbar"><input id="bcSearch" placeholder="ابحث بكود الصنف أو اسمه..." oninput="renderCoding()"><button class="btn gray" onclick="document.getElementById('bcSearch').value='';renderCoding()">مسح</button></div>
+  <div class="cash-panel" style="margin-bottom:14px"><b>طريقة الاستخدام:</b><p class="sub">اضغط «طباعة» بجانب الصنف لطباعة ملصقات محددة، أو اطبع كل الأصناف من الزر أعلى الصفحة. الباركود بيتولد من كود الصنف نفسه؛ امسحه في الكاشير لإضافة الصنف للفاتورة.</p></div>
+  <div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>اسم الصنف</th><th>السعر</th><th>الرصيد</th><th>اختبار/طباعة</th></tr></thead><tbody id="codingBody"></tbody></table></div>
 </div>
 
 <div id="settings" class="page hidden">
@@ -277,7 +292,7 @@ function requestPage(p){
   document.getElementById('app').classList.add('hidden');
   document.getElementById('login').dataset.page=p;
 }
-function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));if(id==='inventory')renderInventory();if(id==='sales')renderSales();if(id==='reports')renderReports();if(id==='cashier'){renderCart();setTimeout(()=>document.getElementById('scan').focus(),100)}}
+function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));if(id==='inventory')renderInventory();if(id==='sales')renderSales();if(id==='reports')renderReports();if(id==='coding')renderCoding();if(id==='cashier'){renderCart();setTimeout(()=>document.getElementById('scan').focus(),100)}}
 function refreshAll(){updateDashboard();renderInventory();renderSales();renderCart()}
 function updateDashboard(){let qty=inventory.reduce((a,x)=>a+Number(x.qty||0),0), value=inventory.reduce((a,x)=>a+Number(x.qty||0)*Number(x.price||0),0), st=sales.reduce((a,x)=>a+Number(x.total||0),0);document.getElementById('cItems').textContent=inventory.length;document.getElementById('cQty').textContent=qty.toLocaleString();document.getElementById('cSales').textContent=money(st);document.getElementById('cStock').textContent=money(value);document.getElementById('iCount').textContent=inventory.length;document.getElementById('iQty').textContent=qty.toLocaleString();document.getElementById('iValue').textContent=money(value);document.getElementById('iSales').textContent=money(st)}
 function renderInventory(){updateDashboard();let q=(document.getElementById('invSearch')?.value||'').toLowerCase();let b=document.getElementById('invBody');b.innerHTML='';inventory.forEach((x,i)=>{if(q&&!(`${x.code} ${x.name}`.toLowerCase().includes(q)))return;let status=x.qty<=0?'<span class="badge out">نفد</span>':x.qty<=5?'<span class="badge low">منخفض</span>':'<span class="badge ok">متوفر</span>';b.innerHTML+=`<tr><td>${x.code}</td><td>${x.name}</td><td>${money(x.price)}</td><td>${x.qty}</td><td>${x.sold||0}</td><td><b>${x.qty}</b></td><td>${money(x.qty*x.price)}</td><td>${status}</td><td><button class="btn gray" onclick="editItem(${i})">تعديل</button> <button class="btn gold" onclick="printBarcode('${x.code}')">باركود</button></td></tr>`})}
@@ -345,6 +360,29 @@ function barcodePrintWindow(title, labels){
   '@page{size:auto;margin:5mm}@media print{.label{border:0}}'+
   '</style></head><body><div class="sheet">'+labels+'</div><script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>');
   w.document.close();
+}
+function renderCoding(){
+  const q=(document.getElementById('bcSearch')?.value||'').trim().toLowerCase();
+  const body=document.getElementById('codingBody');
+  if(!body)return;
+  const seen=new Set(),dupes=new Set();
+  inventory.forEach(x=>{const k=String(x.code).trim();if(seen.has(k))dupes.add(k);seen.add(k)});
+  document.getElementById('bcItemCount').textContent=inventory.length;
+  document.getElementById('bcDuplicateCount').textContent=dupes.size;
+  document.getElementById('bcReadyCount').textContent=inventory.filter(x=>String(x.code||'').trim()).length;
+  body.innerHTML='';
+  inventory.forEach((x,i)=>{
+    if(q&&!String(x.code+' '+x.name).toLowerCase().includes(q))return;
+    const tr=document.createElement('tr');
+    const vals=[x.code,x.name,money(x.price),String(x.qty??0)];
+    vals.forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});
+    const td=document.createElement('td');
+    const btn=document.createElement('button');btn.className='btn gold';btn.textContent='🖨 طباعة';btn.onclick=()=>printBarcode(x.code);
+    td.appendChild(btn);
+    if(dupes.has(String(x.code).trim())){const warn=document.createElement('div');warn.className='badge low';warn.textContent='كود مكرر';td.appendChild(warn)}
+    tr.appendChild(td);body.appendChild(tr);
+  });
+  if(!body.children.length)body.innerHTML='<tr><td colspan="5" class="empty">لا توجد أصناف مطابقة</td></tr>';
 }
 function openBarcodeModal(code){
   const s=document.getElementById('bcSelect');
