@@ -194,6 +194,10 @@ async function loadInventoryFromCloud(){
       if(upsertError) throw new Error('تعذر رفع الأصناف الأولية: '+upsertError.message);
     }
   }
+  const {data:cloudSales,error:salesError}=await supabaseClient.from('shared_sales').select('id,created_at,shift,pay,total,items_summary').order('created_at',{ascending:false}).limit(300);
+  if(salesError) throw new Error('تعذر تحميل الفواتير المشتركة: '+salesError.message);
+  sales=(cloudSales||[]).map(x=>({id:x.id,date:new Date(x.created_at).toLocaleString('ar-EG'),shift:x.shift,pay:x.pay,total:Number(x.total||0),items:x.items_summary||''}));
+  localStorage.setItem(KEYS.sales,JSON.stringify(sales));
   cloudReady=true;
   refreshAll();
 }
@@ -266,12 +270,38 @@ function addToCart(){let input=document.getElementById('scan'),code=input.value.
 function changeCartQty(i,v){let n=Math.max(1,Number(v||1)),stock=inventory.find(x=>x.code===cart[i].code);cart[i].qty=Math.min(n,Number(stock.qty||0));renderCart()}
 function removeCart(i){cart.splice(i,1);renderCart()}
 function clearCart(){cart=[];renderCart()}
-function completeSale(){if(!cart.length){alert('الفاتورة فارغة');return}for(let c of cart){let s=inventory.find(x=>x.code===c.code);if(!s||c.qty>s.qty){alert('الكمية غير كافية للصنف: '+c.name);return}}let total=cart.reduce((a,x)=>a+x.qty*x.price,0);cart.forEach(c=>{let s=inventory.find(x=>x.code===c.code);s.qty-=c.qty;s.sold=(s.sold||0)+c.qty});sales.unshift({id:Date.now(),date:now(),shift:document.getElementById('shift').value,pay:document.getElementById('pay').value,total,items:cart.map(x=>`${x.name} × ${x.qty}`).join('، ')});save();alert('تم إتمام البيع وخصم الكميات من المخزون بنجاح');cart=[];refreshAll();showPage('cashier')}
+async function completeSale(){
+  if(!cart.length){alert('الفاتورة فارغة');return}
+  for(let c of cart){
+    let item=inventory.find(x=>x.code===c.code);
+    if(!item||c.qty>item.qty){alert('الكمية غير كافية للصنف: '+c.name);return}
+  }
+  const payload=cart.map(c=>({code:String(c.code),name:c.name,qty:Number(c.qty),unit_price:Number(c.price),line_total:Number(c.qty*c.price)}));
+  const button=document.querySelector('[onclick="completeSale()"]');
+  if(button){button.disabled=true;button.textContent='جاري حفظ الفاتورة...'}
+  try{
+    const {data,error}=await supabaseClient.rpc('complete_shared_sale',{
+      p_shift:document.getElementById('shift').value,
+      p_pay:document.getElementById('pay').value,
+      p_items:payload
+    });
+    if(error) throw error;
+    cart=[];
+    await loadInventoryFromCloud();
+    alert('تم حفظ الفاتورة رقم '+data+' في قاعدة البيانات وخصم الكميات من المخزون المشترك');
+    refreshAll();
+    showPage('cashier');
+  }catch(e){
+    alert('لم يتم تأكيد البيع في قاعدة البيانات. لم نعتبر الفاتورة مكتملة. السبب: '+(e.message||'خطأ غير معروف'));
+  }finally{
+    if(button){button.disabled=false;button.textContent='إتمام البيع'}
+  }
+}
 function renderSales(){let total=sales.reduce((a,x)=>a+Number(x.total||0),0);document.getElementById('sCount').textContent=sales.length;document.getElementById('sTotal').textContent=money(total);let b=document.getElementById('salesBody');b.innerHTML='';sales.slice(0,300).forEach(x=>b.innerHTML+=`<tr><td>${x.date}</td><td>${String(x.id).slice(-6)}</td><td>${x.shift}</td><td>${money(x.total)}</td><td>${x.pay}</td><td style="text-align:right">${x.items}</td></tr>`)}
 function openItemModal(){editIndex=null;document.getElementById('modalTitle').textContent='إضافة صنف';['mCode','mName','mPrice','mQty'].forEach(id=>document.getElementById(id).value='');document.getElementById('modalBg').classList.remove('hidden')}
 function editItem(i){editIndex=i;let x=inventory[i];document.getElementById('modalTitle').textContent='تعديل الصنف';document.getElementById('mCode').value=x.code;document.getElementById('mName').value=x.name;document.getElementById('mPrice').value=x.price;document.getElementById('mQty').value=x.qty;document.getElementById('modalBg').classList.remove('hidden')}
 function closeModal(){document.getElementById('modalBg').classList.add('hidden')}
-async function saveItem(){let code=document.getElementById('mCode').value.trim(),name=document.getElementById('mName').value.trim(),price=Number(document.getElementById('mPrice').value||0),qty=Number(document.getElementById('mQty').value||0);if(!code||!name){alert('اكتب الكود والاسم');return}if(editIndex===null)inventory.push({code,name,price,qty,sold:0});else inventory[editIndex]={...inventory[editIndex],code,name,price,qty};save();try{if(cloudReady)await syncInventoryToCloud();closeModal();refreshAll();alert('تم حفظ الصنف ومزامنته مع قاعدة البيانات')}catch(e){alert('تم الحفظ محليًا لكن تعذرت المزامنة: '+e.message)}}
+async async function saveItem(){let code=document.getElementById('mCode').value.trim(),name=document.getElementById('mName').value.trim(),price=Number(document.getElementById('mPrice').value||0),qty=Number(document.getElementById('mQty').value||0);if(!code||!name){alert('اكتب الكود والاسم');return}if(editIndex===null)inventory.push({code,name,price,qty,sold:0});else inventory[editIndex]={...inventory[editIndex],code,name,price,qty};save();try{if(cloudReady)await syncInventoryToCloud();closeModal();refreshAll();alert('تم حفظ الصنف ومزامنته مع قاعدة البيانات')}catch(e){alert('تم الحفظ محليًا لكن تعذرت المزامنة: '+e.message)}}
 function savePasswords(){let a=document.getElementById('invPass').value.trim(),b=document.getElementById('cashPass').value.trim();if(a)passes.inventory=a;if(b)passes.cashier=b;localStorage.setItem(KEYS.pass,JSON.stringify(passes));alert('تم حفظ كلمات المرور')}
 function resetData(){if(!confirm('سيتم حذف المبيعات وإرجاع المخزون لبيانات البداية. هل أنت متأكد؟'))return;inventory=ORIGINAL.map(x=>({...x,sold:0}));sales=[];save();refreshAll();alert('تمت إعادة النظام لبيانات البداية')}
 refreshAll();
