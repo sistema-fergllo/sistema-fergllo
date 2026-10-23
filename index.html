@@ -165,6 +165,7 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
 <div id="modalBg" class="modal-bg hidden"><div class="modal"><h3 id="modalTitle">إضافة صنف</h3><input id="mCode" placeholder="الكود / الباركود"><input id="mName" placeholder="اسم الصنف"><input id="mPrice" type="number" step="0.01" placeholder="سعر البيع"><input id="mQty" type="number" step="1" placeholder="الكمية"><div class="modal-actions"><button class="btn green" onclick="saveItem()">حفظ</button><button class="btn gray" onclick="closeModal()">إلغاء</button></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script>
 const { createClient } = supabase;
 const supabaseClient = createClient(
@@ -321,60 +322,56 @@ function savePasswords(){let a=document.getElementById('invPass').value.trim(),b
 function resetData(){if(!confirm('سيتم حذف المبيعات وإرجاع المخزون لبيانات البداية. هل أنت متأكد؟'))return;inventory=ORIGINAL.map(x=>({...x,sold:0}));sales=[];save();refreshAll();alert('تمت إعادة النظام لبيانات البداية')}
 refreshAll();
 
-const BARCODE_IMAGES = {};
-
-function printInvoice(){
-  if(!cart.length){alert('الفاتورة فارغة');return}
-  const total=cart.reduce((a,x)=>a+x.qty*x.price,0);
-  const rows=cart.map(x=>`<tr><td>${x.name}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td></tr>`).join('');
-  const w=window.open('','_blank','width=500,height=700');
-  w.document.write(`<html dir="rtl"><head><title>فاتورة - سيستم فرجللو</title><style>
-  body{font-family:Tahoma,Arial;padding:20px;color:#111}h1{text-align:center;margin:0 0 5px}p{text-align:center;margin:4px}
-  table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border-bottom:1px solid #aaa;padding:8px;text-align:center}
-  .total{font-size:22px;font-weight:bold;text-align:left;margin-top:20px}.foot{text-align:center;margin-top:25px;color:#555}
-  </style></head><body><h1>سيستم فرجللو</h1><p>Farag El-Sayed</p><p>${now()}</p><p>${document.getElementById('shift').value} • ${document.getElementById('pay').value}</p>
-  <table><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>${rows}</table>
-  <div class="total">الإجمالي: ${money(total)}</div><div class="foot">شكراً لتعاملكم معنا</div>
-  <script>window.onload=()=>window.print()<\/script></body></html>`);
+function escapeBarcodeText(value){
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function makeBarcodeSvg(code){
+  if(typeof JsBarcode !== 'function') throw new Error('مكتبة إنشاء الباركود لم يتم تحميلها. تأكد من اتصال الإنترنت ثم حدّث الصفحة.');
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  JsBarcode(svg,String(code),{format:'CODE128',displayValue:true,font:'Arial',fontSize:14,width:2,height:48,margin:3,background:'#ffffff',lineColor:'#000000'});
+  return svg.outerHTML;
+}
+function barcodeLabel(item){
+  const svg=makeBarcodeSvg(item.code);
+  return '<div class="label">'+svg+'<b>'+escapeBarcodeText(item.name)+'</b><small>'+escapeBarcodeText(money(item.price))+'</small></div>';
+}
+function barcodePrintWindow(title, labels){
+  const w=window.open('','_blank','width=900,height=700');
+  if(!w){alert('اسمح بفتح النوافذ المنبثقة للموقع ثم جرّب الطباعة مرة أخرى.');return}
+  w.document.write('<!doctype html><html dir="rtl"><head><meta charset="utf-8"><title>'+escapeBarcodeText(title)+'</title><style>'+
+  'body{font-family:Tahoma,Arial;margin:0;padding:8mm;color:#000;background:#fff}.sheet{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4mm;align-items:start}'+
+  '.label{min-width:0;min-height:28mm;padding:2mm;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;page-break-inside:avoid;break-inside:avoid;overflow:hidden}'+
+  '.label svg{width:100%;max-width:58mm;height:auto;max-height:20mm}.label b{font-size:10pt;margin-top:1mm;max-width:100%;overflow-wrap:anywhere}.label small{font-size:9pt;margin-top:1mm}'+
+  '@page{size:auto;margin:5mm}@media print{.label{border:0}}'+
+  '</style></head><body><div class="sheet">'+labels+'</div><script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>');
   w.document.close();
 }
-
 function openBarcodeModal(code){
-  const s=document.getElementById('bcSelect'); s.innerHTML=inventory.map(x=>`<option value="${x.code}" ${String(x.code)===String(code)?'selected':''}>${x.code} - ${x.name}</option>`).join('');
-  document.getElementById('bcQty').value=1; document.getElementById('barcodeModal').classList.remove('hidden');
+  const s=document.getElementById('bcSelect');
+  s.innerHTML=inventory.map((x,i)=>'<option value="'+i+'" '+(String(x.code)===String(code)?'selected':'')+'>'+escapeBarcodeText(x.code+' - '+x.name)+'</option>').join('');
+  document.getElementById('bcQty').value=1;
+  document.getElementById('barcodeModal').classList.remove('hidden');
 }
 function closeBarcodeModal(){document.getElementById('barcodeModal').classList.add('hidden')}
 function printBarcode(code){openBarcodeModal(code)}
 function printSelectedBarcode(){
-  const code=document.getElementById('bcSelect').value, qty=Math.max(1,Number(document.getElementById('bcQty').value||1));
-  const item=inventory.find(x=>String(x.code)===String(code));
-  const img=BARCODE_IMAGES[String(code)];
-  if(!img){alert('الباركود لهذا الكود يحتاج إعادة تجهيز ملصقات الباركود.');return}
-  const labels=Array.from({length:qty},()=>`<div class="label"><img src="data:image/png;base64,${img}"><b>${item.name}</b><span>${item.code}</span><small>${money(item.price)}</small></div>`).join('');
-  const w=window.open('','_blank');
-  w.document.write(`<html dir="rtl"><head><title>باركود</title><style>
-  body{font-family:Tahoma;margin:0;padding:10px}.sheet{display:flex;flex-wrap:wrap;gap:8px}
-  .label{width:210px;border:1px solid #ddd;padding:10px;text-align:center;page-break-inside:avoid}
-  .label img{width:190px;height:auto;display:block;margin:auto}.label b,.label span,.label small{display:block;margin-top:4px}
-  @media print{.label{border:0}} </style></head><body><div class="sheet">${labels}</div>
-  <script>window.onload=()=>window.print()<\/script></body></html>`);
-  w.document.close(); closeBarcodeModal();
+  const index=Number(document.getElementById('bcSelect').value);
+  const qty=Math.min(500,Math.max(1,Number(document.getElementById('bcQty').value||1)));
+  const item=inventory[index];
+  if(!item){alert('اختار صنف صحيح');return}
+  try{
+    const one=barcodeLabel(item);
+    const labels=Array.from({length:qty},()=>one).join('');
+    barcodePrintWindow('باركود - '+item.name,labels);
+    closeBarcodeModal();
+  }catch(e){alert('تعذر إنشاء الباركود: '+e.message)}
 }
 function printAllBarcodes(){
   if(!inventory.length){alert('لا توجد أصناف');return}
-  const labels=inventory.map(item=>{
-    const img=BARCODE_IMAGES[String(item.code)];
-    if(!img)return '';
-    return `<div class="label"><img src="data:image/png;base64,${img}"><b>${item.name}</b><span>${item.code}</span><small>${money(item.price)}</small></div>`;
-  }).join('');
-  const w=window.open('','_blank');
-  w.document.write(`<html dir="rtl"><head><title>باركود الأصناف</title><style>
-  body{font-family:Tahoma;margin:0;padding:10px}.sheet{display:flex;flex-wrap:wrap;gap:8px}
-  .label{width:210px;border:1px solid #ddd;padding:10px;text-align:center;page-break-inside:avoid}
-  .label img{width:190px;height:auto;display:block;margin:auto}.label b,.label span,.label small{display:block;margin-top:4px}
-  @media print{.label{border:0}} </style></head><body><div class="sheet">${labels}</div>
-  <script>window.onload=()=>window.print()<\/script></body></html>`);
-  w.document.close();
+  try{
+    const labels=inventory.map(item=>barcodeLabel(item)).join('');
+    barcodePrintWindow('باركود الأصناف',labels);
+  }catch(e){alert('تعذر إنشاء الباركود: '+e.message)}
 }
 
 function renderReports(){
