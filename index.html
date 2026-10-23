@@ -59,7 +59,7 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
   <button class="nav" data-page="sales" onclick="showPage('sales')"><span>📊</span>المبيعات</button>
   <button class="nav" data-page="reports" onclick="showPage('reports')"><span>📈</span>التقارير</button>
   <button class="nav" data-page="coding" onclick="showPage('coding')"><span>▦</span>التكويدات</button>
-  <button class="nav" data-page="settings" onclick="showPage('settings')"><span>⚙</span>الإعدادات</button>
+  <button class="nav" data-page="settings" onclick="openSettings()"><span>⚙</span>الإعدادات</button>
   <button class="logout" onclick="location.reload()">⏻ تسجيل الخروج</button>
 </aside>
 <main>
@@ -159,6 +159,8 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
 <div id="settings" class="page hidden">
   <div class="title"><div><h2>⚙ الإعدادات</h2><div class="sub">إدارة كلمات مرور الصفحات والبيانات المحلية</div></div></div>
   <div class="cash-panel" style="max-width:700px">
+    <h3>الرقم السري للإعدادات</h3>
+    <div class="paybox"><input id="newSettingsPin" type="password" inputmode="numeric" placeholder="اكتب الرقم السري الجديد"><button class="btn" onclick="saveSettingsPin()">تغيير الرقم السري</button></div>
     <h3>كلمات مرور الصفحات</h3>
     <p class="sub">كلمة مرور المخزون الافتراضية: <b>2580</b> — كلمة مرور الكاشير الافتراضية: <b>1470</b></p>
     <div class="paybox"><input id="invPass" placeholder="كلمة مرور المخزون الجديدة"><input id="cashPass" placeholder="كلمة مرور الكاشير الجديدة"><button class="btn" onclick="savePasswords()">حفظ كلمات المرور</button></div>
@@ -292,6 +294,8 @@ function requestPage(p){
   document.getElementById('app').classList.add('hidden');
   document.getElementById('login').dataset.page=p;
 }
+function openSettings(){const saved=localStorage.getItem('frg_settings_pin')||'7319';const entered=prompt('أدخل الرقم السري لفتح الإعدادات');if(entered===null)return;if(entered!==saved){alert('الرقم السري غير صحيح');return}showPage('settings')}
+function saveSettingsPin(){const p=document.getElementById('newSettingsPin').value.trim();if(!/^\d{4,12}$/.test(p)){alert('اكتب رقمًا سريًا من 4 إلى 12 رقمًا');return}localStorage.setItem('frg_settings_pin',p);document.getElementById('newSettingsPin').value='';alert('تم تغيير الرقم السري للإعدادات')}
 function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));if(id==='inventory')renderInventory();if(id==='sales')renderSales();if(id==='reports')renderReports();if(id==='coding')renderCoding();if(id==='cashier'){renderCart();setTimeout(()=>document.getElementById('scan').focus(),100)}}
 function refreshAll(){updateDashboard();renderInventory();renderSales();renderCart()}
 function updateDashboard(){let qty=inventory.reduce((a,x)=>a+Number(x.qty||0),0), value=inventory.reduce((a,x)=>a+Number(x.qty||0)*Number(x.price||0),0), st=sales.reduce((a,x)=>a+Number(x.total||0),0);document.getElementById('cItems').textContent=inventory.length;document.getElementById('cQty').textContent=qty.toLocaleString();document.getElementById('cSales').textContent=money(st);document.getElementById('cStock').textContent=money(value);document.getElementById('iCount').textContent=inventory.length;document.getElementById('iQty').textContent=qty.toLocaleString();document.getElementById('iValue').textContent=money(value);document.getElementById('iSales').textContent=money(st)}
