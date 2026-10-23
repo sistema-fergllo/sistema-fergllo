@@ -1,1 +1,292 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>سيستم فرجللو</title></head><body><h1>سيستم فرجللو</h1><p>جاري تجهيز النظام...</p></body></html>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>سيستم فرجللو</title>
+<style>
+:root{--bg:#050d1d;--panel:#071a33;--panel2:#0b2444;--blue:#168cff;--cyan:#24d7ff;--green:#21d46b;--red:#ff4662;--gold:#f4b62b;--text:#f4f8ff;--muted:#91a7c2;--line:#123a67}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#123c73 0,#071326 38%,#030814 100%);color:var(--text);font-family:Tahoma,Arial,sans-serif;min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:0}.hidden{display:none!important}
+.top{height:82px;background:linear-gradient(90deg,#06152b,#0a2343,#06152b);border-bottom:1px solid #0d5aa0;display:flex;align-items:center;justify-content:space-between;padding:0 24px;box-shadow:0 5px 25px #0008}
+.brand{display:flex;align-items:center;gap:15px}.logo{width:52px;height:52px;border:2px solid var(--cyan);border-radius:50%;display:grid;place-items:center;font-size:27px;box-shadow:0 0 18px #24d7ff66}.brand h1{margin:0;font-size:28px;color:#fff}.brand small{color:var(--cyan);display:block;margin-top:3px}
+.userbox{display:flex;gap:18px;align-items:center}.clock{text-align:left;color:#d8eaff}.user{background:#071c35;border:1px solid #1a5c96;border-radius:12px;padding:9px 14px}
+.layout{display:flex;min-height:calc(100vh - 82px)}.side{width:205px;background:linear-gradient(#06162c,#041020);border-left:1px solid #104475;padding:18px 12px;display:flex;flex-direction:column;gap:9px}.nav{padding:15px;border-radius:12px;color:#dbeaff;background:transparent;text-align:right;border:1px solid transparent}.nav:hover,.nav.active{background:linear-gradient(90deg,#0878e6,#0d3b70);border-color:#24bfff;box-shadow:0 0 16px #168cff44}.nav span{font-size:20px;margin-left:8px}.logout{margin-top:auto;background:#291327;color:#ffb9c3;border:1px solid #7d2940;padding:12px;border-radius:12px}
+main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.title h2{font-size:31px;margin:0}.sub{color:var(--muted);margin-top:5px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:18px}.card{background:linear-gradient(145deg,#082346,#06152a);border:1px solid #1468a8;border-radius:15px;padding:18px;box-shadow:0 7px 20px #0004}.card .label{color:#a9bdd5}.card .value{font-size:27px;font-weight:bold;margin-top:8px}.gold{color:var(--gold)}.green{color:#55e58b}.cyan{color:#52dcff}
+.toolbar{display:flex;gap:10px;align-items:center;background:#061a31;border:1px solid var(--line);padding:12px;border-radius:13px;margin-bottom:14px}.toolbar input,.toolbar select,.modal input,.cash-search{background:#041326;color:white;border:1px solid #155083;border-radius:9px;padding:11px 12px;outline:none}.toolbar input{flex:1}.btn{padding:11px 16px;border-radius:9px;color:#fff;background:#0c74df}.btn.green{background:#10a957}.btn.red{background:#b52a43}.btn.gold{background:#c58b12}.btn.gray{background:#22344c}
+.table-wrap{background:#06182e;border:1px solid #145180;border-radius:15px;overflow:auto}.table{width:100%;border-collapse:collapse;min-width:850px}.table th{background:#0b2b52;color:#d8edff;padding:13px 8px;border-bottom:1px solid #1b6ba0}.table td{padding:11px 8px;text-align:center;border-bottom:1px solid #0d3153;color:#edf5ff}.table tr:hover td{background:#0a2340}.badge{padding:5px 10px;border-radius:20px;font-size:12px}.ok{background:#0d6c3c;color:#a7ffd0}.low{background:#725b0a;color:#ffe797}.out{background:#7c2031;color:#ffc0ca}
+.footerline{margin-top:15px;color:#69829f;text-align:center}.login-screen{min-height:100vh;display:grid;place-items:center;padding:20px}.login-card{width:min(440px,95vw);background:linear-gradient(145deg,#092448,#041020);border:1px solid #1b8ad0;border-radius:20px;padding:30px;box-shadow:0 0 55px #0a7dce33;text-align:center}.login-card h1{font-size:34px;margin:5px}.login-card p{color:var(--muted)}.login-card input{width:100%;margin:12px 0}.login-card button{width:100%;margin-top:5px}.err{color:#ff8394;min-height:24px}
+.cash-layout{display:grid;grid-template-columns:1.6fr .75fr;gap:16px}.cash-panel{background:#06182e;border:1px solid #145180;border-radius:15px;padding:16px}.scan{display:flex;gap:9px}.scan input{flex:1;background:#041326;color:white;border:1px solid #1c79bb;border-radius:10px;padding:15px;font-size:18px;outline:none}.cart-total{font-size:31px;font-weight:bold;color:#5ee8ff}.paybox{display:grid;gap:10px}.paybox select,.paybox input{width:100%;background:#041326;color:white;border:1px solid #155083;border-radius:9px;padding:12px}.empty{text-align:center;padding:35px;color:#7890ab}
+.modal-bg{position:fixed;inset:0;background:#000b;display:grid;place-items:center;z-index:10}.modal{width:min(460px,94vw);background:#081d37;border:1px solid #1e83c6;border-radius:18px;padding:24px}.modal h3{margin-top:0}.modal input{width:100%;margin:8px 0}.modal-actions{display:flex;gap:8px;margin-top:12px}
+@media(max-width:900px){.side{width:75px}.nav{font-size:0;text-align:center}.nav span{font-size:22px;margin:0}.cards{grid-template-columns:repeat(2,1fr)}.cash-layout{grid-template-columns:1fr}.top{padding:0 12px}.brand h1{font-size:20px}.userbox .clock{display:none}}
+
+@media print{
+  body{background:#fff!important;color:#000!important}
+  .top,.side,.toolbar,.btn,.title button{display:none!important}
+  main{padding:0!important}
+  .page{display:none!important}
+  #cashier.printing{display:block!important}
+  #reports.printing{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<div id="login" class="login-screen">
+  <div class="login-card">
+    <div class="logo" style="margin:auto">🛒</div>
+    <h1>سيستم فرجللو</h1>
+    <p id="loginText">تسجيل الدخول إلى النظام</p>
+    <input id="password" type="password" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter') doLogin()">
+    <div id="loginErr" class="err"></div>
+    <button class="btn" onclick="doLogin()">دخول</button>
+    <div style="margin-top:18px;color:#7890ab;font-size:12px">Farag El-Sayed • مشرف النظام</div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+<header class="top">
+  <div class="brand"><div class="logo">🛒</div><div><h1>سيستم فرجللو</h1><small>Farag El-Sayed • مشرف النظام</small></div></div>
+  <div class="userbox"><div class="clock"><b id="date"></b><br><span id="time"></span></div><div class="user">👤 <b>admin</b><br><small>مدير النظام</small></div></div>
+</header>
+<div class="layout">
+<aside class="side">
+  <button class="nav active" data-page="home" onclick="showPage('home')"><span>⌂</span>الرئيسية</button>
+  <button class="nav" data-page="inventory" onclick="requestPage('inventory')"><span>📦</span>المخزون</button>
+  <button class="nav" data-page="cashier" onclick="requestPage('cashier')"><span>🧾</span>الكاشير</button>
+  <button class="nav" data-page="sales" onclick="showPage('sales')"><span>📊</span>المبيعات</button>
+  <button class="nav" data-page="reports" onclick="showPage('reports')"><span>📈</span>التقارير</button>
+  <button class="nav" data-page="settings" onclick="showPage('settings')"><span>⚙</span>الإعدادات</button>
+  <button class="logout" onclick="location.reload()">⏻ تسجيل الخروج</button>
+</aside>
+<main>
+<div id="home" class="page">
+  <div class="title"><div><h2>الرئيسية</h2><div class="sub">تنظيم • دقة • نجاح أكبر</div></div></div>
+  <div class="cards">
+    <div class="card"><div class="label">إجمالي الأصناف</div><div id="cItems" class="value cyan"></div></div>
+    <div class="card"><div class="label">إجمالي الكميات</div><div id="cQty" class="value green"></div></div>
+    <div class="card"><div class="label">إجمالي المبيعات</div><div id="cSales" class="value gold"></div></div>
+    <div class="card"><div class="label">قيمة المخزون</div><div id="cStock" class="value"></div></div>
+  </div>
+  <div class="cash-panel"><h3>النظام جاهز للعمل</h3><p class="sub">المخزون والكاشير مرتبطان بالكود/الباركود، وإتمام البيع يخصم الكمية تلقائيًا من المخزون.</p></div>
+</div>
+
+<div id="inventory" class="page hidden">
+  <div class="title"><div><h2>📦 المخزون</h2><div class="sub">جميع الأصناف وكمياتها</div></div>
+  <div style="display:flex;gap:8px"><button class="btn gold" onclick="printAllBarcodes()">▦ طباعة الباركود</button><button class="btn" onclick="openItemModal()">＋ إضافة صنف</button></div></div>
+  <div class="cards">
+    <div class="card"><div class="label">إجمالي الأصناف</div><div id="iCount" class="value cyan"></div></div>
+    <div class="card"><div class="label">إجمالي الكميات</div><div id="iQty" class="value green"></div></div>
+    <div class="card"><div class="label">قيمة المخزون</div><div id="iValue" class="value gold"></div></div>
+    <div class="card"><div class="label">مبيعات اليوم</div><div id="iSales" class="value"></div></div>
+  </div>
+  <div class="toolbar"><input id="invSearch" placeholder="ابحث بالكود أو اسم الصنف..." oninput="renderInventory()"><button class="btn gray" onclick="document.getElementById('invSearch').value='';renderInventory()">مسح</button></div>
+  <div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>اسم الصنف</th><th>السعر</th><th>رصيد أول المدة</th><th>المباع</th><th>الرصيد الحالي</th><th>القيمة</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="invBody"></tbody></table></div>
+</div>
+
+<div id="cashier" class="page hidden">
+  <div class="title"><div><h2>🧾 الكاشير</h2><div class="sub">إدخال المبيعات بسرعة بالباركود أو الكود</div></div></div>
+  <div class="cash-layout">
+    <div class="cash-panel">
+      <div class="scan"><input id="scan" autofocus placeholder="امسح الباركود أو اكتب الكود ثم Enter" onkeydown="if(event.key==='Enter') addToCart()"><button class="btn" onclick="addToCart()">إضافة</button></div>
+      <div style="height:12px"></div>
+      <div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="cartBody"></tbody></table></div>
+    </div>
+    <div class="cash-panel">
+      <h3>بيانات الشيفت</h3>
+      <div class="paybox">
+        <label>الشيفت</label><select id="shift"><option>الشيفت الأول</option><option>الشيفت الثاني</option><option>الشيفت الثالث</option></select>
+        <label>طريقة الدفع</label><select id="pay"><option>كاش</option><option>فيزا</option><option>تحويل</option></select>
+        <div style="margin-top:12px;color:#9bb0c7">إجمالي الفاتورة</div>
+        <div id="cartTotal" class="cart-total">0.00 EGP</div>
+        <button class="btn green" onclick="completeSale()">✓ إتمام البيع</button>
+        <button class="btn gold" onclick="printInvoice()">🖨 طباعة الفاتورة</button>
+        <button class="btn red" onclick="clearCart()">مسح الفاتورة</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="sales" class="page hidden">
+  <div class="title"><div><h2>📊 سجل المبيعات</h2><div class="sub">كل عمليات البيع التي تمت من الكاشير</div></div></div>
+  <div class="cards"><div class="card"><div class="label">عدد العمليات</div><div id="sCount" class="value cyan"></div></div><div class="card"><div class="label">إجمالي المبيعات</div><div id="sTotal" class="value gold"></div></div></div>
+  <div class="table-wrap"><table class="table"><thead><tr><th>التاريخ والوقت</th><th>رقم الفاتورة</th><th>الشيفت</th><th>الإجمالي</th><th>الدفع</th><th>الأصناف</th></tr></thead><tbody id="salesBody"></tbody></table></div>
+</div>
+
+
+<div id="reports" class="page hidden">
+  <div class="title"><div><h2>📈 التقارير</h2><div class="sub">ملخص المبيعات وحركة الشيفتات والأصناف</div></div>
+    <button class="btn gold" onclick="printReport()">🖨 طباعة التقرير</button></div>
+  <div class="toolbar">
+    <label>من</label><input id="repFrom" type="date" onchange="renderReports()">
+    <label>إلى</label><input id="repTo" type="date" onchange="renderReports()">
+    <select id="repShift" onchange="renderReports()"><option value="">كل الشيفتات</option><option>الشيفت الأول</option><option>الشيفت الثاني</option><option>الشيفت الثالث</option></select>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="label">إجمالي المبيعات</div><div id="rTotal" class="value gold">0.00 EGP</div></div>
+    <div class="card"><div class="label">عدد الفواتير</div><div id="rInvoices" class="value cyan">0</div></div>
+    <div class="card"><div class="label">إجمالي القطع</div><div id="rUnits" class="value green">0</div></div>
+    <div class="card"><div class="label">متوسط الفاتورة</div><div id="rAvg" class="value">0.00 EGP</div></div>
+  </div>
+  <div class="cash-panel">
+    <h3>ملخص الشيفتات</h3>
+    <div class="table-wrap"><table class="table"><thead><tr><th>الشيفت</th><th>عدد الفواتير</th><th>إجمالي المبيعات</th></tr></thead><tbody id="shiftBody"></tbody></table></div>
+  </div>
+  <div style="height:16px"></div>
+  <div class="cash-panel">
+    <h3>الأصناف الأكثر مبيعاً</h3>
+    <div class="table-wrap"><table class="table"><thead><tr><th>الصنف</th><th>الكود</th><th>الكمية المباعة</th><th>قيمة المبيعات</th></tr></thead><tbody id="topBody"></tbody></table></div>
+  </div>
+</div>
+
+<div id="settings" class="page hidden">
+  <div class="title"><div><h2>⚙ الإعدادات</h2><div class="sub">إدارة كلمات مرور الصفحات والبيانات المحلية</div></div></div>
+  <div class="cash-panel" style="max-width:700px">
+    <h3>كلمات مرور الصفحات</h3>
+    <p class="sub">كلمة مرور المخزون الافتراضية: <b>2580</b> — كلمة مرور الكاشير الافتراضية: <b>1470</b></p>
+    <div class="paybox"><input id="invPass" placeholder="كلمة مرور المخزون الجديدة"><input id="cashPass" placeholder="كلمة مرور الكاشير الجديدة"><button class="btn" onclick="savePasswords()">حفظ كلمات المرور</button></div>
+    <hr style="border-color:#123a67;margin:22px 0">
+    <button class="btn red" onclick="resetData()">إعادة بيانات النظام إلى الأصل</button>
+  </div>
+</div>
+</main></div></div>
+
+
+<div id="barcodeModal" class="modal-bg hidden"><div class="modal" style="max-width:650px">
+  <h3>طباعة الباركود</h3>
+  <p class="sub">اختر الصنف وعدد الملصقات.</p>
+  <select id="bcSelect" style="width:100%;background:#041326;color:#fff;border:1px solid #155083;border-radius:9px;padding:12px"></select>
+  <input id="bcQty" type="number" min="1" value="1" placeholder="عدد الملصقات">
+  <div class="modal-actions"><button class="btn gold" onclick="printSelectedBarcode()">🖨 طباعة</button><button class="btn gray" onclick="closeBarcodeModal()">إلغاء</button></div>
+</div></div>
+
+<div id="modalBg" class="modal-bg hidden"><div class="modal"><h3 id="modalTitle">إضافة صنف</h3><input id="mCode" placeholder="الكود / الباركود"><input id="mName" placeholder="اسم الصنف"><input id="mPrice" type="number" step="0.01" placeholder="سعر البيع"><input id="mQty" type="number" step="1" placeholder="الكمية"><div class="modal-actions"><button class="btn green" onclick="saveItem()">حفظ</button><button class="btn gray" onclick="closeModal()">إلغاء</button></div></div></div>
+
+<script>
+const ORIGINAL = [{"code": "101", "name": "كريسينا سمسم", "price": 30.0, "qty": 0.0}, {"code": "102", "name": "كريسينا سادة", "price": 30.0, "qty": 0.0}, {"code": "103", "name": "كريسينا سكر و قرفة", "price": 30.0, "qty": 0.0}, {"code": "104", "name": "كريسينا  حبة كاملة", "price": 35.0, "qty": 0.0}, {"code": "105", "name": "باتون حلواني", "price": 30.0, "qty": 0.0}, {"code": "106", "name": "باتون كامون", "price": 30.0, "qty": 0.0}, {"code": "107", "name": "باتون ملح", "price": 30.0, "qty": 0.0}, {"code": "108", "name": "باتون تركى", "price": 35.0, "qty": 0.0}, {"code": "109", "name": "باتون حبة كاملة", "price": 35.0, "qty": 0.0}, {"code": "110", "name": "سماسم", "price": 30.0, "qty": 0.0}, {"code": "111", "name": "عين يمامة", "price": 30.0, "qty": 0.0}, {"code": "112", "name": "برزيانة", "price": 30.0, "qty": 0.0}, {"code": "113", "name": "شرائح سمسم وحبة بركة", "price": 30.0, "qty": 0.0}, {"code": "114", "name": "شرائح تركى", "price": 45.0, "qty": 0.0}, {"code": "115", "name": "شرائح شوفان", "price": 35.0, "qty": 0.0}, {"code": "116", "name": "شرائح سبع حبوب", "price": 35.0, "qty": 0.0}, {"code": "117", "name": "توست كوركوم", "price": 30.0, "qty": 0.0}, {"code": "118", "name": "توست حبة كاملة", "price": 35.0, "qty": 0.0}, {"code": "119", "name": "حرف (s) سكر", "price": 30.0, "qty": 0.0}, {"code": "120", "name": "حرف (s) سكر و قرفة", "price": 30.0, "qty": 0.0}, {"code": "121", "name": "فايش صعيدي", "price": 35.0, "qty": 0.0}, {"code": "201", "name": "نشادر فانيليا", "price": 60.0, "qty": 0.0}, {"code": "202", "name": "نشادر برتقال", "price": 60.0, "qty": 0.0}, {"code": "203", "name": "نشادر شيكولاتة", "price": 60.0, "qty": 0.0}, {"code": "204", "name": "برازق", "price": 60.0, "qty": 0.0}, {"code": "205", "name": "بسكويت صخر", "price": 60.0, "qty": 0.0}, {"code": "206", "name": "بسكويت نسكافيه", "price": 60.0, "qty": 0.0}, {"code": "207", "name": "بسكويت قهوة", "price": 60.0, "qty": 0.0}, {"code": "208", "name": "بسكويت بندق", "price": 60.0, "qty": 0.0}, {"code": "209", "name": "بسكويت بندق حبة كاملة", "price": 70.0, "qty": 0.0}, {"code": "210", "name": "بسكويت قرفة", "price": 60.0, "qty": 0.0}, {"code": "211", "name": "بسكويت ينسون", "price": 60.0, "qty": 0.0}, {"code": "212", "name": "بسكويت ينسون حبة كاملة", "price": 70.0, "qty": 0.0}, {"code": "213", "name": "بسكويت انس", "price": 40.0, "qty": 0.0}, {"code": "214", "name": "كوكيز شيكولاتة", "price": 60.0, "qty": 0.0}, {"code": "215", "name": "كوكيز شيكولاتة حبة كاملة", "price": 70.0, "qty": 0.0}, {"code": "216", "name": "كوكيز فانيليا", "price": 60.0, "qty": 0.0}, {"code": "217", "name": "كوكيز فانيليا حبة كاملة", "price": 70.0, "qty": 0.0}, {"code": "218", "name": "بسكويت لوكسى", "price": 60.0, "qty": 0.0}, {"code": "219", "name": "قرفة حبة كاملة", "price": 70.0, "qty": 0.0}, {"code": "220", "name": "نسكافيه حبة كاملة", "price": 70.0, "qty": 0.0}, {"code": "301", "name": "قراقيش عجوة", "price": 50.0, "qty": 0.0}, {"code": "302", "name": "قراقيش عجوة حبة كاملة", "price": 60.0, "qty": 0.0}, {"code": "303", "name": "قراقيش ينسون", "price": 50.0, "qty": 0.0}, {"code": "304", "name": "قراقيش ملبن", "price": 50.0, "qty": 0.0}, {"code": "305", "name": "قراميش حبة البركة", "price": 60.0, "qty": 0.0}, {"code": "306", "name": "قراقيش سادة", "price": 50.0, "qty": 0.0}, {"code": "307", "name": "قرص عجوة", "price": 50.0, "qty": 0.0}, {"code": "308", "name": "قرص عجوة حبة كاملة", "price": 60.0, "qty": 0.0}, {"code": "309", "name": "قرص ملبن", "price": 50.0, "qty": 0.0}, {"code": "310", "name": "قرص سادة حبة كاملة", "price": 60.0, "qty": 0.0}, {"code": "311", "name": "معمولة عجوة", "price": 50.0, "qty": 0.0}, {"code": "312", "name": "معمولة ملبن", "price": 50.0, "qty": 0.0}, {"code": "401", "name": "باتيه جبنة بيضاء", "price": 25.0, "qty": 0.0}, {"code": "402", "name": "باتيه جبنة بيضاء زيتون", "price": 25.0, "qty": 0.0}, {"code": "403", "name": "باتيه تركىباتيه شيدر", "price": 25.0, "qty": 0.0}, {"code": "404", "name": "باتيه سوسيس", "price": 25.0, "qty": 0.0}, {"code": "405", "name": "باتيه جبنه بيضاء حبة كاملة", "price": 30.0, "qty": 0.0}, {"code": "406", "name": "باتيه جبنة تركي حبة كاملة", "price": 30.0, "qty": 0.0}, {"code": "407", "name": "كرواسون سادة", "price": 20.0, "qty": 0.0}, {"code": "408", "name": "كرواسون سادة حبة كاملة", "price": 25.0, "qty": 0.0}, {"code": "409", "name": "ميني بيتزا (طبق)", "price": 50.0, "qty": 0.0}, {"code": "410", "name": "ساليزون جبنة تركى (طبق)", "price": 50.0, "qty": 0.0}, {"code": "411", "name": "ساليزون جبنة بيضاء (طبق)", "price": 50.0, "qty": 0.0}, {"code": "412", "name": "بيتزا إيطالي", "price": 30.0, "qty": 0.0}, {"code": "501", "name": "انجلش كيك قالب", "price": 50.0, "qty": 0.0}, {"code": "502", "name": "انجلش كيك (طبق)", "price": 40.0, "qty": 0.0}, {"code": "503", "name": "كاب كيك", "price": 20.0, "qty": 0.0}, {"code": "504", "name": "فطير صغير", "price": 15.0, "qty": 0.0}, {"code": "505", "name": "فطير كبير", "price": 25.0, "qty": 0.0}, {"code": "601", "name": "كرواسون شيكولاتة", "price": 30.0, "qty": 0.0}, {"code": "602", "name": "دانش", "price": 25.0, "qty": 0.0}, {"code": "603", "name": "سابليه كبير", "price": 25.0, "qty": 0.0}, {"code": "604", "name": "ميني سابليه (الكيلو)", "price": 280.0, "qty": 0.0}, {"code": "605", "name": "تارت كبير", "price": 25.0, "qty": 0.0}, {"code": "606", "name": "ميني تارت (الكيلو)", "price": 280.0, "qty": 0.0}, {"code": "607", "name": "دونتس كبير", "price": 30.0, "qty": 0.0}, {"code": "608", "name": "ميني دونتس (الكيلو)", "price": 250.0, "qty": 0.0}, {"code": "609", "name": "باباظ", "price": 30.0, "qty": 0.0}, {"code": "610", "name": "ملفيه حلو", "price": 25.0, "qty": 0.0}, {"code": "611", "name": "ملفيه حادق (طبق)", "price": 50.0, "qty": 0.0}, {"code": "612", "name": "جاتوه", "price": 30.0, "qty": 0.0}, {"code": "613", "name": "فلوست", "price": 45.0, "qty": 0.0}, {"code": "614", "name": "هولنديز", "price": 25.0, "qty": 0.0}, {"code": "615", "name": "اكلير", "price": 25.0, "qty": 0.0}, {"code": "616", "name": "ميني اكلير (الكيلو)", "price": 250.0, "qty": 0.0}, {"code": "617", "name": "البولات", "price": 25.0, "qty": 0.0}, {"code": "618", "name": "بيتي فور (الكيلو)", "price": 280.0, "qty": 0.0}, {"code": "701", "name": "هريسة لوز", "price": 200.0, "qty": 0.0}, {"code": "702", "name": "هريسة فسدق كريزة", "price": 200.0, "qty": 0.0}, {"code": "703", "name": "هريسة سادة", "price": 180.0, "qty": 0.0}, {"code": "404", "name": "هريسة عين جمل", "price": 200.0, "qty": 0.0}, {"code": "705", "name": "هريسة بندق", "price": 200.0, "qty": 0.0}, {"code": "706", "name": "جلاش مكسرات", "price": 200.0, "qty": 0.0}, {"code": "707", "name": "جلاش  سادة", "price": 180.0, "qty": 0.0}, {"code": "708", "name": "جلاش نوتيلا", "price": 200.0, "qty": 0.0}, {"code": "709", "name": "جلاش سوستة", "price": 200.0, "qty": 0.0}, {"code": "710", "name": "كنافة كابات", "price": 15.0, "qty": 0.0}, {"code": "711", "name": "كنافة سيجار", "price": 180.0, "qty": 0.0}, {"code": "712", "name": "كنافة  بندق", "price": 200.0, "qty": 0.0}, {"code": "713", "name": "كنافة شيكولاتة نوتيلا", "price": 200.0, "qty": 0.0}, {"code": "714", "name": "كنافة مبروم", "price": 200.0, "qty": 0.0}, {"code": "715", "name": "كنافة مكسرات", "price": 200.0, "qty": 0.0}, {"code": "716", "name": "شكلمة كريز", "price": 180.0, "qty": 0.0}, {"code": "717", "name": "شكلمة مكسرات", "price": 200.0, "qty": 0.0}, {"code": "718", "name": "رموش الست مكسرات", "price": 200.0, "qty": 0.0}, {"code": "719", "name": "رموش الست عادي", "price": 180.0, "qty": 0.0}];
+const KEYS = {inv:'frg_inv', sales:'frg_sales', pass:'frg_pass'};
+let inventory = JSON.parse(localStorage.getItem(KEYS.inv)||'null') || ORIGINAL.map(x=>({...x, sold:0}));
+let sales = JSON.parse(localStorage.getItem(KEYS.sales)||'[]');
+let passes = JSON.parse(localStorage.getItem(KEYS.pass)||'null') || {inventory:'2580',cashier:'1470'};
+let cart=[], pendingPage=null, editIndex=null;
+
+function save(){localStorage.setItem(KEYS.inv,JSON.stringify(inventory));localStorage.setItem(KEYS.sales,JSON.stringify(sales))}
+function money(n){return Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' EGP'}
+function now(){return new Date().toLocaleString('ar-EG')}
+function updateClock(){let d=new Date();document.getElementById('date').textContent=d.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'2-digit',day:'2-digit'});document.getElementById('time').textContent=d.toLocaleTimeString('ar-EG')}
+setInterval(updateClock,1000);updateClock();
+
+function doLogin(){if(document.getElementById('password').value==='admin'){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');refreshAll();return}document.getElementById('loginErr').textContent='كلمة المرور الرئيسية غير صحيحة';}
+function requestPage(p){pendingPage=p;document.getElementById('loginText').textContent='أدخل كلمة مرور صفحة '+(p==='inventory'?'المخزون':'الكاشير');document.getElementById('password').value='';document.getElementById('login').classList.remove('hidden');document.getElementById('app').classList.add('hidden');document.getElementById('login').dataset.page=p}
+const oldLogin=doLogin;
+doLogin=function(){let p=document.getElementById('login').dataset.page;if(!p){oldLogin();return}if(document.getElementById('password').value===passes[p]){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');showPage(p);document.getElementById('login').dataset.page=''}else document.getElementById('loginErr').textContent='كلمة المرور غير صحيحة';};
+
+function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));if(id==='inventory')renderInventory();if(id==='sales')renderSales();if(id==='reports')renderReports();if(id==='cashier'){renderCart();setTimeout(()=>document.getElementById('scan').focus(),100)}}
+function refreshAll(){updateDashboard();renderInventory();renderSales();renderCart()}
+function updateDashboard(){let qty=inventory.reduce((a,x)=>a+Number(x.qty||0),0), value=inventory.reduce((a,x)=>a+Number(x.qty||0)*Number(x.price||0),0), st=sales.reduce((a,x)=>a+Number(x.total||0),0);document.getElementById('cItems').textContent=inventory.length;document.getElementById('cQty').textContent=qty.toLocaleString();document.getElementById('cSales').textContent=money(st);document.getElementById('cStock').textContent=money(value);document.getElementById('iCount').textContent=inventory.length;document.getElementById('iQty').textContent=qty.toLocaleString();document.getElementById('iValue').textContent=money(value);document.getElementById('iSales').textContent=money(st)}
+function renderInventory(){updateDashboard();let q=(document.getElementById('invSearch')?.value||'').toLowerCase();let b=document.getElementById('invBody');b.innerHTML='';inventory.forEach((x,i)=>{if(q&&!(`${x.code} ${x.name}`.toLowerCase().includes(q)))return;let status=x.qty<=0?'<span class="badge out">نفد</span>':x.qty<=5?'<span class="badge low">منخفض</span>':'<span class="badge ok">متوفر</span>';b.innerHTML+=`<tr><td>${x.code}</td><td>${x.name}</td><td>${money(x.price)}</td><td>${x.qty}</td><td>${x.sold||0}</td><td><b>${x.qty}</b></td><td>${money(x.qty*x.price)}</td><td>${status}</td><td><button class="btn gray" onclick="editItem(${i})">تعديل</button> <button class="btn gold" onclick="printBarcode('${x.code}')">باركود</button></td></tr>`})}
+function renderCart(){let b=document.getElementById('cartBody');b.innerHTML='';let total=0;if(!cart.length)b.innerHTML='<tr><td colspan="6" class="empty">امسح الباركود أو اكتب الكود لإضافة صنف</td></tr>';cart.forEach((x,i)=>{let t=x.qty*x.price;total+=t;b.innerHTML+=`<tr><td>${x.code}</td><td>${x.name}</td><td><input style="width:70px;background:#041326;color:#fff;border:1px solid #155083;border-radius:6px;padding:7px;text-align:center" type="number" min="1" value="${x.qty}" onchange="changeCartQty(${i},this.value)"></td><td>${money(x.price)}</td><td>${money(t)}</td><td><button class="btn red" onclick="removeCart(${i})">حذف</button></td></tr>`});document.getElementById('cartTotal').textContent=money(total)}
+function addToCart(){let input=document.getElementById('scan'),code=input.value.trim();if(!code)return;let item=inventory.find(x=>String(x.code)===code);if(!item){alert('الكود غير موجود في المخزون');input.select();return}let existing=cart.find(x=>x.code===item.code);if(existing){if(existing.qty+1>item.qty)alert('الكمية المتاحة غير كافية');else existing.qty++}else{if(item.qty<1){alert('الصنف نافد من المخزون');input.select();return}cart.push({code:item.code,name:item.name,price:Number(item.price||0),qty:1})}input.value='';renderCart();input.focus()}
+function changeCartQty(i,v){let n=Math.max(1,Number(v||1)),stock=inventory.find(x=>x.code===cart[i].code);cart[i].qty=Math.min(n,Number(stock.qty||0));renderCart()}
+function removeCart(i){cart.splice(i,1);renderCart()}
+function clearCart(){cart=[];renderCart()}
+function completeSale(){if(!cart.length){alert('الفاتورة فارغة');return}for(let c of cart){let s=inventory.find(x=>x.code===c.code);if(!s||c.qty>s.qty){alert('الكمية غير كافية للصنف: '+c.name);return}}let total=cart.reduce((a,x)=>a+x.qty*x.price,0);cart.forEach(c=>{let s=inventory.find(x=>x.code===c.code);s.qty-=c.qty;s.sold=(s.sold||0)+c.qty});sales.unshift({id:Date.now(),date:now(),shift:document.getElementById('shift').value,pay:document.getElementById('pay').value,total,items:cart.map(x=>`${x.name} × ${x.qty}`).join('، ')});save();alert('تم إتمام البيع وخصم الكميات من المخزون بنجاح');cart=[];refreshAll();showPage('cashier')}
+function renderSales(){let total=sales.reduce((a,x)=>a+Number(x.total||0),0);document.getElementById('sCount').textContent=sales.length;document.getElementById('sTotal').textContent=money(total);let b=document.getElementById('salesBody');b.innerHTML='';sales.slice(0,300).forEach(x=>b.innerHTML+=`<tr><td>${x.date}</td><td>${String(x.id).slice(-6)}</td><td>${x.shift}</td><td>${money(x.total)}</td><td>${x.pay}</td><td style="text-align:right">${x.items}</td></tr>`)}
+function openItemModal(){editIndex=null;document.getElementById('modalTitle').textContent='إضافة صنف';['mCode','mName','mPrice','mQty'].forEach(id=>document.getElementById(id).value='');document.getElementById('modalBg').classList.remove('hidden')}
+function editItem(i){editIndex=i;let x=inventory[i];document.getElementById('modalTitle').textContent='تعديل الصنف';document.getElementById('mCode').value=x.code;document.getElementById('mName').value=x.name;document.getElementById('mPrice').value=x.price;document.getElementById('mQty').value=x.qty;document.getElementById('modalBg').classList.remove('hidden')}
+function closeModal(){document.getElementById('modalBg').classList.add('hidden')}
+function saveItem(){let code=document.getElementById('mCode').value.trim(),name=document.getElementById('mName').value.trim(),price=Number(document.getElementById('mPrice').value||0),qty=Number(document.getElementById('mQty').value||0);if(!code||!name){alert('اكتب الكود والاسم');return}if(editIndex===null)inventory.push({code,name,price,qty,sold:0});else inventory[editIndex]={...inventory[editIndex],code,name,price,qty};save();closeModal();refreshAll()}
+function savePasswords(){let a=document.getElementById('invPass').value.trim(),b=document.getElementById('cashPass').value.trim();if(a)passes.inventory=a;if(b)passes.cashier=b;localStorage.setItem(KEYS.pass,JSON.stringify(passes));alert('تم حفظ كلمات المرور')}
+function resetData(){if(!confirm('سيتم حذف المبيعات وإرجاع المخزون لبيانات البداية. هل أنت متأكد؟'))return;inventory=ORIGINAL.map(x=>({...x,sold:0}));sales=[];save();refreshAll();alert('تمت إعادة النظام لبيانات البداية')}
+refreshAll();
+
+const BARCODE_IMAGES = {};
+
+function printInvoice(){
+  if(!cart.length){alert('الفاتورة فارغة');return}
+  const total=cart.reduce((a,x)=>a+x.qty*x.price,0);
+  const rows=cart.map(x=>`<tr><td>${x.name}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td></tr>`).join('');
+  const w=window.open('','_blank','width=500,height=700');
+  w.document.write(`<html dir="rtl"><head><title>فاتورة - سيستم فرجللو</title><style>
+  body{font-family:Tahoma,Arial;padding:20px;color:#111}h1{text-align:center;margin:0 0 5px}p{text-align:center;margin:4px}
+  table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border-bottom:1px solid #aaa;padding:8px;text-align:center}
+  .total{font-size:22px;font-weight:bold;text-align:left;margin-top:20px}.foot{text-align:center;margin-top:25px;color:#555}
+  </style></head><body><h1>سيستم فرجللو</h1><p>Farag El-Sayed</p><p>${now()}</p><p>${document.getElementById('shift').value} • ${document.getElementById('pay').value}</p>
+  <table><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>${rows}</table>
+  <div class="total">الإجمالي: ${money(total)}</div><div class="foot">شكراً لتعاملكم معنا</div>
+  <script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+
+function openBarcodeModal(code){
+  const s=document.getElementById('bcSelect'); s.innerHTML=inventory.map(x=>`<option value="${x.code}" ${String(x.code)===String(code)?'selected':''}>${x.code} - ${x.name}</option>`).join('');
+  document.getElementById('bcQty').value=1; document.getElementById('barcodeModal').classList.remove('hidden');
+}
+function closeBarcodeModal(){document.getElementById('barcodeModal').classList.add('hidden')}
+function printBarcode(code){openBarcodeModal(code)}
+function printSelectedBarcode(){
+  const code=document.getElementById('bcSelect').value, qty=Math.max(1,Number(document.getElementById('bcQty').value||1));
+  const item=inventory.find(x=>String(x.code)===String(code));
+  const img=BARCODE_IMAGES[String(code)];
+  if(!img){alert('الباركود لهذا الكود يحتاج إعادة تجهيز ملصقات الباركود.');return}
+  const labels=Array.from({length:qty},()=>`<div class="label"><img src="data:image/png;base64,${img}"><b>${item.name}</b><span>${item.code}</span><small>${money(item.price)}</small></div>`).join('');
+  const w=window.open('','_blank');
+  w.document.write(`<html dir="rtl"><head><title>باركود</title><style>
+  body{font-family:Tahoma;margin:0;padding:10px}.sheet{display:flex;flex-wrap:wrap;gap:8px}
+  .label{width:210px;border:1px solid #ddd;padding:10px;text-align:center;page-break-inside:avoid}
+  .label img{width:190px;height:auto;display:block;margin:auto}.label b,.label span,.label small{display:block;margin-top:4px}
+  @media print{.label{border:0}} </style></head><body><div class="sheet">${labels}</div>
+  <script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close(); closeBarcodeModal();
+}
+function printAllBarcodes(){
+  if(!inventory.length){alert('لا توجد أصناف');return}
+  const labels=inventory.map(item=>{
+    const img=BARCODE_IMAGES[String(item.code)];
+    if(!img)return '';
+    return `<div class="label"><img src="data:image/png;base64,${img}"><b>${item.name}</b><span>${item.code}</span><small>${money(item.price)}</small></div>`;
+  }).join('');
+  const w=window.open('','_blank');
+  w.document.write(`<html dir="rtl"><head><title>باركود الأصناف</title><style>
+  body{font-family:Tahoma;margin:0;padding:10px}.sheet{display:flex;flex-wrap:wrap;gap:8px}
+  .label{width:210px;border:1px solid #ddd;padding:10px;text-align:center;page-break-inside:avoid}
+  .label img{width:190px;height:auto;display:block;margin:auto}.label b,.label span,.label small{display:block;margin-top:4px}
+  @media print{.label{border:0}} </style></head><body><div class="sheet">${labels}</div>
+  <script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+
+function renderReports(){
+  const from=document.getElementById('repFrom').value, to=document.getElementById('repTo').value, shift=document.getElementById('repShift').value;
+  const filtered=sales.filter(s=>{
+    const d=new Date(s.id); const day=d.toISOString().slice(0,10);
+    return (!from||day>=from)&&(!to||day<=to)&&(!shift||s.shift===shift);
+  });
+  const total=filtered.reduce((a,s)=>a+Number(s.total||0),0);
+  const units=filtered.reduce((a,s)=>a+s.items.split('، ').reduce((n,t)=>n+(Number((t.match(/×\s*(\d+)/)||[])[1]||0)),0),0);
+  document.getElementById('rTotal').textContent=money(total);
+  document.getElementById('rInvoices').textContent=filtered.length;
+  document.getElementById('rUnits').textContent=units;
+  document.getElementById('rAvg').textContent=money(filtered.length?total/filtered.length:0);
+  const sb=document.getElementById('shiftBody'); sb.innerHTML='';
+  ['الشيفت الأول','الشيفت الثاني','الشيفت الثالث'].forEach(sh=>{
+    const a=filtered.filter(x=>x.shift===sh), t=a.reduce((n,x)=>n+Number(x.total||0),0);
+    sb.innerHTML+=`<tr><td>${sh}</td><td>${a.length}</td><td>${money(t)}</td></tr>`;
+  });
+  const top={};
+  filtered.forEach(s=>s.items.split('، ').forEach(t=>{let m=t.match(/^(.*?)\s×\s*(\d+)$/);if(m){let name=m[1],qty=Number(m[2]);top[name]=(top[name]||0)+qty}}));
+  const tb=document.getElementById('topBody');tb.innerHTML='';
+  Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,20).forEach(([name,qty])=>{
+    const it=inventory.find(x=>x.name===name);tb.innerHTML+=`<tr><td>${name}</td><td>${it?it.code:'-'}</td><td>${qty}</td><td>${it?money(qty*it.price):'-'}</td></tr>`;
+  });
+}
+function printReport(){
+  renderReports();
+  const src=document.getElementById('reports');
+  const old=document.title; document.title='تقرير سيستم فرجللو';
+  window.print(); document.title=old;
+}
+
+</script>
+</body></html>
