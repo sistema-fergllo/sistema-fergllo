@@ -188,11 +188,13 @@ async function loadInventoryFromCloud(){
     inventory=data.map(x=>({code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)}));
     localStorage.setItem(KEYS.inv,JSON.stringify(inventory));
   } else {
-    // Prevent duplicate product codes from breaking Supabase upsert.
+    // Normalize codes and guarantee one unique code per initial row.
     const seenCodes = new Set();
-    let nextCode = Math.max(0, ...inventory.map(x => Number(x.code) || 0)) + 1;
+    let nextCode = Math.max(0, ...inventory.map(x => Number(String(x.code ?? '').trim()) || 0)) + 1;
     inventory = inventory.map(x => {
-      let code = String(x.code);
+      const rawCode = String(x.code ?? '').trim();
+      const numericCode = rawCode !== '' && Number.isFinite(Number(rawCode)) ? String(Number(rawCode)) : rawCode;
+      let code = numericCode || String(nextCode++);
       if (seenCodes.has(code)) {
         while (seenCodes.has(String(nextCode))) nextCode++;
         code = String(nextCode++);
