@@ -229,6 +229,107 @@ begin
 end;
 $$;
 
+
+-- Lock the legacy shared workspace to administrators only. Replace any older
+-- permissive policies so customer sessions cannot read or mutate shared rows.
+create or replace function public.is_system_admin()
+returns boolean
+language sql stable security definer
+set search_path = public
+as $
+  select exists (
+    select 1 from public.user_profiles up
+    where up.user_id = auth.uid() and up.role = 'admin'
+  );
+$;
+
+alter table public.shared_inventory enable row level security;
+alter table public.shared_sales enable row level security;
+
+do $
+declare p record;
+begin
+  for p in select policyname from pg_policies
+    where schemaname='public' and tablename='shared_inventory'
+  loop
+    execute format('drop policy if exists %I on public.shared_inventory', p.policyname);
+  end loop;
+  for p in select policyname from pg_policies
+    where schemaname='public' and tablename='shared_sales'
+  loop
+    execute format('drop policy if exists %I on public.shared_sales', p.policyname);
+  end loop;
+end $;
+
+create policy "admins only shared inventory" on public.shared_inventory
+  for all to authenticated using (public.is_system_admin())
+  with check (public.is_system_admin());
+create policy "admins only shared sales" on public.shared_sales
+  for all to authenticated using (public.is_system_admin())
+  with check (public.is_system_admin());
+
+-- Replacement for the legacy sale RPC: explicit administrator check and atomic stock deduction.
+create or replace function public.complete_admin_shared_sale(
+  p_shift text,
+  p_pay text,
+  p_items jsonb
+)
+returns text
+language plpgsql
+security definer
+set search_path = public
+as $
+declare
+  v_total numeric(12,2) := 0;
+  v_summary text := '';
+  v_item jsonb;
+  v_code text;
+  v_qty numeric(12,3);
+  v_price numeric(12,2);
+  v_name text;
+  v_sale_id text;
+begin
+  if not public.is_system_admin() then
+    raise exception 'غير مصرح: العملية متاحة لمدير النظام فقط.';
+  end if;
+  if jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) = 0 then
+    raise exception 'الفاتورة فارغة.';
+  end if;
+
+  for v_item in select value from jsonb_array_elements(p_items)
+  loop
+    v_code := v_item->>'code';
+    v_qty := (v_item->>'qty')::numeric;
+    if v_qty <= 0 then raise exception 'كمية غير صحيحة.'; end if;
+    select name, price, qty into v_name, v_price, v_qty
+      from public.shared_inventory where code = v_code for update;
+    if not found then raise exception 'صنف غير موجود: %', v_code; end if;
+    if (v_item->>'qty')::numeric > v_qty then
+      raise exception 'الكمية غير كافية للصنف: %', v_name;
+    end if;
+    v_total := v_total + ((v_item->>'qty')::numeric * v_price);
+    v_summary := concat_ws('، ', nullif(v_summary,''), v_name || ' × ' || (v_item->>'qty'));
+  end loop;
+
+  for v_item in select value from jsonb_array_elements(p_items)
+  loop
+    update public.shared_inventory
+      set qty = qty - (v_item->>'qty')::numeric,
+          sold = coalesce(sold,0) + (v_item->>'qty')::numeric,
+          updated_at = now()
+      where code = v_item->>'code';
+  end loop;
+
+  insert into public.shared_sales (shift, pay, total, items_summary)
+  values (coalesce(p_shift,'الشيفت الأول'), coalesce(p_pay,'كاش'), v_total, v_summary)
+  returning id::text into v_sale_id;
+  return v_sale_id;
+end;
+$;
+
+revoke execute on function public.complete_shared_sale(text,text,jsonb) from anon, authenticated;
+grant execute on function public.complete_admin_shared_sale(text,text,jsonb) to authenticated;
+
 grant execute on function public.current_client_id() to authenticated;
 grant execute on function public.complete_client_sale(text,text,jsonb) to authenticated;
 
