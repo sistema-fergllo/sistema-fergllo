@@ -120,6 +120,10 @@ as $$
 declare
   matched_client public.client_accounts%rowtype;
 begin
+  if coalesce(new.raw_user_meta_data->>'account_type','') <> 'client' then
+    return new;
+  end if;
+
   select * into matched_client
   from public.client_accounts
   where lower(email) = lower(new.email)
