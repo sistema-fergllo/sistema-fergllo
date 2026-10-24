@@ -113,8 +113,14 @@ if rstart >= 0 and rend > rstart:
 '''
     s = s[:rstart] + render + s[rend:]
 
-# Make the modal markup self-healing even if an older version is deployed.
-s = s.replace('<h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ سجل العميل من حساب المدير.</p>', '<h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ حساب دخول مستقل للعميل.</p>')
+# Replace the old reset-to-default action with a dedicated page-password deletion action.
+s = s.replace('onclick="resetData()">إعادة بيانات النظام إلى الأصل', 'onclick="deletePagePasswords()">🗑 حذف الرقم السري')
+old_reset = "function resetData(){if(!confirm('سيتم حذف المبيعات وإرجاع المخزون لبيانات البداية. هل أنت متأكد؟'))return;inventory=ORIGINAL.map(x=>({...x,sold:0}));sales=[];save();refreshAll();alert('تمت إعادة النظام لبيانات البداية')}"
+new_reset = "function deletePagePasswords(){if(!confirm('سيتم حذف الرقم السري للمخزون والكاشير فقط، ولن يتم حذف العملاء أو المخزون أو المبيعات. هل أنت متأكد؟'))return;passes.inventory='';passes.cashier='';localStorage.setItem(KEYS.pass,JSON.stringify(passes));const a=document.getElementById('invPass'),b=document.getElementById('cashPass');if(a)a.value='';if(b)b.value='';alert('تم حذف الرقم السري للمخزون والكاشير. الصفحتان تفتحان بدون رقم سري.')}"
+if old_reset in s:
+    s = s.replace(old_reset, new_reset)
+else:
+    s = re.sub(r'function resetData\(\)\{.*?\}', new_reset, s, count=1)
 
 # Visible deployment marker so GitHub Pages receives a fresh commit.
 marker='<!-- deploy-trigger-20261024-client-credentials-v2 -->'
