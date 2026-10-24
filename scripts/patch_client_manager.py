@@ -66,7 +66,6 @@ async function saveClient(){
       return;
     }
 
-    // Update public client data now. Password/auth-identity changes are handled only by a trusted server action.
     const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);
     if(error)throw error;
     clients[clientEditIndex]=item;
@@ -81,7 +80,6 @@ async function saveClient(){
 '''
 s = s[:start] + newfun + s[end:]
 
-# Replace the clients table renderer so username is visible and the edit action is obvious.
 rstart = s.find('function renderClients(){')
 rend = s.find('function showPage(', rstart)
 if rstart >= 0 and rend > rstart:
@@ -113,7 +111,6 @@ if rstart >= 0 and rend > rstart:
 '''
     s = s[:rstart] + render + s[rend:]
 
-# Replace the old reset-to-default action with a dedicated page-password deletion action.
 s = s.replace('onclick="resetData()">إعادة بيانات النظام إلى الأصل', 'onclick="deletePagePasswords()">🗑 حذف الرقم السري')
 old_reset = "function resetData(){if(!confirm('سيتم حذف المبيعات وإرجاع المخزون لبيانات البداية. هل أنت متأكد؟'))return;inventory=ORIGINAL.map(x=>({...x,sold:0}));sales=[];save();refreshAll();alert('تمت إعادة النظام لبيانات البداية')}"
 new_reset = "function deletePagePasswords(){if(!confirm('سيتم حذف الرقم السري للمخزون والكاشير فقط، ولن يتم حذف العملاء أو المخزون أو المبيعات. هل أنت متأكد؟'))return;passes.inventory='';passes.cashier='';localStorage.setItem(KEYS.pass,JSON.stringify(passes));const a=document.getElementById('invPass'),b=document.getElementById('cashPass');if(a)a.value='';if(b)b.value='';alert('تم حذف الرقم السري للمخزون والكاشير. الصفحتان تفتحان بدون رقم سري.')}"
@@ -122,11 +119,12 @@ if old_reset in s:
 else:
     s = re.sub(r'function resetData\(\)\{.*?\}', new_reset, s, count=1)
 
-# Login screen branding: calculator icon instead of cart, and accounting-system wording.
-s = s.replace('<div class="logo" style="margin:auto">🛒</div><h1>سيستم فرجللو</h1><p id="loginText">اختر نوع الدخول</p>', '<div class="logo" style="margin:auto">🧮</div><h1>سيستم فرجللو</h1><p id="loginText">سيستم محاسبة</p>')
+# Login screen: use a real calculator-style SVG icon, not the abacus emoji.
+old_login = '<div class="logo" style="margin:auto">🧮</div><h1>سيستم فرجللو</h1><p id="loginText">سيستم محاسبة</p>'
+new_login = '<div class="logo" style="margin:auto"><svg viewBox="0 0 64 64" width="34" height="34" aria-label="آلة حاسبة" role="img"><rect x="13" y="5" width="38" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="4"/><rect x="19" y="11" width="26" height="10" rx="2" fill="currentColor"/><rect x="19" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="19" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="38" width="7" height="18" rx="1" fill="currentColor"/><rect x="19" y="49" width="17" height="7" rx="1" fill="currentColor"/></svg></div><h1>سيستم فرجللو</h1><p id="loginText">سيستم محاسبة</p>'
+s = s.replace(old_login, new_login)
 
-# Visible deployment marker so GitHub Pages receives a fresh commit.
-marker='<!-- deploy-trigger-20261024-client-credentials-v3 -->'
+marker='<!-- deploy-trigger-20261024-calculator-icon-v1 -->'
 s=re.sub(r'<!-- deploy-trigger-20261024:[^>]+ -->$', marker, s)
 if marker not in s:
     s += '\n'+marker+'\n'
