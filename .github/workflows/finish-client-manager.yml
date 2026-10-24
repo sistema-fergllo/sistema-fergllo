@@ -5,23 +5,18 @@ on:
 permissions:
   contents: write
 jobs:
-  patch:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch client manager
-        run: python3 scripts/patch_client_manager.py
-      - name: Patch menu refinement
-        run: python3 scripts/patch_menu_v2.py
-      - name: Patch client auth rotation
-        run: python3 scripts/patch_client_auth_rotation.py
-      - name: Patch admin login
-        run: python3 scripts/patch_admin_login_fix.py
-      - name: Commit patched index
+      - name: Verify current system
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git diff --cached --quiet && exit 0
-          git commit -m "Fix manager login"
-          git push
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('index.html').read_text(encoding='utf-8')
+          required=["chooseLogin('admin')","chooseLogin('client')","async function doLogin()","client_accounts","user_profiles"]
+          missing=[x for x in required if x not in s]
+          if missing:
+              raise SystemExit('Missing required system parts: '+', '.join(missing))
+          print('Faragello System verification passed.')
+          PY
