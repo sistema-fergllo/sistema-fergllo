@@ -42,6 +42,7 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
     <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter') doLogin()">
     <div id="loginErr" class="err"></div>
     <button class="btn" onclick="doLogin()">دخول</button>
+    <button class="btn gray" style="width:100%;margin-top:8px" onclick="registerClientAccount()">إنشاء حساب عميل</button>
     <div style="margin-top:18px;color:#7890ab;font-size:12px">Farag El-Sayed • مشرف النظام</div>
   </div>
 </div>
@@ -224,8 +225,9 @@ let sales = JSON.parse(localStorage.getItem(KEYS.sales)||'[]');
 let passes = JSON.parse(localStorage.getItem(KEYS.pass)||'null') || {inventory:'2580',cashier:'1470'};
 let cart=[], pendingPage=null, editIndex=null;
 let cloudReady = false;
+let currentProfileRole = 'admin';
 
-function save(){localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify(sales));if(cloudReady) syncInventoryToCloud().catch(e=>console.error('Cloud inventory save failed',e))}
+function save(){localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify(sales));if(currentProfileRole==='client' && cloudReady) syncClientInventoryToCloud().catch(e=>console.error('Client inventory save failed',e));else if(cloudReady) syncInventoryToCloud().catch(e=>console.error('Cloud inventory save failed',e))}
 async function loadInventoryFromCloud(){
   const {data,error}=await supabaseClient.from('shared_inventory').select('code,name,price,qty,sold').order('code');
   if(error) throw new Error('تعذر تحميل المخزون المشترك: '+error.message);
@@ -271,6 +273,41 @@ function now(){return new Date().toLocaleString('ar-EG')}
 function updateClock(){let d=new Date();document.getElementById('date').textContent=d.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'2-digit',day:'2-digit'});document.getElementById('time').textContent=d.toLocaleTimeString('ar-EG')}
 setInterval(updateClock,1000);updateClock();
 
+async function registerClientAccount(){
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  const errorBox=document.getElementById('loginErr');
+  errorBox.textContent='';
+  if(!email||!password){errorBox.textContent='اكتب الإيميل وكلمة المرور أولًا.';return}
+  if(password.length<8){errorBox.textContent='كلمة المرور لازم تكون 8 أحرف أو أرقام على الأقل.';return}
+  const fullName=prompt('اكتب اسم العميل كما هو مسجل عند مدير النظام:');
+  if(!fullName)return;
+  try{
+    const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{account_type:'client',full_name:fullName}}});
+    if(error)throw error;
+    errorBox.textContent=data.session?'تم إنشاء الحساب. سجّل الدخول الآن.':'تم إرسال طلب إنشاء الحساب. لو تأكيد البريد مفعّل، افتح رسالة التأكيد ثم سجّل الدخول.';
+  }catch(e){errorBox.textContent=e.message||'تعذر إنشاء الحساب.'}
+}
+
+async function loadClientWorkspaceFromCloud(clientId){
+  const {data:inv,error:invError}=await supabaseClient.from('client_inventory').select('code,name,price,qty,sold').eq('client_id',clientId).order('code');
+  if(invError)throw new Error('تعذر تحميل مخزون العميل: '+invError.message);
+  inventory=(inv||[]).map(x=>({code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)}));
+  const {data:cloudSales,error:salesError}=await supabaseClient.from('client_sales').select('id,created_at,shift,pay,total,items_summary').eq('client_id',clientId).order('created_at',{ascending:false}).limit(300);
+  if(salesError)throw new Error('تعذر تحميل مبيعات العميل: '+salesError.message);
+  sales=(cloudSales||[]).map(x=>({id:x.id,date:new Date(x.created_at).toLocaleString('ar-EG'),shift:x.shift,pay:x.pay,total:Number(x.total||0),items:x.items_summary||''}));
+  localStorage.setItem(KEYS.inv+'_'+clientId,JSON.stringify(inventory));
+  localStorage.setItem(KEYS.sales+'_'+clientId,JSON.stringify(sales));
+  cloudReady=true;cart=[];refreshAll();
+}
+async function syncClientInventoryToCloud(){
+  if(!activeClient?.id)throw new Error('لا توجد مساحة عميل نشطة.');
+  const rows=inventory.map(x=>({client_id:activeClient.id,code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0),updated_at:new Date().toISOString()}));
+  if(!rows.length)return;
+  const {error}=await supabaseClient.from('client_inventory').upsert(rows,{onConflict:'client_id,code'});
+  if(error)throw error;
+}
+
 async function doLogin(){
   const page = document.getElementById('login').dataset.page;
   const password = document.getElementById('password').value;
@@ -292,16 +329,35 @@ async function doLogin(){
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
     if(error) throw error;
     const { data: profile, error: profileError } = await supabaseClient
-      .from('user_profiles').select('full_name, role, branch_id')
+      .from('user_profiles').select('full_name, role, branch_id, client_id')
       .eq('user_id', data.user.id).single();
     if(profileError || !profile){
       await supabaseClient.auth.signOut();
       throw new Error('الحساب موجود لكن ملف الصلاحيات غير موجود. راجع جدول user_profiles.');
     }
+    if(profile.role === 'client'){
+      const {data:account,error:accountError}=await supabaseClient.from('client_accounts').select('id,name,project,email,status').eq('id',profile.client_id).single();
+      if(accountError||!account||account.status!=='نشط'){await supabaseClient.auth.signOut();throw new Error('حساب العميل غير نشط أو غير مربوط بمساحة عمل. تواصل مع مدير النظام.')}
+      currentProfileRole='client';
+      activeClient={id:account.id,name:account.name,project:account.project,email:account.email};
+      localStorage.setItem('frg_active_client',JSON.stringify(activeClient));
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      document.getElementById('login').dataset.page='';
+      document.querySelector('.brand small').textContent=account.name+(account.project?' • '+account.project:'');
+      document.querySelector('.user b').textContent=account.name;
+      document.querySelector('.user small').textContent='حساب العميل';
+      document.querySelectorAll('.nav[data-page="clients"],.nav[data-page="settings"]').forEach(el=>el.classList.add('hidden'));
+      await loadClientWorkspaceFromCloud(account.id);
+      showPage('home');
+      return;
+    }
     if(profile.role !== 'admin'){
       await supabaseClient.auth.signOut();
-      throw new Error('الدخول متاح حاليًا لحساب مدير النظام فقط. سنجهز صلاحيات الفروع لاحقًا.');
+      throw new Error('نوع الحساب غير مدعوم. راجع مدير النظام.');
     }
+    currentProfileRole='admin';
+    document.querySelectorAll('.nav[data-page="clients"],.nav[data-page="settings"]').forEach(el=>el.classList.remove('hidden'));
     // After the one-time BABA FINO transfer, keep the manager's own workspace empty.
     if(localStorage.getItem('frg_baba_fino_inventory_migrated_v1')!=='1'){
       await loadInventoryFromCloud();
@@ -317,6 +373,11 @@ async function doLogin(){
     document.getElementById('login').classList.add('hidden');
     document.getElementById('app').classList.remove('hidden');
     document.getElementById('login').dataset.page = '';
+    const {data:cloudClients,error:clientsError}=await supabaseClient.from('client_accounts').select('id,name,project,email,status,created_at').order('created_at',{ascending:true});
+    if(!clientsError){
+      clients=(cloudClients||[]).map(c=>({...c,date:new Date(c.created_at).toLocaleDateString('ar-EG')}));
+      saveClients();
+    }
     refreshAll();
   } catch(err) {
     errorBox.textContent = err.message || 'تعذر تسجيل الدخول. راجع البريد وكلمة المرور.';
@@ -342,10 +403,10 @@ function workspaceKey(base){return activeClient ? base+'_'+activeClient.id : bas
 function saveClients(){localStorage.setItem(CLIENTS_KEY,JSON.stringify(clients));}
 function openClientModal(index=-1){clientEditIndex=index;const c=index>=0?clients[index]:{name:'',project:'',email:'',status:'نشط'};document.getElementById('clientModal').classList.remove('hidden');document.getElementById('clientName').value=c.name||'';document.getElementById('clientProject').value=c.project||'';document.getElementById('clientEmail').value=c.email||'';document.getElementById('clientStatus').value=c.status||'نشط';}
 function closeClientModal(){document.getElementById('clientModal').classList.add('hidden')}
-function saveClient(){const name=document.getElementById('clientName').value.trim(),project=document.getElementById('clientProject').value.trim(),email=document.getElementById('clientEmail').value.trim(),status=document.getElementById('clientStatus').value;if(!name||!email){alert('اكتب اسم العميل والبريد الإلكتروني');return}const item={id:clientEditIndex>=0?clients[clientEditIndex].id:('client_'+Date.now()),name,project,email,status,date:new Date().toLocaleDateString('ar-EG')};if(clientEditIndex>=0){item.date=clients[clientEditIndex].date;clients[clientEditIndex]=item}else clients.push(item);saveClients();closeClientModal();renderClients()}
+async function saveClient(){const name=document.getElementById('clientName').value.trim(),project=document.getElementById('clientProject').value.trim(),email=document.getElementById('clientEmail').value.trim().toLowerCase(),status=document.getElementById('clientStatus').value;if(!name||!email){alert('اكتب اسم العميل والبريد الإلكتروني');return}const item={id:clientEditIndex>=0?clients[clientEditIndex].id:('client_'+Date.now()),name,project,email,status,date:clientEditIndex>=0?clients[clientEditIndex].date:new Date().toLocaleDateString('ar-EG')};try{const {error}=await supabaseClient.from('client_accounts').upsert({id:item.id,name:item.name,project:item.project,email:item.email,status:item.status},{onConflict:'id'});if(error)throw error;if(clientEditIndex>=0)clients[clientEditIndex]=item;else clients.push(item);saveClients();closeClientModal();renderClients();alert('تم حفظ حساب العميل في قاعدة البيانات. خلي العميل ينشئ حسابه بنفس الإيميل من شاشة الدخول.')}catch(e){alert('تعذر حفظ حساب العميل: '+e.message)}}
 function editClient(i){openClientModal(i)}
-function toggleClient(i){clients[i].status=clients[i].status==='نشط'?'موقوف':'نشط';saveClients();renderClients()}
-function deleteClient(i){if(!confirm('حذف حساب العميل؟'))return;clients.splice(i,1);saveClients();renderClients()}
+async function toggleClient(i){const next=clients[i].status==='نشط'?'موقوف':'نشط';try{const {error}=await supabaseClient.from('client_accounts').update({status:next}).eq('id',clients[i].id);if(error)throw error;clients[i].status=next;saveClients();renderClients()}catch(e){alert('تعذر تحديث الحساب: '+e.message)}}
+async function deleteClient(i){if(!confirm('حذف سجل العميل ومساحة عمله؟'))return;try{const {error}=await supabaseClient.from('client_accounts').delete().eq('id',clients[i].id);if(error)throw error;clients.splice(i,1);saveClients();renderClients()}catch(e){alert('تعذر حذف الحساب: '+e.message)}}
 function openClientWorkspace(i){
   const c=clients[i];
   if(!c||c.status!=='نشط'){alert('حساب العميل موقوف أو غير موجود');return}
@@ -397,15 +458,14 @@ async function completeSale(){
   const button=document.querySelector('[onclick="completeSale()"]');
   if(button){button.disabled=true;button.textContent='جاري حفظ الفاتورة...'}
   try{
-    const {data,error}=await supabaseClient.rpc('complete_shared_sale',{
-      p_shift:document.getElementById('shift').value,
-      p_pay:document.getElementById('pay').value,
-      p_items:payload
-    });
+    const isCustomer=currentProfileRole==='client';
+    const {data,error}=isCustomer
+      ? await supabaseClient.rpc('complete_client_sale',{p_shift:document.getElementById('shift').value,p_pay:document.getElementById('pay').value,p_items:payload})
+      : await supabaseClient.rpc('complete_shared_sale',{p_shift:document.getElementById('shift').value,p_pay:document.getElementById('pay').value,p_items:payload});
     if(error) throw error;
     cart=[];
-    await loadInventoryFromCloud();
-    alert('تم حفظ الفاتورة رقم '+data+' في قاعدة البيانات وخصم الكميات من المخزون المشترك');
+    if(isCustomer) await loadClientWorkspaceFromCloud(activeClient.id); else await loadInventoryFromCloud();
+    alert('تم حفظ الفاتورة رقم '+data+' في قاعدة البيانات وخصم الكميات من مخزون '+(isCustomer?'حسابك':'النظام المشترك'));
     refreshAll();
     showPage('cashier');
   }catch(e){
