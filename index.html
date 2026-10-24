@@ -361,7 +361,7 @@ async function doLogin(){
   }
 }
 function requestPage(p){
-  if(currentProfileRole==='client'){showPage(p);return}
+  if(activeClient || currentProfileRole==='client'){showPage(p);return}
   pendingPage=p;
   document.getElementById('loginText').textContent='أدخل كلمة مرور صفحة '+(p==='inventory'?'المخزون':'الكاشير');
   document.getElementById('email').classList.add('hidden');
