@@ -235,28 +235,10 @@ async function loadInventoryFromCloud(){
     inventory=data.map(x=>({code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)}));
     localStorage.setItem(KEYS.inv,JSON.stringify(inventory));
   } else {
-    // The admin workspace stays empty when no shared inventory exists.
-    if (!inventory || inventory.length === 0) inventory = [];
-    // Normalize codes and guarantee one unique code per initial row.
-    const seenCodes = new Set();
-    let nextCode = Math.max(0, ...inventory.map(x => Number(String(x.code ?? '').trim()) || 0)) + 1;
-    inventory = inventory.map(x => {
-      const rawCode = String(x.code ?? '').trim();
-      const numericCode = rawCode !== '' && Number.isFinite(Number(rawCode)) ? String(Number(rawCode)) : rawCode;
-      let code = numericCode || String(nextCode++);
-      if (seenCodes.has(code)) {
-        while (seenCodes.has(String(nextCode))) nextCode++;
-        code = String(nextCode++);
-      }
-      seenCodes.add(code);
-      return { ...x, code };
-    });
+    // Keep the admin/shared inventory empty when the cloud table has no rows.
+    // Never repopulate it from stale browser storage.
+    inventory = [];
     localStorage.setItem(KEYS.inv, JSON.stringify(inventory));
-    const rows=inventory.map(x=>({code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)}));
-    if(rows.length){
-      const {error:upsertError}=await supabaseClient.from('shared_inventory').upsert(rows,{onConflict:'code'});
-      if(upsertError) throw new Error('تعذر رفع الأصناف الأولية: '+upsertError.message);
-    }
   }
   const {data:cloudSales,error:salesError}=await supabaseClient.from('shared_sales').select('id,created_at,shift,pay,total,items_summary').order('created_at',{ascending:false}).limit(300);
   if(salesError) throw new Error('تعذر تحميل الفواتير المشتركة: '+salesError.message);
