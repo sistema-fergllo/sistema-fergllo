@@ -327,8 +327,11 @@ begin
 end;
 $;
 
-revoke execute on function public.complete_shared_sale(text,text,jsonb) from anon, authenticated;
+revoke execute on function public.complete_shared_sale(text,text,jsonb) from public, anon, authenticated;
+revoke execute on function public.complete_admin_shared_sale(text,text,jsonb) from public, anon;
+revoke execute on function public.complete_client_sale(text,text,jsonb) from public, anon;
 grant execute on function public.complete_admin_shared_sale(text,text,jsonb) to authenticated;
+grant execute on function public.complete_client_sale(text,text,jsonb) to authenticated;
 
 grant execute on function public.current_client_id() to authenticated;
 grant execute on function public.complete_client_sale(text,text,jsonb) to authenticated;
