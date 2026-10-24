@@ -59,6 +59,7 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
   <button class="nav" data-page="sales" onclick="showPage('sales')"><span>📊</span>المبيعات</button>
   <button class="nav" data-page="reports" onclick="showPage('reports')"><span>📈</span>التقارير</button>
   <button class="nav" data-page="coding" onclick="showPage('coding')"><span>▦</span>التكويدات</button>
+  <button class="nav" data-page="clients" onclick="showPage('clients')"><span>👥</span>العملاء</button>
   <button class="nav" data-page="settings" onclick="openSettings()"><span>⚙</span>الإعدادات</button>
   <button class="logout" onclick="location.reload()">⏻ تسجيل الخروج</button>
 </aside>
@@ -156,6 +157,18 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
   <div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>اسم الصنف</th><th>السعر</th><th>الرصيد</th><th>اختبار/طباعة</th></tr></thead><tbody id="codingBody"></tbody></table></div>
 </div>
 
+<div id="clients" class="page hidden">
+  <div class="title"><div><h2>👥 العملاء</h2><div class="sub">إدارة حسابات العملاء المستقلة للنظام</div></div><button class="btn" onclick="openClientModal()">＋ إضافة حساب عميل</button></div>
+  <div class="cards">
+    <div class="card"><div class="label">إجمالي العملاء</div><div id="clCount" class="value cyan">0</div></div>
+    <div class="card"><div class="label">حسابات نشطة</div><div id="clActive" class="value green">0</div></div>
+    <div class="card"><div class="label">حسابات موقوفة</div><div id="clInactive" class="value gold">0</div></div>
+    <div class="card"><div class="label">آخر إضافة</div><div id="clLast" class="value" style="font-size:18px">—</div></div>
+  </div>
+  <div class="toolbar"><input id="clientSearch" placeholder="ابحث باسم العميل أو البريد أو النشاط..." oninput="renderClients()"><button class="btn gray" onclick="document.getElementById('clientSearch').value='';renderClients()">مسح</button></div>
+  <div class="table-wrap"><table class="table"><thead><tr><th>اسم العميل</th><th>النشاط / المشروع</th><th>البريد الإلكتروني</th><th>حالة الحساب</th><th>تاريخ الإضافة</th><th>إجراء</th></tr></thead><tbody id="clientsBody"></tbody></table></div>
+</div>
+
 <div id="settings" class="page hidden">
   <div class="title"><div><h2>⚙ الإعدادات</h2><div class="sub">إدارة كلمات مرور الصفحات والبيانات المحلية</div></div></div>
   <div class="cash-panel" style="max-width:700px">
@@ -179,6 +192,7 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
   <div class="modal-actions"><button class="btn gold" onclick="printSelectedBarcode()">🖨 طباعة</button><button class="btn gray" onclick="closeBarcodeModal()">إلغاء</button></div>
 </div></div>
 
+<div id="clientModal" class="modal-bg hidden"><div class="modal"><h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ سجل العميل من حساب المدير.</p><input id="clientName" placeholder="اسم العميل"><input id="clientProject" placeholder="النشاط / اسم المشروع"><input id="clientEmail" type="email" placeholder="البريد الإلكتروني"><select id="clientStatus" style="width:100%;background:#041326;color:white;border:1px solid #155083;border-radius:9px;padding:11px"><option>نشط</option><option>موقوف</option></select><div class="modal-actions"><button class="btn" onclick="saveClient()">حفظ</button><button class="btn gray" onclick="closeClientModal()">إلغاء</button></div></div></div>
 <div id="modalBg" class="modal-bg hidden"><div class="modal"><h3 id="modalTitle">إضافة صنف</h3><input id="mCode" placeholder="الكود / الباركود"><input id="mName" placeholder="اسم الصنف"><input id="mPrice" type="number" step="0.01" placeholder="سعر البيع"><input id="mQty" type="number" step="1" placeholder="الكمية"><div class="modal-actions"><button class="btn green" onclick="saveItem()">حفظ</button><button class="btn gray" onclick="closeModal()">إلغاء</button></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -296,7 +310,18 @@ function requestPage(p){
 }
 function openSettings(){const saved=localStorage.getItem('frg_settings_pin')||'7319';const entered=prompt('أدخل الرقم السري لفتح الإعدادات');if(entered===null)return;if(entered!==saved){alert('الرقم السري غير صحيح');return}showPage('settings')}
 function saveSettingsPin(){const p=document.getElementById('newSettingsPin').value.trim();if(!/^\d{4,12}$/.test(p)){alert('اكتب رقمًا سريًا من 4 إلى 12 رقمًا');return}localStorage.setItem('frg_settings_pin',p);document.getElementById('newSettingsPin').value='';alert('تم تغيير الرقم السري للإعدادات')}
-function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));if(id==='inventory')renderInventory();if(id==='sales')renderSales();if(id==='reports')renderReports();if(id==='coding')renderCoding();if(id==='cashier'){renderCart();setTimeout(()=>document.getElementById('scan').focus(),100)}}
+const CLIENTS_KEY='frg_clients';
+let clients=JSON.parse(localStorage.getItem(CLIENTS_KEY)||'[]');
+let clientEditIndex=-1;
+function saveClients(){localStorage.setItem(CLIENTS_KEY,JSON.stringify(clients));}
+function openClientModal(index=-1){clientEditIndex=index;const c=index>=0?clients[index]:{name:'',project:'',email:'',status:'نشط'};document.getElementById('clientModal').classList.remove('hidden');document.getElementById('clientName').value=c.name||'';document.getElementById('clientProject').value=c.project||'';document.getElementById('clientEmail').value=c.email||'';document.getElementById('clientStatus').value=c.status||'نشط';}
+function closeClientModal(){document.getElementById('clientModal').classList.add('hidden')}
+function saveClient(){const name=document.getElementById('clientName').value.trim(),project=document.getElementById('clientProject').value.trim(),email=document.getElementById('clientEmail').value.trim(),status=document.getElementById('clientStatus').value;if(!name||!email){alert('اكتب اسم العميل والبريد الإلكتروني');return}const item={name,project,email,status,date:new Date().toLocaleDateString('ar-EG')};if(clientEditIndex>=0){item.date=clients[clientEditIndex].date;clients[clientEditIndex]=item}else clients.push(item);saveClients();closeClientModal();renderClients()}
+function editClient(i){openClientModal(i)}
+function toggleClient(i){clients[i].status=clients[i].status==='نشط'?'موقوف':'نشط';saveClients();renderClients()}
+function deleteClient(i){if(!confirm('حذف حساب العميل؟'))return;clients.splice(i,1);saveClients();renderClients()}
+function renderClients(){const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase(),list=clients.filter(c=>[c.name,c.project,c.email].join(' ').toLowerCase().includes(q));document.getElementById('clCount').textContent=clients.length;document.getElementById('clActive').textContent=clients.filter(c=>c.status==='نشط').length;document.getElementById('clInactive').textContent=clients.filter(c=>c.status!=='نشط').length;document.getElementById('clLast').textContent=clients.length?clients[clients.length-1].date:'—';document.getElementById('clientsBody').innerHTML=list.length?list.map(c=>{const i=clients.indexOf(c);return `<tr><td>${c.name}</td><td>${c.project||'—'}</td><td>${c.email}</td><td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td><td>${c.date}</td><td><button class="btn gray" onclick="editClient(${i})">تعديل</button> <button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button> <button class="btn red" onclick="deleteClient(${i})">حذف</button></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'}
+function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));if(id==='inventory')renderInventory();if(id==='sales')renderSales();if(id==='reports')renderReports();if(id==='coding')renderCoding();if(id==='clients')renderClients();if(id==='cashier'){renderCart();setTimeout(()=>document.getElementById('scan').focus(),100)}}
 function refreshAll(){updateDashboard();renderInventory();renderSales();renderCart()}
 function updateDashboard(){let qty=inventory.reduce((a,x)=>a+Number(x.qty||0),0), value=inventory.reduce((a,x)=>a+Number(x.qty||0)*Number(x.price||0),0), st=sales.reduce((a,x)=>a+Number(x.total||0),0);document.getElementById('cItems').textContent=inventory.length;document.getElementById('cQty').textContent=qty.toLocaleString();document.getElementById('cSales').textContent=money(st);document.getElementById('cStock').textContent=money(value);document.getElementById('iCount').textContent=inventory.length;document.getElementById('iQty').textContent=qty.toLocaleString();document.getElementById('iValue').textContent=money(value);document.getElementById('iSales').textContent=money(st)}
 function renderInventory(){updateDashboard();let q=(document.getElementById('invSearch')?.value||'').toLowerCase();let b=document.getElementById('invBody');b.innerHTML='';inventory.forEach((x,i)=>{if(q&&!(`${x.code} ${x.name}`.toLowerCase().includes(q)))return;let status=x.qty<=0?'<span class="badge out">نفد</span>':x.qty<=5?'<span class="badge low">منخفض</span>':'<span class="badge ok">متوفر</span>';b.innerHTML+=`<tr><td>${x.code}</td><td>${x.name}</td><td>${money(x.price)}</td><td>${x.qty}</td><td>${x.sold||0}</td><td><b>${x.qty}</b></td><td>${money(x.qty*x.price)}</td><td>${status}</td><td><button class="btn gray" onclick="editItem(${i})">تعديل</button> <button class="btn gold" onclick="printBarcode('${x.code}')">باركود</button></td></tr>`})}
