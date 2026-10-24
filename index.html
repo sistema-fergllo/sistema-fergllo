@@ -23,6 +23,29 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
 @media print{body{background:#fff!important;color:#000!important}.top,.side,.toolbar,.btn,.title button{display:none!important}main{padding:0!important}.page{display:none!important}#cashier.printing{display:block!important}#reports.printing{display:block!important}}
 
 /* Faragello premium external and internal interfaces */
+
+/* Correct split: public brand on the left, internal dashboard preview on the right */
+.login-screen{direction:ltr!important;grid-template-columns:minmax(340px,.78fr) minmax(0,1.22fr)!important;align-items:stretch!important}
+.login-showcase{direction:rtl!important;grid-column:1!important;grid-row:1!important;min-height:100vh!important}
+.login-form-panel{direction:rtl!important;grid-column:2!important;grid-row:1!important;display:flex!important;align-items:center!important;justify-content:center!important;position:relative!important;overflow:hidden!important;padding:28px!important;background:linear-gradient(145deg,#07152b,#0a2850)!important}
+.internal-preview{position:absolute;inset:0;padding:30px 28px;direction:rtl;background:linear-gradient(145deg,#f4f9ff,#dcecff);color:#123567;overflow:hidden}
+.preview-top{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #cde2fb;border-radius:14px;padding:15px 18px;box-shadow:0 8px 25px #124b8510}
+.preview-top b{font-size:22px;color:#092d70}.preview-top span{color:#587ba5;font-size:13px}
+.preview-heading{margin:28px 0 18px;font-size:25px;font-weight:800;color:#123567}
+.preview-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.preview-stat{background:#fff;border:1px solid #d2e4f8;border-radius:13px;padding:18px 14px;box-shadow:0 8px 20px #124b850a}
+.preview-stat small{display:block;color:#6381a6;font-size:13px}.preview-stat strong{display:block;font-size:26px;color:#086ed2;margin-top:8px}
+.preview-content{display:grid;grid-template-columns:1.35fr .8fr;gap:14px;margin-top:16px}
+.preview-chart,.preview-menu{background:#fff;border:1px solid #d2e4f8;border-radius:14px;padding:18px}
+.preview-chart b,.preview-menu b{color:#123567;font-size:17px}
+.preview-bars{height:180px;display:flex;align-items:end;gap:12px;padding:20px 8px 0;border-bottom:1px solid #d5e5f7}
+.preview-bars i{display:block;flex:1;border-radius:6px 6px 0 0;background:linear-gradient(#2ac6ff,#1672e8);height:40%}
+.preview-bars i:nth-child(2){height:66%}.preview-bars i:nth-child(3){height:50%}.preview-bars i:nth-child(4){height:78%}.preview-bars i:nth-child(5){height:60%}.preview-bars i:nth-child(6){height:91%}.preview-bars i:nth-child(7){height:72%}
+.preview-menu span{display:block;margin-top:14px;padding:10px;border-radius:8px;background:#f0f7ff;color:#285583;font-size:14px}
+.login-form-panel .login-card{position:relative;z-index:3;width:min(440px,100%);box-shadow:0 20px 65px #001a3b55;border:2px solid #fff}
+@media(max-width:900px){.login-screen{grid-template-columns:1fr!important}.login-showcase{grid-column:1!important;grid-row:1!important}.login-form-panel{grid-column:1!important;grid-row:2!important;min-height:650px}.internal-preview{opacity:.24}.login-form-panel .login-card{z-index:4}}
+@media(max-width:520px){.preview-content{grid-template-columns:1fr}.preview-menu{display:none}.preview-stat strong{font-size:20px}.internal-preview{padding:16px}.preview-bars{height:100px}}
+
 .login-screen{direction:ltr;display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,.92fr);place-items:stretch;gap:0;padding:0;background:radial-gradient(ellipse at 20% 80%,#0755bb 0,transparent 38%),linear-gradient(125deg,#03122e,#052b62 58%,#087de4);overflow:auto}.login-showcase{direction:rtl;grid-column:1;grid-row:1}.login-form-panel{direction:rtl;grid-column:2;grid-row:1}
 .login-showcase{position:relative;min-height:100vh;padding:34px clamp(24px,5vw,76px);display:flex;flex-direction:column;justify-content:center;overflow:hidden}
 .login-showcase:before,.login-showcase:after{content:"";position:absolute;border:1px solid #168cff55;border-radius:48%;width:720px;height:330px;transform:rotate(-22deg);pointer-events:none}
@@ -66,7 +89,7 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
     <div class="showcase-device"><div class="device-sidebar"><b>▦ فرجلو</b><span>⌂ الرئيسية</span><span>⬡ المخزون</span><span>▣ الكاشير</span><span>▤ المبيعات</span><span>▥ التقارير</span></div><div class="device-screen"><div class="device-top"></div><div class="fake-chart"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="fake-metrics"><span>المبيعات<br><b>12,500</b></span><span>المخزون<br><b>3,420</b></span><span>العملاء<br><b>256</b></span></div></div></div>
     <div class="login-owner">مدير السيستم<br><strong>فرج السيد</strong><small>إدارة أعمالك بسهولة واحترافية</small></div>
   </div>
-  <div class="login-form-panel"><div class="login-card">
+  <div class="login-form-panel"><div class="internal-preview"><div class="preview-top"><b>▦ فرجلو System</b><span>لوحة الإدارة الداخلية · معاينة</span></div><div class="preview-heading">لوحة التحكم الرئيسية</div><div class="preview-stats"><div class="preview-stat"><small>إجمالي المبيعات</small><strong>المبيعات</strong></div><div class="preview-stat"><small>إدارة المخزون</small><strong>الأصناف</strong></div><div class="preview-stat"><small>العملاء</small><strong>العملاء</strong></div></div><div class="preview-content"><div class="preview-chart"><b>ملخص حركة المبيعات</b><div class="preview-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="preview-menu"><b>قائمة السيستم</b><span>⌂ الرئيسية</span><span>⬡ المخزون</span><span>▣ الكاشير</span><span>▤ المبيعات</span><span>▥ التقارير</span><span>⚙ الإعدادات</span></div></div></div><div class="login-card">
     <div class="login-emblem">▦</div><h1>فرجلو</h1><div class="login-system-name">System</div>
     <h2>تسجيل الدخول</h2><p id="loginText">ادخل بياناتك للمتابعة</p>
     <button id="adminLoginChoice" class="btn" style="width:100%;margin-top:8px" onclick="chooseLogin('admin')">دخول المشرف</button>
