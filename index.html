@@ -235,8 +235,8 @@ async function loadInventoryFromCloud(){
     inventory=data.map(x=>({code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)}));
     localStorage.setItem(KEYS.inv,JSON.stringify(inventory));
   } else {
-    // If the shared table is empty, initialize it from the built-in starter catalog.
-    if (!inventory || inventory.length === 0) inventory = ORIGINAL.map(x => ({...x, sold: 0}));
+    // The admin workspace stays empty when no shared inventory exists.
+    if (!inventory || inventory.length === 0) inventory = [];
     // Normalize codes and guarantee one unique code per initial row.
     const seenCodes = new Set();
     let nextCode = Math.max(0, ...inventory.map(x => Number(String(x.code ?? '').trim()) || 0)) + 1;
