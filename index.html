@@ -117,16 +117,12 @@ async function saveClient(){
       alert('تم إنشاء حساب العميل بالكامل. اسم المستخدم: '+username);
       return;
     }
-
     const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);
     if(error)throw error;
     clients[clientEditIndex]=item;
     saveClients();closeClientModal();renderClients();
-    if(password){
-      alert('تم تعديل بيانات العميل. كلمة المرور الجديدة تحتاج تنفيذ عملية Auth آمنة من السيرفر؛ لم يتم تخزين كلمة المرور داخل الموقع.');
-    }else{
-      alert('تم تعديل بيانات العميل بنجاح.');
-    }
+    if(password) alert('تم تعديل بيانات العميل. كلمة المرور الجديدة تحتاج تنفيذ عملية Auth آمنة من السيرفر؛ لم يتم تخزين كلمة المرور داخل الموقع.');
+    else alert('تم تعديل بيانات العميل بنجاح.');
   }catch(e){alert('تعذر حفظ حساب العميل: '+(e?.message||e))}
 }
 function editClient(i){openClientModal(i)}async function toggleClient(i){const next=clients[i].status==='نشط'?'موقوف':'نشط';try{const{error}=await supabaseClient.from('client_accounts').update({status:next}).eq('id',clients[i].id);if(error)throw error;clients[i].status=next;saveClients();renderClients()}catch(e){alert('تعذر تحديث الحساب: '+e.message)}}async function deleteClient(i){if(!confirm('حذف سجل العميل ومساحة عمله؟'))return;try{const{error}=await supabaseClient.from('client_accounts').delete().eq('id',clients[i].id);if(error)throw error;clients.splice(i,1);saveClients();renderClients()}catch(e){alert('تعذر حذف الحساب: '+e.message)}}
@@ -141,20 +137,7 @@ function renderClients(){
   document.getElementById('clLast').textContent=clients.length?clients[clients.length-1].date:'—';
   document.getElementById('clientsBody').innerHTML=list.length?list.map(c=>{
     const i=clients.indexOf(c);
-    return `<tr style="cursor:pointer" ondblclick="openClientWorkspace(${i})">
-      <td><button class="btn gray" onclick="openClientWorkspace(${i})">${c.name}</button></td>
-      <td><b style="color:#52dcff">${c.username||'—'}</b></td>
-      <td>${c.project||'—'}</td>
-      <td>${c.email||'—'}</td>
-      <td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td>
-      <td>${c.date}</td>
-      <td>
-        <button class="btn green" onclick="openClientWorkspace(${i})">فتح السيستم</button>
-        <button class="btn gray" onclick="editClient(${i})">تعديل الاسم/المستخدم/الباسورد</button>
-        <button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button>
-        <button class="btn red" onclick="deleteClient(${i})">حذف</button>
-      </td>
-    </tr>`
+    return `<tr style="cursor:pointer" ondblclick="openClientWorkspace(${i})"><td><button class="btn gray" onclick="openClientWorkspace(${i})">${c.name}</button></td><td><b style="color:#52dcff">${c.username||'—'}</b></td><td>${c.project||'—'}</td><td>${c.email||'—'}</td><td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td><td>${c.date}</td><td><button class="btn green" onclick="openClientWorkspace(${i})">فتح السيستم</button><button class="btn gray" onclick="editClient(${i})">تعديل الاسم/المستخدم/الباسورد</button><button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button><button class="btn red" onclick="deleteClient(${i})">حذف</button></td></tr>`
   }).join(''):'<tr><td colspan="7" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'
 }
 function showPage(id){const invNav=document.getElementById('navInventory');if(invNav)invNav.classList.remove('hidden');document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));const bar=document.getElementById('clientWorkspaceBar');if(bar){bar.style.display=activeClient?'block':'none';document.getElementById('clientWorkspaceName').textContent=activeClient?(activeClient.name+(activeClient.project?' • '+activeClient.project:'')):''}if(id==='inventory')renderInventory();if(id==='sales')renderSales();if(id==='reports')renderReports();if(id==='coding')renderCoding();if(id==='clients')renderClients();if(id==='cashier'){renderCart();setTimeout(()=>document.getElementById('scan').focus(),100)}}
