@@ -104,10 +104,10 @@ create policy "admins manage client sales" on public.client_sales
   ));
 
 drop policy if exists "clients access own sales" on public.client_sales;
-create policy "clients access own sales" on public.client_sales
-  for all to authenticated
-  using (client_id = public.current_client_id())
-  with check (client_id = public.current_client_id());
+drop policy if exists "clients read own sales" on public.client_sales;
+create policy "clients read own sales" on public.client_sales
+  for select to authenticated
+  using (client_id = public.current_client_id());
 
 -- New customer sign-ups are matched to a customer record by email.
 -- No customer is granted access unless an administrator created the record first.
@@ -163,9 +163,9 @@ create or replace function public.complete_client_sale(
 )
 returns bigint
 language plpgsql
-security invoker
+security definer
 set search_path = public
-as $$
+as $
 declare
   v_client_id text := public.current_client_id();
   v_total numeric(12,2) := 0;
