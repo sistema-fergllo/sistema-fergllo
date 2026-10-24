@@ -301,6 +301,28 @@ function escapeBarcodeText(value){return String(value??'').replace(/[&<>"']/g,ch
   };
 })();
 </script>
+<!-- login-button-emergency-repair-20261025 -->
+<script>
+(function(){
+ function repairLoginButtons(){
+  var admin=document.getElementById('adminLoginChoice'), client=document.getElementById('clientLoginToggle'), fields=document.getElementById('loginFields'), text=document.getElementById('loginText'), email=document.getElementById('email'), pass=document.getElementById('password'), err=document.getElementById('loginErr');
+  if(!admin||!fields)return;
+  admin.onclick=function(){
+   fields.classList.remove('hidden');
+   admin.classList.add('hidden');
+   if(client)client.classList.add('hidden');
+   if(text)text.textContent='دخول المشرف';
+   if(err)err.textContent='';
+   if(email)email.focus();
+  };
+  if(client)client.onclick=function(){
+   fields.classList.remove('hidden');admin.classList.add('hidden');client.classList.add('hidden');
+   if(text)text.textContent='دخول العميل';if(err)err.textContent='';if(email)email.focus();
+  };
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repairLoginButtons);else repairLoginButtons();
+})();
+</script>
 </body></html>');w.document.close()}
 function renderCoding(){const q=(document.getElementById('bcSearch')?.value||'').trim().toLowerCase(),body=document.getElementById('codingBody');if(!body)return;const seen=new Set(),dupes=new Set();inventory.forEach(x=>{const k=String(x.code).trim();if(seen.has(k))dupes.add(k);seen.add(k)});document.getElementById('bcItemCount').textContent=inventory.length;document.getElementById('bcDuplicateCount').textContent=dupes.size;document.getElementById('bcReadyCount').textContent=inventory.filter(x=>String(x.code||'').trim()).length;body.innerHTML='';inventory.forEach((x,i)=>{if(q&&!String(x.code+' '+x.name).toLowerCase().includes(q))return;const tr=document.createElement('tr');[x.code,x.name,money(x.price),String(x.qty??0)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});const td=document.createElement('td'),btn=document.createElement('button');btn.className='btn gold';btn.textContent='🖨 طباعة';btn.onclick=()=>printBarcode(x.code);td.appendChild(btn);if(dupes.has(String(x.code).trim())){const warn=document.createElement('div');warn.className='badge low';warn.textContent='كود مكرر';td.appendChild(warn)}tr.appendChild(td);body.appendChild(tr)});if(!body.children.length)body.innerHTML='<tr><td colspan="5" class="empty">لا توجد أصناف مطابقة</td></tr>'}
 function openBarcodeModal(code){const s=document.getElementById('bcSelect');s.innerHTML=inventory.map((x,i)=>'<option value="'+i+'" '+(String(x.code)===String(code)?'selected':'')+'>'+escapeBarcodeText(x.code+' - '+x.name)+'</option>').join('');document.getElementById('bcQty').value=1;document.getElementById('barcodeModal').classList.remove('hidden')}function closeBarcodeModal(){document.getElementById('barcodeModal').classList.add('hidden')}function printBarcode(code){openBarcodeModal(code)}function printSelectedBarcode(){const index=Number(document.getElementById('bcSelect').value),qty=Math.min(500,Math.max(1,Number(document.getElementById('bcQty').value||1))),item=inventory[index];if(!item){alert('اختار صنف صحيح');return}try{const one=barcodeLabel(item),labels=Array.from({length:qty},()=>one).join('');barcodePrintWindow('باركود - '+item.name,labels);closeBarcodeModal()}catch(e){alert('تعذر إنشاء الباركود: '+e.message)}}function printAllBarcodes(){if(!inventory.length){alert('لا توجد أصناف');return}try{const labels=inventory.map(item=>barcodeLabel(item)).join('');barcodePrintWindow('باركود الأصناف',labels)}catch(e){alert('تعذر إنشاء الباركود: '+e.message)}}
