@@ -349,20 +349,23 @@ function deleteClient(i){if(!confirm('حذف حساب العميل؟'))return;cl
 function openClientWorkspace(i){
   const c=clients[i];
   if(!c||c.status!=='نشط'){alert('حساب العميل موقوف أو غير موجود');return}
-  const migrationKey='frg_baba_fino_inventory_migrated_v1';
-  const isBabaFino=(String(c.name||'')+' '+String(c.project||'')).toLowerCase().replace(/[^a-z0-9]/g,'').includes('babafino');
   const clientInvKey=KEYS.inv+'_'+c.id, clientSalesKey=KEYS.sales+'_'+c.id;
-  // One-time migration: move the current shared inventory and sales into BABA FINO's workspace.
-  if(isBabaFino && localStorage.getItem(migrationKey)!=='1'){
+  const isBabaFino=(String(c.name||'')+' '+String(c.project||'')).toLowerCase().replace(/[^a-z0-9]/g,'').includes('babafino');
+  // Move the legacy main workspace into BABA FINO once, but recover if an earlier attempt only marked migration.
+  if(isBabaFino && !localStorage.getItem(clientInvKey)){
     const currentInv=JSON.parse(localStorage.getItem(KEYS.inv)||'null')||inventory||[];
     const currentSales=JSON.parse(localStorage.getItem(KEYS.sales)||'[]')||sales||[];
-    if(!localStorage.getItem(clientInvKey)){
-      localStorage.setItem(clientInvKey,JSON.stringify(currentInv));
-      localStorage.setItem(clientSalesKey,JSON.stringify(currentSales));
-    }
+    localStorage.setItem(clientInvKey,JSON.stringify(currentInv));
+    localStorage.setItem(clientSalesKey,JSON.stringify(currentSales));
+    localStorage.setItem('frg_baba_fino_inventory_migrated_v1','1');
+  }
+  if(!isBabaFino && !localStorage.getItem(clientInvKey)){
+    localStorage.setItem(clientInvKey,JSON.stringify([]));
+    localStorage.setItem(clientSalesKey,JSON.stringify([]));
+  }
+  if(isBabaFino){
     localStorage.setItem(KEYS.inv,JSON.stringify([]));
     localStorage.setItem(KEYS.sales,JSON.stringify([]));
-    localStorage.setItem(migrationKey,'1');
   }
   activeClient={id:c.id,name:c.name,project:c.project,email:c.email};
   localStorage.setItem('frg_active_client',JSON.stringify(activeClient));
@@ -372,9 +375,9 @@ function openClientWorkspace(i){
   document.querySelector('.user small').textContent='حساب العميل';
   showPage('home')
 }
-function loadWorkspaceData(){const invKey=workspaceKey(KEYS.inv),salesKey=workspaceKey(KEYS.sales);inventory=JSON.parse(localStorage.getItem(invKey)||'null')||ORIGINAL.map(x=>({...x,sold:0}));sales=JSON.parse(localStorage.getItem(salesKey)||'[]');cloudReady=false;cart=[];refreshAll()}
+function loadWorkspaceData(){const invKey=workspaceKey(KEYS.inv),salesKey=workspaceKey(KEYS.sales);inventory=JSON.parse(localStorage.getItem(invKey)||'null')||[];sales=JSON.parse(localStorage.getItem(salesKey)||'[]');cloudReady=false;cart=[];refreshAll()}
 function leaveClientWorkspace(){activeClient=null;localStorage.removeItem('frg_active_client');inventory=JSON.parse(localStorage.getItem(KEYS.inv)||'null')||ORIGINAL.map(x=>({...x,sold:0}));sales=JSON.parse(localStorage.getItem(KEYS.sales)||'[]');cloudReady=false;document.querySelector('.brand small').textContent='Farag El-Sayed • مشرف النظام';document.querySelector('.user b').textContent='admin';document.querySelector('.user small').textContent='مدير النظام';showPage('clients')}
-function renderClients(){const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase(),list=clients.filter(c=>[c.name,c.project,c.email].join(' ').toLowerCase().includes(q));document.getElementById('clCount').textContent=clients.length;document.getElementById('clActive').textContent=clients.filter(c=>c.status==='نشط').length;document.getElementById('clInactive').textContent=clients.filter(c=>c.status!=='نشط').length;document.getElementById('clLast').textContent=clients.length?clients[clients.length-1].date:'—';document.getElementById('clientsBody').innerHTML=list.length?list.map(c=>{const i=clients.indexOf(c);return `<tr><td>${c.name}</td><td>${c.project||'—'}</td><td>${c.email}</td><td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td><td>${c.date}</td><td><button class="btn green" onclick="openClientWorkspace(${i})">فتح السيستم</button> <button class="btn gray" onclick="editClient(${i})">تعديل</button> <button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button> <button class="btn red" onclick="deleteClient(${i})">حذف</button></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'}
+function renderClients(){const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase(),list=clients.filter(c=>[c.name,c.project,c.email].join(' ').toLowerCase().includes(q));document.getElementById('clCount').textContent=clients.length;document.getElementById('clActive').textContent=clients.filter(c=>c.status==='نشط').length;document.getElementById('clInactive').textContent=clients.filter(c=>c.status!=='نشط').length;document.getElementById('clLast').textContent=clients.length?clients[clients.length-1].date:'—';document.getElementById('clientsBody').innerHTML=list.length?list.map(c=>{const i=clients.indexOf(c);return `<tr style="cursor:pointer" ondblclick="openClientWorkspace(${i})"><td><button class="btn gray" onclick="openClientWorkspace(${i})">${c.name}</button></td><td>${c.project||'—'}</td><td>${c.email}</td><td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td><td>${c.date}</td><td><button class="btn green" onclick="openClientWorkspace(${i})">فتح السيستم</button> <button class="btn gray" onclick="editClient(${i})">تعديل</button> <button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button> <button class="btn red" onclick="deleteClient(${i})">حذف</button></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'}
 function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));const bar=document.getElementById('clientWorkspaceBar');if(bar){bar.style.display=activeClient?'block':'none';document.getElementById('clientWorkspaceName').textContent=activeClient?(activeClient.name+(activeClient.project?' • '+activeClient.project:'')):'';}if(id==='inventory')renderInventory();if(id==='sales')renderSales();if(id==='reports')renderReports();if(id==='coding')renderCoding();if(id==='clients')renderClients();if(id==='cashier'){renderCart();setTimeout(()=>document.getElementById('scan').focus(),100)}}
 function refreshAll(){updateDashboard();renderInventory();renderSales();renderCart()}
 function updateDashboard(){let qty=inventory.reduce((a,x)=>a+Number(x.qty||0),0), value=inventory.reduce((a,x)=>a+Number(x.qty||0)*Number(x.price||0),0), st=sales.reduce((a,x)=>a+Number(x.total||0),0);document.getElementById('cItems').textContent=inventory.length;document.getElementById('cQty').textContent=qty.toLocaleString();document.getElementById('cSales').textContent=money(st);document.getElementById('cStock').textContent=money(value);document.getElementById('iCount').textContent=inventory.length;document.getElementById('iQty').textContent=qty.toLocaleString();document.getElementById('iValue').textContent=money(value);document.getElementById('iSales').textContent=money(st)}
