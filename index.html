@@ -38,11 +38,13 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
     <div class="logo" style="margin:auto">🛒</div>
     <h1>سيستم فرجللو</h1>
     <p id="loginText">تسجيل الدخول إلى النظام</p>
-    <input id="email" type="text" placeholder="اسم المستخدم أو البريد الإلكتروني" autocomplete="username" onkeydown="if(event.key==='Enter') doLogin()">
-    <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter') doLogin()">
-    <div id="loginErr" class="err"></div>
-    <button class="btn" onclick="doLogin()">دخول</button>
-    <button class="btn gray" style="width:100%;margin-top:8px" onclick="registerClientAccount()">إنشاء حساب عميل</button>
+    <div id="loginFields" class="hidden">
+      <input id="email" type="text" placeholder="اسم المستخدم" autocomplete="username" onkeydown="if(event.key==='Enter') doLogin()">
+      <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter') doLogin()">
+      <div id="loginErr" class="err"></div>
+      <button id="loginSubmit" class="btn" onclick="doLogin()">دخول</button>
+    </div>
+    <button id="clientLoginToggle" class="btn gray" style="width:100%;margin-top:8px" onclick="toggleClientLogin()">دخول العميل</button>
     <div style="margin-top:18px;color:#7890ab;font-size:12px">Farag El-Sayed • مشرف النظام</div>
   </div>
 </div>
@@ -257,6 +259,17 @@ function money(n){return Number(n||0).toLocaleString('en-US',{minimumFractionDig
 function now(){return new Date().toLocaleString('ar-EG')}
 function updateClock(){let d=new Date();document.getElementById('date').textContent=d.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'2-digit',day:'2-digit'});document.getElementById('time').textContent=d.toLocaleTimeString('ar-EG')}
 setInterval(updateClock,1000);updateClock();
+
+function toggleClientLogin(){
+  const fields=document.getElementById('loginFields');
+  const toggle=document.getElementById('clientLoginToggle');
+  const opening=fields.classList.contains('hidden');
+  fields.classList.toggle('hidden',!opening);
+  toggle.textContent=opening?'إخفاء تسجيل الدخول':'دخول العميل';
+  document.getElementById('loginText').textContent=opening?'اكتب اسم المستخدم وكلمة المرور':'تسجيل الدخول إلى النظام';
+  document.getElementById('loginErr').textContent='';
+  if(opening)document.getElementById('email').focus();
+}
 
 async function registerClientAccount(){
   const email=document.getElementById('email').value.trim();
