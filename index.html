@@ -463,7 +463,7 @@ async function completeSale(){
     const isCustomer=currentProfileRole==='client';
     const {data,error}=isCustomer
       ? await supabaseClient.rpc('complete_client_sale',{p_shift:document.getElementById('shift').value,p_pay:document.getElementById('pay').value,p_items:payload})
-      : await supabaseClient.rpc('complete_shared_sale',{p_shift:document.getElementById('shift').value,p_pay:document.getElementById('pay').value,p_items:payload});
+      : await supabaseClient.rpc('complete_admin_shared_sale',{p_shift:document.getElementById('shift').value,p_pay:document.getElementById('pay').value,p_items:payload});
     if(error) throw error;
     cart=[];
     if(isCustomer) await loadClientWorkspaceFromCloud(activeClient.id); else await loadInventoryFromCloud();
