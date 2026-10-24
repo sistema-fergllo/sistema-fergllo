@@ -330,7 +330,7 @@ async function doLogin(){
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
     if(error) throw error;
     const { data: profile, error: profileError } = await supabaseClient
-      .from('user_profiles').select('full_name, role, branch_id, client_id')
+      .from('user_profiles').select('full_name, role, branch_id')
       .eq('user_id', data.user.id).single();
     if(profileError || !profile){
       await supabaseClient.auth.signOut();
