@@ -26,7 +26,7 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
 <body>
 <div id="login" class="login-screen">
   <div class="login-card">
-    <div class="logo" style="margin:auto">🧮</div><h1>سيستم فرجللو</h1><p id="loginText">سيستم محاسبة</p>
+    <div class="logo" style="margin:auto"><svg viewBox="0 0 64 64" width="34" height="34" aria-label="آلة حاسبة" role="img"><rect x="13" y="5" width="38" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="4"/><rect x="19" y="11" width="26" height="10" rx="2" fill="currentColor"/><rect x="19" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="19" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="38" width="7" height="18" rx="1" fill="currentColor"/><rect x="19" y="49" width="17" height="7" rx="1" fill="currentColor"/></svg></div><h1>سيستم فرجللو</h1><p id="loginText">سيستم محاسبة</p>
     <button id="adminLoginChoice" class="btn" style="width:100%;margin-top:8px" onclick="chooseLogin('admin')">دخول المشرف</button>
     <button id="clientLoginToggle" class="btn gray" style="width:100%;margin-top:8px" onclick="chooseLogin('client')">دخول العميل</button>
     <div id="loginFields" class="hidden"><input id="email" type="text" placeholder="اسم المستخدم" autocomplete="username" onkeydown="if(event.key==='Enter') doLogin()"><input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter') doLogin()"><div id="loginErr" class="err"></div><button id="loginSubmit" class="btn" onclick="doLogin()">تسجيل الدخول</button><button class="btn gray" onclick="resetLoginChoice()">رجوع</button></div>
@@ -118,7 +118,6 @@ async function saveClient(){
       return;
     }
 
-    // Update public client data now. Password/auth-identity changes are handled only by a trusted server action.
     const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);
     if(error)throw error;
     clients[clientEditIndex]=item;
@@ -181,3 +180,5 @@ function renderReports(){const from=document.getElementById('repFrom').value,to=
 <!-- deploy-trigger-20261024-client-credentials-v2 -->
 
 <!-- deploy-trigger-20261024-client-credentials-v3 -->
+
+<!-- deploy-trigger-20261024-calculator-icon-v1 -->
