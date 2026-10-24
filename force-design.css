@@ -1,5 +1,5 @@
-/* Faragello image design */
-#login.login-screen{background:url('./assets/login_web.jpg') center/cover no-repeat fixed!important}
+/* Faragello exact reference images */
+#login.login-screen{background:url('./login_web.jpg') center/cover no-repeat fixed!important}
 #login.login-screen:before{display:none!important}
-#app{background:url('./assets/dashboard_web.jpg') center/cover no-repeat fixed!important}
+#app{background:url('./dashboard_web.jpg') center/cover no-repeat fixed!important}
 #app .layout,#app main{background:rgba(0,0,0,.28)!important}
