@@ -1,4 +1,4 @@
-name: Apply Faragello new design
+name: Apply Faragello exact reference design
 on:
   push:
     branches: [main]
@@ -6,24 +6,44 @@ permissions:
   contents: write
 jobs:
   redesign:
-    if: github.event.head_commit.message != 'Apply Faragello image design' && github.event.head_commit.message != 'Fix Faragello image paths'
+    if: github.event.head_commit.message != 'Apply exact Faragello reference design'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Apply exact reference images
+      - name: Apply exact reference images without changing app functions
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          s=s.replace('assets/login.jpg','login_web.jpg')
-          s=s.replace('assets/dashboard.jpg','dashboard_web.jpg')
-          p.write_text(s,encoding='utf-8')
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('assets/login.jpg','login_web.jpg')
+          s = s.replace('assets/dashboard.jpg','dashboard_web.jpg')
+          css = '''
+<style id="faragello-exact-reference-design">
+html,body{margin:0;min-height:100%;}
+#login.login-screen{background:url('./login_web.jpg') center center/cover no-repeat fixed !important;position:relative;overflow:hidden;}
+#login.login-screen:before{display:none !important;content:none !important;}
+#login .login-card{position:relative;z-index:2;}
+#app{background:url('./dashboard_web.jpg') center center/cover no-repeat fixed !important;min-height:100vh;}
+#app .layout{background:rgba(3,14,31,.48) !important;}
+#app main{background:rgba(3,14,31,.40) !important;}
+#app .top{background:rgba(3,17,38,.88) !important;}
+#app .side{background:rgba(2,11,25,.90) !important;}
+</style>
+'''
+          marker = '<style id="faragello-exact-reference-design">'
+          if marker in s:
+              a = s.index(marker)
+              b = s.index('</style>', a) + len('</style>')
+              s = s[:a] + css.strip() + s[b:]
+          else:
+              s = s.replace('</head>', css + '\n</head>', 1)
+          p.write_text(s, encoding='utf-8')
           PY
-      - name: Commit design
+      - name: Commit exact design
         run: |
           git config user.name "sistema-fergllo"
           git config user.email "farajelsayed1@gmail.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Apply exact Faragello reference images"
+          git diff --cached --quiet || git commit -m "Apply exact Faragello reference design"
           git push
