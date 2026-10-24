@@ -302,7 +302,18 @@ async function doLogin(){
       await supabaseClient.auth.signOut();
       throw new Error('الدخول متاح حاليًا لحساب مدير النظام فقط. سنجهز صلاحيات الفروع لاحقًا.');
     }
-    await loadInventoryFromCloud();
+    // After the one-time BABA FINO transfer, keep the manager's own workspace empty.
+    if(localStorage.getItem('frg_baba_fino_inventory_migrated_v1')!=='1'){
+      await loadInventoryFromCloud();
+    } else {
+      activeClient=null;
+      localStorage.removeItem('frg_active_client');
+      inventory=[];
+      sales=[];
+      cloudReady=false;
+      localStorage.setItem(KEYS.inv,JSON.stringify([]));
+      localStorage.setItem(KEYS.sales,JSON.stringify([]));
+    }
     document.getElementById('login').classList.add('hidden');
     document.getElementById('app').classList.remove('hidden');
     document.getElementById('login').dataset.page = '';
@@ -335,7 +346,32 @@ function saveClient(){const name=document.getElementById('clientName').value.tri
 function editClient(i){openClientModal(i)}
 function toggleClient(i){clients[i].status=clients[i].status==='نشط'?'موقوف':'نشط';saveClients();renderClients()}
 function deleteClient(i){if(!confirm('حذف حساب العميل؟'))return;clients.splice(i,1);saveClients();renderClients()}
-function openClientWorkspace(i){const c=clients[i];if(!c||c.status!=='نشط'){alert('حساب العميل موقوف أو غير موجود');return}activeClient={id:c.id,name:c.name,project:c.project,email:c.email};localStorage.setItem('frg_active_client',JSON.stringify(activeClient));loadWorkspaceData();document.querySelector('.brand small').textContent=c.name+(c.project?' • '+c.project:'');document.querySelector('.user b').textContent=c.name;document.querySelector('.user small').textContent='حساب العميل';showPage('home')}
+function openClientWorkspace(i){
+  const c=clients[i];
+  if(!c||c.status!=='نشط'){alert('حساب العميل موقوف أو غير موجود');return}
+  const migrationKey='frg_baba_fino_inventory_migrated_v1';
+  const isBabaFino=(String(c.name||'')+' '+String(c.project||'')).toLowerCase().replace(/[^a-z0-9]/g,'').includes('babafino');
+  const clientInvKey=KEYS.inv+'_'+c.id, clientSalesKey=KEYS.sales+'_'+c.id;
+  // One-time migration: move the current shared inventory and sales into BABA FINO's workspace.
+  if(isBabaFino && localStorage.getItem(migrationKey)!=='1'){
+    const currentInv=JSON.parse(localStorage.getItem(KEYS.inv)||'null')||inventory||[];
+    const currentSales=JSON.parse(localStorage.getItem(KEYS.sales)||'[]')||sales||[];
+    if(!localStorage.getItem(clientInvKey)){
+      localStorage.setItem(clientInvKey,JSON.stringify(currentInv));
+      localStorage.setItem(clientSalesKey,JSON.stringify(currentSales));
+    }
+    localStorage.setItem(KEYS.inv,JSON.stringify([]));
+    localStorage.setItem(KEYS.sales,JSON.stringify([]));
+    localStorage.setItem(migrationKey,'1');
+  }
+  activeClient={id:c.id,name:c.name,project:c.project,email:c.email};
+  localStorage.setItem('frg_active_client',JSON.stringify(activeClient));
+  loadWorkspaceData();
+  document.querySelector('.brand small').textContent=c.name+(c.project?' • '+c.project:'');
+  document.querySelector('.user b').textContent=c.name;
+  document.querySelector('.user small').textContent='حساب العميل';
+  showPage('home')
+}
 function loadWorkspaceData(){const invKey=workspaceKey(KEYS.inv),salesKey=workspaceKey(KEYS.sales);inventory=JSON.parse(localStorage.getItem(invKey)||'null')||ORIGINAL.map(x=>({...x,sold:0}));sales=JSON.parse(localStorage.getItem(salesKey)||'[]');cloudReady=false;cart=[];refreshAll()}
 function leaveClientWorkspace(){activeClient=null;localStorage.removeItem('frg_active_client');inventory=JSON.parse(localStorage.getItem(KEYS.inv)||'null')||ORIGINAL.map(x=>({...x,sold:0}));sales=JSON.parse(localStorage.getItem(KEYS.sales)||'[]');cloudReady=false;document.querySelector('.brand small').textContent='Farag El-Sayed • مشرف النظام';document.querySelector('.user b').textContent='admin';document.querySelector('.user small').textContent='مدير النظام';showPage('clients')}
 function renderClients(){const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase(),list=clients.filter(c=>[c.name,c.project,c.email].join(' ').toLowerCase().includes(q));document.getElementById('clCount').textContent=clients.length;document.getElementById('clActive').textContent=clients.filter(c=>c.status==='نشط').length;document.getElementById('clInactive').textContent=clients.filter(c=>c.status!=='نشط').length;document.getElementById('clLast').textContent=clients.length?clients[clients.length-1].date:'—';document.getElementById('clientsBody').innerHTML=list.length?list.map(c=>{const i=clients.indexOf(c);return `<tr><td>${c.name}</td><td>${c.project||'—'}</td><td>${c.email}</td><td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td><td>${c.date}</td><td><button class="btn green" onclick="openClientWorkspace(${i})">فتح السيستم</button> <button class="btn gray" onclick="editClient(${i})">تعديل</button> <button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button> <button class="btn red" onclick="deleteClient(${i})">حذف</button></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'}
