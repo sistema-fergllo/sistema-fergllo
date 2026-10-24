@@ -235,6 +235,8 @@ async function loadInventoryFromCloud(){
     inventory=data.map(x=>({code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)}));
     localStorage.setItem(KEYS.inv,JSON.stringify(inventory));
   } else {
+    // If the shared table is empty, initialize it from the built-in starter catalog.
+    if (!inventory || inventory.length === 0) inventory = ORIGINAL.map(x => ({...x, sold: 0}));
     // Normalize codes and guarantee one unique code per initial row.
     const seenCodes = new Set();
     let nextCode = Math.max(0, ...inventory.map(x => Number(String(x.code ?? '').trim()) || 0)) + 1;
@@ -359,18 +361,10 @@ async function doLogin(){
     }
     currentProfileRole='admin';
     document.querySelectorAll('.nav[data-page="clients"],.nav[data-page="settings"]').forEach(el=>el.classList.remove('hidden'));
-    // After the one-time BABA FINO transfer, keep the manager's own workspace empty.
-    if(localStorage.getItem('frg_baba_fino_inventory_migrated_v1')!=='1'){
-      await loadInventoryFromCloud();
-    } else {
-      activeClient=null;
-      localStorage.removeItem('frg_active_client');
-      inventory=[];
-      sales=[];
-      cloudReady=false;
-      localStorage.setItem(KEYS.inv,JSON.stringify([]));
-      localStorage.setItem(KEYS.sales,JSON.stringify([]));
-    }
+    // Load the manager's shared inventory on every login.
+    activeClient=null;
+    localStorage.removeItem('frg_active_client');
+    await loadInventoryFromCloud();
     document.getElementById('login').classList.add('hidden');
     document.getElementById('app').classList.remove('hidden');
     document.getElementById('login').dataset.page = '';
