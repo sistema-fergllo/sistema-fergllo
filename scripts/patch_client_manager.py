@@ -122,8 +122,11 @@ if old_reset in s:
 else:
     s = re.sub(r'function resetData\(\)\{.*?\}', new_reset, s, count=1)
 
+# Login screen branding: calculator icon instead of cart, and accounting-system wording.
+s = s.replace('<div class="logo" style="margin:auto">🛒</div><h1>سيستم فرجللو</h1><p id="loginText">اختر نوع الدخول</p>', '<div class="logo" style="margin:auto">🧮</div><h1>سيستم فرجللو</h1><p id="loginText">سيستم محاسبة</p>')
+
 # Visible deployment marker so GitHub Pages receives a fresh commit.
-marker='<!-- deploy-trigger-20261024-client-credentials-v2 -->'
+marker='<!-- deploy-trigger-20261024-client-credentials-v3 -->'
 s=re.sub(r'<!-- deploy-trigger-20261024:[^>]+ -->$', marker, s)
 if marker not in s:
     s += '\n'+marker+'\n'
