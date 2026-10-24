@@ -4,6 +4,7 @@ import re
 p = Path('index.html')
 s = p.read_text(encoding='utf-8')
 
+# Make the manager form unmistakable on both add and edit.
 if 'id="clientUsername"' not in s:
     s = re.sub(
         r'<input id="clientName"[^>]*>',
@@ -20,10 +21,15 @@ if start < 0 or end < 0:
 newfun = '''function openClientModal(index=-1){
   clientEditIndex=index;
   const c=index>=0?clients[index]:{name:'',username:'',project:'',email:'',status:'نشط'};
+  const title=document.querySelector('#clientModal h3');
+  if(title)title.textContent=index>=0?'✏ تعديل حساب العميل':'＋ إضافة حساب عميل';
+  const sub=document.querySelector('#clientModal .sub');
+  if(sub)sub.textContent=index>=0?'عدّل اسم المستخدم أو كلمة المرور أو بيانات العميل.':'أنشئ حساب دخول مستقل للعميل.';
   document.getElementById('clientModal').classList.remove('hidden');
   document.getElementById('clientName').value=c.name||'';
   document.getElementById('clientUsername').value=c.username||'';
   document.getElementById('clientPassword').value='';
+  document.getElementById('clientPassword').placeholder=index>=0?'كلمة مرور جديدة (اتركها فارغة إذا لا تريد تغييرها)':'كلمة مرور الدخول';
   document.getElementById('clientProject').value=c.project||'';
   document.getElementById('clientEmail').value=c.email||'';
   document.getElementById('clientStatus').value=c.status||'نشط';
@@ -40,6 +46,7 @@ async function saveClient(){
   if(!name||!username){alert('اكتب اسم العميل واسم المستخدم');return}
   if(!/^[a-z0-9._-]+$/.test(username)){alert('اسم المستخدم يكون بالإنجليزية والأرقام فقط مثل: babafino');return}
   if(clientEditIndex<0 && password.length<6){alert('كلمة المرور يجب أن تكون 6 أحرف أو أكثر');return}
+  if(clientEditIndex>=0 && password && password.length<6){alert('كلمة المرور الجديدة يجب أن تكون 6 أحرف أو أكثر');return}
   const old=clientEditIndex>=0?clients[clientEditIndex]:null;
   const item={id:old?old.id:crypto.randomUUID(),name,username,project,email,status,date:old?old.date:new Date().toLocaleDateString('ar-EG')};
   try{
@@ -54,15 +61,65 @@ async function saveClient(){
       const {error:profileError}=await supabaseClient.from('user_profiles').insert({user_id:authData.user.id,full_name:item.name,role:'client',client_id:item.id});
       if(profileError)throw profileError;
       clients.push(item);
-    }else{
-      const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);
-      if(error)throw error;
-      clients[clientEditIndex]=item;
+      saveClients();closeClientModal();renderClients();
+      alert('تم إنشاء حساب العميل بالكامل. اسم المستخدم: '+username);
+      return;
     }
+
+    // Update public client data now. Password/auth-identity changes are handled only by a trusted server action.
+    const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);
+    if(error)throw error;
+    clients[clientEditIndex]=item;
     saveClients();closeClientModal();renderClients();
-    alert(old?'تم تعديل بيانات العميل بنجاح.':'تم إنشاء حساب العميل بالكامل.');
+    if(password){
+      alert('تم تعديل بيانات العميل. كلمة المرور الجديدة تحتاج تنفيذ عملية Auth آمنة من السيرفر؛ لم يتم تخزين كلمة المرور داخل الموقع.');
+    }else{
+      alert('تم تعديل بيانات العميل بنجاح.');
+    }
   }catch(e){alert('تعذر حفظ حساب العميل: '+(e?.message||e))}
 }
 '''
 s = s[:start] + newfun + s[end:]
+
+# Replace the clients table renderer so username is visible and the edit action is obvious.
+rstart = s.find('function renderClients(){')
+rend = s.find('function showPage(', rstart)
+if rstart >= 0 and rend > rstart:
+    render = '''function renderClients(){
+  const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase();
+  const list=clients.filter(c=>[c.name,c.username,c.project,c.email].join(' ').toLowerCase().includes(q));
+  document.getElementById('clCount').textContent=clients.length;
+  document.getElementById('clActive').textContent=clients.filter(c=>c.status==='نشط').length;
+  document.getElementById('clInactive').textContent=clients.filter(c=>c.status!=='نشط').length;
+  document.getElementById('clLast').textContent=clients.length?clients[clients.length-1].date:'—';
+  document.getElementById('clientsBody').innerHTML=list.length?list.map(c=>{
+    const i=clients.indexOf(c);
+    return `<tr style="cursor:pointer" ondblclick="openClientWorkspace(${i})">
+      <td><button class="btn gray" onclick="openClientWorkspace(${i})">${c.name}</button></td>
+      <td><b style="color:#52dcff">${c.username||'—'}</b></td>
+      <td>${c.project||'—'}</td>
+      <td>${c.email||'—'}</td>
+      <td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td>
+      <td>${c.date}</td>
+      <td>
+        <button class="btn green" onclick="openClientWorkspace(${i})">فتح السيستم</button>
+        <button class="btn gray" onclick="editClient(${i})">تعديل الاسم/المستخدم/الباسورد</button>
+        <button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button>
+        <button class="btn red" onclick="deleteClient(${i})">حذف</button>
+      </td>
+    </tr>`
+  }).join(''):'<tr><td colspan="7" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'
+}
+'''
+    s = s[:rstart] + render + s[rend:]
+
+# Make the modal markup self-healing even if an older version is deployed.
+s = s.replace('<h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ سجل العميل من حساب المدير.</p>', '<h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ حساب دخول مستقل للعميل.</p>')
+
+# Visible deployment marker so GitHub Pages receives a fresh commit.
+marker='<!-- deploy-trigger-20261024-client-credentials-v2 -->'
+s=re.sub(r'<!-- deploy-trigger-20261024:[^>]+ -->$', marker, s)
+if marker not in s:
+    s += '\n'+marker+'\n'
+
 p.write_text(s, encoding='utf-8')
