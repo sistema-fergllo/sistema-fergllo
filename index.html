@@ -198,7 +198,7 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
   <div class="modal-actions"><button class="btn gold" onclick="printSelectedBarcode()">🖨 طباعة</button><button class="btn gray" onclick="closeBarcodeModal()">إلغاء</button></div>
 </div></div>
 
-<div id="clientModal" class="modal-bg hidden"><div class="modal"><h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ سجل العميل من حساب المدير.</p><input id="clientName" placeholder="اسم العميل"><input id="clientUsername" placeholder="اسم المستخدم للدخول" autocomplete="username"><input id="clientPassword" type="password" placeholder="كلمة مرور الدخول" autocomplete="new-password"><input id="clientProject" placeholder="النشاط / اسم المشروع"><input id="clientEmail" type="email" placeholder="البريد الإلكتروني"><select id="clientStatus" style="width:100%;background:#041326;color:white;border:1px solid #155083;border-radius:9px;padding:11px"><option>نشط</option><option>موقوف</option></select><div class="modal-actions"><button class="btn" onclick="saveClient()">حفظ</button><button class="btn gray" onclick="closeClientModal()">إلغاء</button></div></div></div>
+<div id="clientModal" class="modal-bg hidden"><div class="modal"><h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ حساب دخول مستقل للعميل.</p><input id="clientName" placeholder="اسم العميل"><input id="clientUsername" placeholder="اسم المستخدم للدخول" autocomplete="username"><input id="clientPassword" type="password" placeholder="كلمة مرور الدخول" autocomplete="new-password"><input id="clientProject" placeholder="النشاط / اسم المشروع"><input id="clientEmail" type="email" placeholder="البريد الإلكتروني"><select id="clientStatus" style="width:100%;background:#041326;color:white;border:1px solid #155083;border-radius:9px;padding:11px"><option>نشط</option><option>موقوف</option></select><div class="modal-actions"><button class="btn" onclick="saveClient()">حفظ</button><button class="btn gray" onclick="closeClientModal()">إلغاء</button></div></div></div>
 <div id="modalBg" class="modal-bg hidden"><div class="modal"><h3 id="modalTitle">إضافة صنف</h3><input id="mCode" placeholder="الكود / الباركود"><input id="mName" placeholder="اسم الصنف"><input id="mPrice" type="number" step="0.01" placeholder="سعر البيع"><input id="mQty" type="number" step="1" placeholder="الكمية"><div class="modal-actions"><button class="btn green" onclick="saveItem()">حفظ</button><button class="btn gray" onclick="closeModal()">إلغاء</button></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -413,10 +413,15 @@ function saveClients(){localStorage.setItem(CLIENTS_KEY,JSON.stringify(clients))
 function openClientModal(index=-1){
   clientEditIndex=index;
   const c=index>=0?clients[index]:{name:'',username:'',project:'',email:'',status:'نشط'};
+  const title=document.querySelector('#clientModal h3');
+  if(title)title.textContent=index>=0?'✏ تعديل حساب العميل':'＋ إضافة حساب عميل';
+  const sub=document.querySelector('#clientModal .sub');
+  if(sub)sub.textContent=index>=0?'عدّل اسم المستخدم أو كلمة المرور أو بيانات العميل.':'أنشئ حساب دخول مستقل للعميل.';
   document.getElementById('clientModal').classList.remove('hidden');
   document.getElementById('clientName').value=c.name||'';
   document.getElementById('clientUsername').value=c.username||'';
   document.getElementById('clientPassword').value='';
+  document.getElementById('clientPassword').placeholder=index>=0?'كلمة مرور جديدة (اتركها فارغة إذا لا تريد تغييرها)':'كلمة مرور الدخول';
   document.getElementById('clientProject').value=c.project||'';
   document.getElementById('clientEmail').value=c.email||'';
   document.getElementById('clientStatus').value=c.status||'نشط';
@@ -433,6 +438,7 @@ async function saveClient(){
   if(!name||!username){alert('اكتب اسم العميل واسم المستخدم');return}
   if(!/^[a-z0-9._-]+$/.test(username)){alert('اسم المستخدم يكون بالإنجليزية والأرقام فقط مثل: babafino');return}
   if(clientEditIndex<0 && password.length<6){alert('كلمة المرور يجب أن تكون 6 أحرف أو أكثر');return}
+  if(clientEditIndex>=0 && password && password.length<6){alert('كلمة المرور الجديدة يجب أن تكون 6 أحرف أو أكثر');return}
   const old=clientEditIndex>=0?clients[clientEditIndex]:null;
   const item={id:old?old.id:crypto.randomUUID(),name,username,project,email,status,date:old?old.date:new Date().toLocaleDateString('ar-EG')};
   try{
@@ -447,13 +453,21 @@ async function saveClient(){
       const {error:profileError}=await supabaseClient.from('user_profiles').insert({user_id:authData.user.id,full_name:item.name,role:'client',client_id:item.id});
       if(profileError)throw profileError;
       clients.push(item);
-    }else{
-      const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);
-      if(error)throw error;
-      clients[clientEditIndex]=item;
+      saveClients();closeClientModal();renderClients();
+      alert('تم إنشاء حساب العميل بالكامل. اسم المستخدم: '+username);
+      return;
     }
+
+    // Update public client data now. Password/auth-identity changes are handled only by a trusted server action.
+    const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);
+    if(error)throw error;
+    clients[clientEditIndex]=item;
     saveClients();closeClientModal();renderClients();
-    alert(old?'تم تعديل بيانات العميل بنجاح.':'تم إنشاء حساب العميل بالكامل.');
+    if(password){
+      alert('تم تعديل بيانات العميل. كلمة المرور الجديدة تحتاج تنفيذ عملية Auth آمنة من السيرفر؛ لم يتم تخزين كلمة المرور داخل الموقع.');
+    }else{
+      alert('تم تعديل بيانات العميل بنجاح.');
+    }
   }catch(e){alert('تعذر حفظ حساب العميل: '+(e?.message||e))}
 }
 function editClient(i){openClientModal(i)}
@@ -478,7 +492,31 @@ async function openClientWorkspace(i){
 }
 function loadWorkspaceData(){const invKey=workspaceKey(KEYS.inv),salesKey=workspaceKey(KEYS.sales);inventory=JSON.parse(localStorage.getItem(invKey)||'null')||[];sales=JSON.parse(localStorage.getItem(salesKey)||'[]');cloudReady=false;cart=[];refreshAll()}
 function leaveClientWorkspace(){activeClient=null;localStorage.removeItem('frg_active_client');const invNav=document.getElementById('navInventory');if(invNav)invNav.classList.add('hidden');inventory=[];sales=[];localStorage.setItem(KEYS.inv,'[]');localStorage.setItem(KEYS.sales,'[]');cloudReady=false;document.querySelector('.brand small').textContent='Farag El-Sayed • مشرف النظام';document.querySelector('.user b').textContent='admin';document.querySelector('.user small').textContent='مدير النظام';showPage('clients')}
-function renderClients(){const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase(),list=clients.filter(c=>[c.name,c.project,c.email].join(' ').toLowerCase().includes(q));document.getElementById('clCount').textContent=clients.length;document.getElementById('clActive').textContent=clients.filter(c=>c.status==='نشط').length;document.getElementById('clInactive').textContent=clients.filter(c=>c.status!=='نشط').length;document.getElementById('clLast').textContent=clients.length?clients[clients.length-1].date:'—';document.getElementById('clientsBody').innerHTML=list.length?list.map(c=>{const i=clients.indexOf(c);return `<tr style="cursor:pointer" ondblclick="openClientWorkspace(${i})"><td><button class="btn gray" onclick="openClientWorkspace(${i})">${c.name}</button></td><td>${c.project||'—'}</td><td>${c.email}</td><td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td><td>${c.date}</td><td><button class="btn green" onclick="openClientWorkspace(${i})">فتح السيستم</button> <button class="btn gray" onclick="editClient(${i})">تعديل</button> <button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button> <button class="btn red" onclick="deleteClient(${i})">حذف</button></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'}
+function renderClients(){
+  const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase();
+  const list=clients.filter(c=>[c.name,c.username,c.project,c.email].join(' ').toLowerCase().includes(q));
+  document.getElementById('clCount').textContent=clients.length;
+  document.getElementById('clActive').textContent=clients.filter(c=>c.status==='نشط').length;
+  document.getElementById('clInactive').textContent=clients.filter(c=>c.status!=='نشط').length;
+  document.getElementById('clLast').textContent=clients.length?clients[clients.length-1].date:'—';
+  document.getElementById('clientsBody').innerHTML=list.length?list.map(c=>{
+    const i=clients.indexOf(c);
+    return `<tr style="cursor:pointer" ondblclick="openClientWorkspace(${i})">
+      <td><button class="btn gray" onclick="openClientWorkspace(${i})">${c.name}</button></td>
+      <td><b style="color:#52dcff">${c.username||'—'}</b></td>
+      <td>${c.project||'—'}</td>
+      <td>${c.email||'—'}</td>
+      <td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td>
+      <td>${c.date}</td>
+      <td>
+        <button class="btn green" onclick="openClientWorkspace(${i})">فتح السيستم</button>
+        <button class="btn gray" onclick="editClient(${i})">تعديل الاسم/المستخدم/الباسورد</button>
+        <button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button>
+        <button class="btn red" onclick="deleteClient(${i})">حذف</button>
+      </td>
+    </tr>`
+  }).join(''):'<tr><td colspan="7" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'
+}
 function showPage(id){const isBabaFinoWorkspace=!!activeClient&&((String(activeClient.name||'')+' '+String(activeClient.project||'')).toLowerCase().replace(/[^a-z0-9]/g,'').includes('babafino'));const invNav=document.getElementById('navInventory');if(invNav)invNav.classList.remove('hidden');document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));const bar=document.getElementById('clientWorkspaceBar');if(bar){bar.style.display=activeClient?'block':'none';document.getElementById('clientWorkspaceName').textContent=activeClient?(activeClient.name+(activeClient.project?' • '+activeClient.project:'')):'';}if(id==='inventory')renderInventory();if(id==='sales')renderSales();if(id==='reports')renderReports();if(id==='coding')renderCoding();if(id==='clients')renderClients();if(id==='cashier'){renderCart();setTimeout(()=>document.getElementById('scan').focus(),100)}}
 function refreshAll(){updateDashboard();renderInventory();renderSales();renderCart()}
 function updateDashboard(){let qty=inventory.reduce((a,x)=>a+Number(x.qty||0),0), value=inventory.reduce((a,x)=>a+Number(x.qty||0)*Number(x.price||0),0), st=sales.reduce((a,x)=>a+Number(x.total||0),0);document.getElementById('cItems').textContent=inventory.length;document.getElementById('cQty').textContent=qty.toLocaleString();document.getElementById('cSales').textContent=money(st);document.getElementById('cStock').textContent=money(value);document.getElementById('iCount').textContent=inventory.length;document.getElementById('iQty').textContent=qty.toLocaleString();document.getElementById('iValue').textContent=money(value);document.getElementById('iSales').textContent=money(st)}
@@ -632,4 +670,4 @@ function printReport(){
 </script>
 </body></html>
 
-<!-- deploy-trigger-20261024: coding menu release -->
+<!-- deploy-trigger-20261024-client-credentials-v2 -->
