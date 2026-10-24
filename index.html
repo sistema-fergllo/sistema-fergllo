@@ -89,16 +89,16 @@ main{padding:28px;background:radial-gradient(circle at 0 0,#e8f4ff 0,#f7fbff 35%
 
 <style id="faragello-new-image-design">
 /* NEW DESIGN: only the two approved reference images */
-#login.login-screen{background-image:url("login_web.jpg") !important;background-size:cover !important;background-position:center !important;background-repeat:no-repeat !important;}
+#login.login-screen{background-image:url("faragello_external_1920x1080.jpg") !important;background-size:cover !important;background-position:center !important;background-repeat:no-repeat !important;}
 #login.login-screen:before{background:rgba(0,0,0,.12) !important;}
-#app{background-image:url("dashboard_web.jpg") !important;background-size:cover !important;background-position:center !important;background-attachment:fixed !important;}
+#app{background-image:url("faragello_internal_1920x1080.jpg") !important;background-size:cover !important;background-position:center !important;background-attachment:fixed !important;}
 #app .layout{background:rgba(3,14,30,.42) !important;}
 #app main{background:rgba(3,14,30,.38) !important;}
 </style>
-<link rel="stylesheet" href="force-design.css?v=20261024-final">
+<link rel="stylesheet" href="force-design.css?v=20261025-fix1">
 
 
-<link id="faragello-final-css" rel="stylesheet" href="force-design.css?v=20261024-4">
+<link id="faragello-final-css" rel="stylesheet" href="force-design.css?v=20261025-fix1">
 </head>
 <body>
 <div id="login" class="login-screen">
@@ -240,9 +240,9 @@ refreshAll();
 function escapeBarcodeText(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}function makeBarcodeSvg(code){if(typeof JsBarcode!=='function')throw new Error('مكتبة إنشاء الباركود لم يتم تحميلها. تأكد من اتصال الإنترنت ثم حدّث الصفحة.');const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');JsBarcode(svg,String(code),{format:'CODE128',displayValue:true,font:'Arial',fontSize:14,width:2,height:48,margin:3,background:'#ffffff',lineColor:'#000000'});return svg.outerHTML}function barcodeLabel(item){const svg=makeBarcodeSvg(item.code);return '<div class="label">'+svg+'<b>'+escapeBarcodeText(item.name)+'</b><small>'+escapeBarcodeText(money(item.price))+'</small></div>'}function barcodePrintWindow(title,labels){const w=window.open('','_blank','width=900,height=700');if(!w){alert('اسمح بفتح النوافذ المنبثقة للموقع ثم جرّب الطباعة مرة أخرى.');return}w.document.write('<!doctype html><html dir="rtl"><head><meta charset="utf-8"><title>'+escapeBarcodeText(title)+'</title><style>body{font-family:Tahoma,Arial;margin:0;padding:8mm;color:#000;background:#fff}.sheet{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4mm;align-items:start}.label{min-width:0;min-height:28mm;padding:2mm;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;page-break-inside:avoid;break-inside:avoid;overflow:hidden}.label svg{width:100%;max-width:58mm;height:auto;max-height:20mm}.label b{font-size:10pt;margin-top:1mm;max-width:100%;overflow-wrap:anywhere}.label small{font-size:9pt;margin-top:1mm}@page{size:auto;margin:5mm}@media print{.label{border:0}}</style>
 <style id="faragello-new-image-design">
 /* NEW DESIGN: only the two approved reference images */
-#login.login-screen{background-image:url("login_web.jpg") !important;background-size:cover !important;background-position:center !important;background-repeat:no-repeat !important;}
+#login.login-screen{background-image:url("faragello_external_1920x1080.jpg") !important;background-size:cover !important;background-position:center !important;background-repeat:no-repeat !important;}
 #login.login-screen:before{background:rgba(0,0,0,.12) !important;}
-#app{background-image:url("dashboard_web.jpg") !important;background-size:cover !important;background-position:center !important;background-attachment:fixed !important;}
+#app{background-image:url("faragello_internal_1920x1080.jpg") !important;background-size:cover !important;background-position:center !important;background-attachment:fixed !important;}
 #app .layout{background:rgba(3,14,30,.42) !important;}
 #app main{background:rgba(3,14,30,.38) !important;}
 </style>
@@ -310,9 +310,9 @@ function createTransferPermit(){const from=document.getElementById('trFrom').val
 function printTransferPermit(){const from=document.getElementById('trFrom').value.trim()||'—',to=document.getElementById('trTo').value.trim()||'—',note=document.getElementById('trNote').value.trim()||'—';const w=window.open('','_blank','width=800,height=700');if(!w){alert('اسمح بالنوافذ المنبثقة ثم جرّب الطباعة.');return}w.document.write('<!doctype html><html dir="rtl"><head><meta charset="utf-8"><title>إذن تحويل - سيستم فرجللو</title><style>body{font-family:Tahoma,Arial;padding:30px;color:#111}.box{border:2px solid #111;padding:25px}.row{padding:12px;border-bottom:1px solid #ddd;font-size:18px}h1{text-align:center}</style>
 <style id="faragello-new-image-design">
 /* NEW DESIGN: only the two approved reference images */
-#login.login-screen{background-image:url("login_web.jpg") !important;background-size:cover !important;background-position:center !important;background-repeat:no-repeat !important;}
+#login.login-screen{background-image:url("faragello_external_1920x1080.jpg") !important;background-size:cover !important;background-position:center !important;background-repeat:no-repeat !important;}
 #login.login-screen:before{background:rgba(0,0,0,.12) !important;}
-#app{background-image:url("dashboard_web.jpg") !important;background-size:cover !important;background-position:center !important;background-attachment:fixed !important;}
+#app{background-image:url("faragello_internal_1920x1080.jpg") !important;background-size:cover !important;background-position:center !important;background-attachment:fixed !important;}
 #app .layout{background:rgba(3,14,30,.42) !important;}
 #app main{background:rgba(3,14,30,.38) !important;}
 </style>
