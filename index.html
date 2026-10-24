@@ -38,7 +38,7 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
     <div class="logo" style="margin:auto">🛒</div>
     <h1>سيستم فرجللو</h1>
     <p id="loginText">تسجيل الدخول إلى النظام</p>
-    <input id="email" type="email" placeholder="البريد الإلكتروني" autocomplete="username" onkeydown="if(event.key==='Enter') doLogin()">
+    <input id="email" type="text" placeholder="اسم المستخدم أو البريد الإلكتروني" autocomplete="username" onkeydown="if(event.key==='Enter') doLogin()">
     <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter') doLogin()">
     <div id="loginErr" class="err"></div>
     <button class="btn" onclick="doLogin()">دخول</button>
@@ -308,8 +308,10 @@ async function doLogin(){
     } else errorBox.textContent = 'كلمة مرور الصفحة غير صحيحة';
     return;
   }
-  const email = document.getElementById('email').value.trim();
-  if(!email || !password){ errorBox.textContent = 'اكتب البريد الإلكتروني وكلمة المرور'; return; }
+  const loginName = document.getElementById('email').value.trim();
+  if(!loginName || !password){ errorBox.textContent = 'اكتب اسم المستخدم وكلمة المرور'; return; }
+  // Username-only customer login maps to a private internal Supabase Auth email.
+  const email = loginName.includes('@') ? loginName : (loginName.toLowerCase().replace(/[^a-z0-9._-]/g,'') + '@fergllo.local');
   try {
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
     if(error) throw error;
