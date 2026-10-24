@@ -6,19 +6,18 @@ permissions:
   contents: write
 jobs:
   redesign:
-    if: github.event.head_commit.message != 'Apply Faragello image design'
+    if: github.event.head_commit.message != 'Apply Faragello image design' && github.event.head_commit.message != 'Fix Faragello image paths'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Apply new image design
+      - name: Apply exact reference images
         run: |
           python - <<'PY'
           from pathlib import Path
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          css='''\n<style id="faragello-new-image-design">\n/* NEW DESIGN: only the two approved reference images */\n#login.login-screen{background-image:url("assets/login.jpg") !important;background-size:cover !important;background-position:center !important;background-repeat:no-repeat !important;}\n#login.login-screen:before{background:rgba(0,0,0,.12) !important;}\n#app{background-image:url("assets/dashboard.jpg") !important;background-size:cover !important;background-position:center !important;background-attachment:fixed !important;}\n#app .layout{background:rgba(3,14,30,.42) !important;}\n#app main{background:rgba(3,14,30,.38) !important;}\n</style>\n'''
-          if 'id="faragello-new-image-design"' not in s:
-              s=s.replace('</head>',css+'</head>')
+          s=s.replace('assets/login.jpg','login_web.jpg')
+          s=s.replace('assets/dashboard.jpg','dashboard_web.jpg')
           p.write_text(s,encoding='utf-8')
           PY
       - name: Commit design
@@ -26,5 +25,5 @@ jobs:
           git config user.name "sistema-fergllo"
           git config user.email "farajelsayed1@gmail.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Apply Faragello image design"
+          git diff --cached --quiet || git commit -m "Apply exact Faragello reference images"
           git push
