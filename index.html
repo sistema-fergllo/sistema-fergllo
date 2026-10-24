@@ -198,7 +198,7 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
   <div class="modal-actions"><button class="btn gold" onclick="printSelectedBarcode()">🖨 طباعة</button><button class="btn gray" onclick="closeBarcodeModal()">إلغاء</button></div>
 </div></div>
 
-<div id="clientModal" class="modal-bg hidden"><div class="modal"><h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ سجل العميل من حساب المدير.</p><input id="clientName" placeholder="اسم العميل"><input id="clientProject" placeholder="النشاط / اسم المشروع"><input id="clientEmail" type="email" placeholder="البريد الإلكتروني"><select id="clientStatus" style="width:100%;background:#041326;color:white;border:1px solid #155083;border-radius:9px;padding:11px"><option>نشط</option><option>موقوف</option></select><div class="modal-actions"><button class="btn" onclick="saveClient()">حفظ</button><button class="btn gray" onclick="closeClientModal()">إلغاء</button></div></div></div>
+<div id="clientModal" class="modal-bg hidden"><div class="modal"><h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ سجل العميل من حساب المدير.</p><input id="clientName" placeholder="اسم العميل"><input id="clientUsername" placeholder="اسم المستخدم للدخول" autocomplete="username"><input id="clientPassword" type="password" placeholder="كلمة مرور الدخول" autocomplete="new-password"><input id="clientProject" placeholder="النشاط / اسم المشروع"><input id="clientEmail" type="email" placeholder="البريد الإلكتروني"><select id="clientStatus" style="width:100%;background:#041326;color:white;border:1px solid #155083;border-radius:9px;padding:11px"><option>نشط</option><option>موقوف</option></select><div class="modal-actions"><button class="btn" onclick="saveClient()">حفظ</button><button class="btn gray" onclick="closeClientModal()">إلغاء</button></div></div></div>
 <div id="modalBg" class="modal-bg hidden"><div class="modal"><h3 id="modalTitle">إضافة صنف</h3><input id="mCode" placeholder="الكود / الباركود"><input id="mName" placeholder="اسم الصنف"><input id="mPrice" type="number" step="0.01" placeholder="سعر البيع"><input id="mQty" type="number" step="1" placeholder="الكمية"><div class="modal-actions"><button class="btn green" onclick="saveItem()">حفظ</button><button class="btn gray" onclick="closeModal()">إلغاء</button></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -410,9 +410,52 @@ let clientEditIndex=-1;
 let activeClient=JSON.parse(localStorage.getItem('frg_active_client')||'null');
 function workspaceKey(base){return activeClient ? base+'_'+activeClient.id : base}
 function saveClients(){localStorage.setItem(CLIENTS_KEY,JSON.stringify(clients));}
-function openClientModal(index=-1){clientEditIndex=index;const c=index>=0?clients[index]:{name:'',project:'',email:'',status:'نشط'};document.getElementById('clientModal').classList.remove('hidden');document.getElementById('clientName').value=c.name||'';document.getElementById('clientProject').value=c.project||'';document.getElementById('clientEmail').value=c.email||'';document.getElementById('clientStatus').value=c.status||'نشط';}
+function openClientModal(index=-1){
+  clientEditIndex=index;
+  const c=index>=0?clients[index]:{name:'',username:'',project:'',email:'',status:'نشط'};
+  document.getElementById('clientModal').classList.remove('hidden');
+  document.getElementById('clientName').value=c.name||'';
+  document.getElementById('clientUsername').value=c.username||'';
+  document.getElementById('clientPassword').value='';
+  document.getElementById('clientProject').value=c.project||'';
+  document.getElementById('clientEmail').value=c.email||'';
+  document.getElementById('clientStatus').value=c.status||'نشط';
+}
 function closeClientModal(){document.getElementById('clientModal').classList.add('hidden')}
-async function saveClient(){const name=document.getElementById('clientName').value.trim(),project=document.getElementById('clientProject').value.trim(),email=document.getElementById('clientEmail').value.trim().toLowerCase(),status=document.getElementById('clientStatus').value;if(!name||!email){alert('اكتب اسم العميل والبريد الإلكتروني');return}const item={id:clientEditIndex>=0?clients[clientEditIndex].id:('client_'+Date.now()),name,project,email,status,date:clientEditIndex>=0?clients[clientEditIndex].date:new Date().toLocaleDateString('ar-EG')};try{const {error}=await supabaseClient.from('client_accounts').upsert({id:item.id,name:item.name,project:item.project,email:item.email,status:item.status},{onConflict:'id'});if(error)throw error;if(clientEditIndex>=0)clients[clientEditIndex]=item;else clients.push(item);saveClients();closeClientModal();renderClients();alert('تم حفظ حساب العميل في قاعدة البيانات. خلي العميل ينشئ حسابه بنفس الإيميل من شاشة الدخول.')}catch(e){alert('تعذر حفظ حساب العميل: '+e.message)}}
+
+async function saveClient(){
+  const name=document.getElementById('clientName').value.trim();
+  const username=document.getElementById('clientUsername').value.trim().toLowerCase();
+  const password=document.getElementById('clientPassword').value;
+  const project=document.getElementById('clientProject').value.trim();
+  const email=document.getElementById('clientEmail').value.trim().toLowerCase();
+  const status=document.getElementById('clientStatus').value;
+  if(!name||!username){alert('اكتب اسم العميل واسم المستخدم');return}
+  if(!/^[a-z0-9._-]+$/.test(username)){alert('اسم المستخدم يكون بالإنجليزية والأرقام فقط مثل: babafino');return}
+  if(clientEditIndex<0 && password.length<6){alert('كلمة المرور يجب أن تكون 6 أحرف أو أكثر');return}
+  const old=clientEditIndex>=0?clients[clientEditIndex]:null;
+  const item={id:old?old.id:crypto.randomUUID(),name,username,project,email,status,date:old?old.date:new Date().toLocaleDateString('ar-EG')};
+  try{
+    if(!old){
+      const authEmail=username+'@fergllo.local';
+      const signupClient=window.__frgSignupClient || (window.__frgSignupClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}));
+      const {data:authData,error:authError}=await signupClient.auth.signUp({email:authEmail,password});
+      if(authError)throw authError;
+      if(!authData.user)throw new Error('تعذر إنشاء حساب الدخول');
+      const {error:dbError}=await supabaseClient.from('client_accounts').insert({id:item.id,name:item.name,username:item.username,project:item.project,email:item.email,status:item.status});
+      if(dbError)throw dbError;
+      const {error:profileError}=await supabaseClient.from('user_profiles').insert({user_id:authData.user.id,full_name:item.name,role:'client',client_id:item.id});
+      if(profileError)throw profileError;
+      clients.push(item);
+    }else{
+      const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);
+      if(error)throw error;
+      clients[clientEditIndex]=item;
+    }
+    saveClients();closeClientModal();renderClients();
+    alert(old?'تم تعديل بيانات العميل بنجاح.':'تم إنشاء حساب العميل بالكامل.');
+  }catch(e){alert('تعذر حفظ حساب العميل: '+(e?.message||e))}
+}
 function editClient(i){openClientModal(i)}
 async function toggleClient(i){const next=clients[i].status==='نشط'?'موقوف':'نشط';try{const {error}=await supabaseClient.from('client_accounts').update({status:next}).eq('id',clients[i].id);if(error)throw error;clients[i].status=next;saveClients();renderClients()}catch(e){alert('تعذر تحديث الحساب: '+e.message)}}
 async function deleteClient(i){if(!confirm('حذف سجل العميل ومساحة عمله؟'))return;try{const {error}=await supabaseClient.from('client_accounts').delete().eq('id',clients[i].id);if(error)throw error;clients.splice(i,1);saveClients();renderClients()}catch(e){alert('تعذر حذف الحساب: '+e.message)}}
