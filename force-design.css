@@ -1,4 +1,4 @@
-/* Exact Faragello reference design - applied by GitHub Actions */
-#login.login-screen{background:url('./login_web.jpg') center center/cover no-repeat fixed!important}
+/* Exact Faragello reference design - fitted to viewport */
+#login.login-screen{background-image:url('./login_web.jpg')!important;background-position:center center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;background-attachment:fixed!important}
 #login.login-screen:before{display:none!important}
-#app{background:url('./dashboard_web.jpg') center center/cover no-repeat fixed!important}
+#app{background-image:url('./dashboard_web.jpg')!important;background-position:center center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;background-attachment:fixed!important}
