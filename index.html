@@ -334,7 +334,7 @@ async function doLogin(){
       .eq('user_id', data.user.id).single();
     if(profileError || !profile){
       await supabaseClient.auth.signOut();
-      throw new Error('الحساب موجود لكن ملف الصلاحيات غير موجود. راجع جدول user_profiles.');
+      throw new Error('تعذر قراءة ملف الصلاحيات: ' + (profileError?.message || 'لا يوجد صف مطابق في user_profiles') + ' (code: ' + (profileError?.code || 'بدون كود') + ')');
     }
     if(profile.role === 'client'){
       const {data:account,error:accountError}=await supabaseClient.from('client_accounts').select('id,name,project,email,status').eq('id',profile.client_id).single();
