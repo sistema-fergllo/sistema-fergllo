@@ -12,12 +12,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add clients management and workspace opening
+      - name: Repair and add clients management/workspace
         shell: python
         run: |
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
+
+          # Repair older runs that accidentally inserted the client JS block twice.
+          marker = "const CLIENTS_KEY='frg_clients';"
+          first = s.find(marker)
+          second = s.find(marker, first + len(marker)) if first >= 0 else -1
+          if first >= 0 and second >= 0:
+              s = s[:first] + s[second:]
 
           # Add clients navigation/page if not already present.
           nav_old = '''  <button class="nav" data-page="coding" onclick="showPage('coding')"><span>▦</span>التكويدات</button>\n  <button class="nav" data-page="settings" onclick="openSettings()"><span>⚙</span>الإعدادات</button>'''
@@ -54,7 +61,6 @@ jobs:
 
           # Add a clear workspace header action when inside a client.
           home_anchor = '<div id="home" class="page">'
-          home_old = home_anchor
           home_new = '''<div id="home" class="page">\n  <div id="clientWorkspaceBar" class="cash-panel" style="margin-bottom:16px;display:none;border-color:#21d46b"><b>مساحة عمل العميل:</b> <span id="clientWorkspaceName"></span> <button class="btn gray" style="float:left" onclick="leaveClientWorkspace()">↩ العودة للعملاء</button></div>'''
           if 'id="clientWorkspaceBar"' not in s:
               if home_anchor not in s: raise SystemExit('home anchor not found')
@@ -73,5 +79,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Add client workspace opening"
+          git diff --cached --quiet || git commit -m "Repair client UI script"
           git push
