@@ -1,4 +1,18 @@
-/* Exact Faragello reference design - fitted to viewport */
-#login.login-screen{background-image:url('./login_web.jpg')!important;background-position:center center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;background-attachment:fixed!important}
+/* Faragello System - final image backgrounds */
+#login.login-screen{
+  background-image:url('./faragello_external_1920x1080.jpg')!important;
+  background-position:center center!important;
+  background-size:cover!important;
+  background-repeat:no-repeat!important;
+  background-attachment:fixed!important;
+}
 #login.login-screen:before{display:none!important}
-#app{background-image:url('./dashboard_web.jpg')!important;background-position:center center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;background-attachment:fixed!important}
+#app{
+  background-image:url('./faragello_internal_1920x1080.jpg')!important;
+  background-position:center center!important;
+  background-size:cover!important;
+  background-repeat:no-repeat!important;
+  background-attachment:fixed!important;
+}
+#app .layout{background:rgba(3,14,30,.22)!important}
+#app main{background:rgba(3,14,30,.18)!important}
