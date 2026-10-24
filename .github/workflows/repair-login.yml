@@ -10,74 +10,76 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch login and cache bust
+      - name: Patch final design and login
         run: |
           python - <<'PY'
           from pathlib import Path
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
+
+          # Load the exact two reference images AFTER every inline style so the old design cannot win.
+          link='<link id="faragello-final-css" rel="stylesheet" href="force-design.css?v=20261024-2">'
+          s=s.replace('<link id="faragello-final-css" rel="stylesheet" href="force-design.css?v=20261024-2">','')
+          s=s.replace('</head>',link+'\n</head>',1)
+
           patch = r'''<script id="faragello-login-repair">
           (function(){
             window.doLogin=async function(){
-              const page=document.getElementById('login').dataset.page;
-              const password=document.getElementById('password').value;
+              const login=document.getElementById('login');
+              const app=document.getElementById('app');
+              const passwordEl=document.getElementById('password');
+              const emailEl=document.getElementById('email');
               const errorBox=document.getElementById('loginErr');
-              errorBox.textContent='';
+              if(!login||!app||!passwordEl||!emailEl){return;}
+              const page=login.dataset.page||'';
+              const password=passwordEl.value.trim();
+              if(errorBox) errorBox.textContent='';
               if(page){
-                if(!passes[page]||password===passes[page]){
-                  document.getElementById('login').classList.add('hidden');
-                  document.getElementById('app').classList.remove('hidden');
-                  document.getElementById('login').dataset.page='';
-                  showPage(page);
-                }else errorBox.textContent='كلمة مرور الصفحة غير صحيحة';
+                if(typeof passes!=='undefined' && (!passes[page] || password===passes[page])){
+                  login.classList.add('hidden'); app.classList.remove('hidden'); login.dataset.page='';
+                  if(typeof showPage==='function') showPage(page);
+                }else if(errorBox) errorBox.textContent='كلمة مرور الصفحة غير صحيحة';
                 return;
               }
-              const loginName=document.getElementById('email').value.trim();
-              if(!loginName||!password){errorBox.textContent='اكتب اسم المستخدم وكلمة المرور';return;}
+              const loginName=emailEl.value.trim();
+              if(!loginName||!password){if(errorBox) errorBox.textContent='اكتب اسم المستخدم وكلمة المرور';return;}
+              if(typeof supabaseClient==='undefined'){if(errorBox) errorBox.textContent='الاتصال بالنظام غير جاهز، أعد تحميل الصفحة';return;}
               const email=loginName.includes('@')?loginName:(loginName.toLowerCase().replace(/[^a-z0-9._-]/g,'')+'@fergllo.local');
-              const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('انتهت مهلة الاتصال. جرّب مرة أخرى.')),12000));
+              const timeout=(promise)=>Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(new Error('انتهت مهلة الاتصال.')),10000))]);
               try{
-                const result=await Promise.race([supabaseClient.auth.signInWithPassword({email,password}),timeout]);
-                const {data,error}=result;
-                if(error) throw error;
+                const result=await timeout(supabaseClient.auth.signInWithPassword({email,password}));
+                if(result.error) throw result.error;
+                const uid=result.data.user.id;
                 let profile=null;
                 try{
-                  const r=await Promise.race([supabaseClient.from('user_profiles').select('full_name, role, branch_id, client_id').eq('user_id',data.user.id).single(),timeout]);
-                  profile=r.data;
+                  const r=await timeout(supabaseClient.from('user_profiles').select('full_name, role, branch_id, client_id').eq('user_id',uid).single());
                   if(r.error) throw r.error;
-                }catch(profileErr){
-                  if(selectedLoginRole==='admin'){
-                    currentProfileRole='admin'; activeClient=null; localStorage.removeItem('frg_active_client');
-                    document.getElementById('login').classList.add('hidden');
-                    document.getElementById('app').classList.remove('hidden');
-                    document.getElementById('login').dataset.page='';
-                    document.querySelectorAll('.nav[data-page="clients"],.nav[data-page="settings"]').forEach(el=>el.classList.remove('hidden'));
-                    refreshAll();
-                    loadInventoryFromCloud().catch(()=>{});
-                    return;
-                  }
-                  throw new Error('تعذر قراءة صلاحيات الحساب.');
+                  profile=r.data;
+                }catch(e){
+                  if(typeof selectedLoginRole!=='undefined' && selectedLoginRole==='admin') profile={role:'admin',full_name:loginName};
+                  else throw new Error('تعذر قراءة صلاحيات الحساب');
                 }
-                if(selectedLoginRole&&profile.role!==selectedLoginRole){throw new Error(selectedLoginRole==='admin'?'هذه بيانات عميل وليست بيانات المشرف.':'هذه بيانات مشرف وليست بيانات العميل.')}
-                if(profile.role!=='admin') throw new Error('حساب المشرف غير صالح.');
-                currentProfileRole='admin'; activeClient=null; localStorage.removeItem('frg_active_client');
+                if(typeof selectedLoginRole!=='undefined' && selectedLoginRole && profile.role!==selectedLoginRole){
+                  throw new Error(selectedLoginRole==='admin'?'هذه بيانات عميل وليست بيانات المشرف':'هذه بيانات مشرف وليست بيانات العميل');
+                }
+                if(profile.role!=='admin') throw new Error('حساب المشرف غير صالح');
+                if(typeof currentProfileRole!=='undefined') currentProfileRole='admin';
+                if(typeof activeClient!=='undefined') activeClient=null;
+                localStorage.removeItem('frg_active_client');
                 document.querySelectorAll('.nav[data-page="clients"],.nav[data-page="settings"]').forEach(el=>el.classList.remove('hidden'));
-                document.getElementById('login').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-                document.getElementById('login').dataset.page='';
-                refreshAll();
-                loadInventoryFromCloud().catch(e=>{console.error(e);});
-              }catch(err){errorBox.textContent=err.message||'تعذر تسجيل الدخول. راجع البيانات.';}
+                login.classList.add('hidden'); app.classList.remove('hidden'); login.dataset.page='';
+                if(typeof refreshAll==='function') refreshAll();
+                if(typeof loadInventoryFromCloud==='function') loadInventoryFromCloud().catch(()=>{});
+              }catch(err){if(errorBox) errorBox.textContent=err.message||'تعذر تسجيل الدخول';}
             };
           })();
           </script>'''
-          if 'faragello-login-repair' not in s:
+          if 'id="faragello-login-repair"' not in s:
               s=s.replace('</body>',patch+'\n</body>',1)
-          s=s.replace('href="force-design.css"','href="force-design.css?v=20261024"')
           p.write_text(s,encoding='utf-8')
           PY
           git config user.name 'Faragello System'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git commit -m 'Repair login flow and refresh final design CSS' || exit 0
+          git commit -m 'Apply final reference backgrounds and repair login' || exit 0
           git push
