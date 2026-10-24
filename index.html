@@ -199,6 +199,18 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script>
+/* Show startup/runtime failures on the login screen instead of leaving the button apparently dead. */
+window.addEventListener('error', function(event) {
+  const box = document.getElementById('loginErr');
+  if (box && event.message) box.textContent = 'خطأ تشغيل: ' + event.message;
+});
+window.addEventListener('unhandledrejection', function(event) {
+  const box = document.getElementById('loginErr');
+  const reason = event.reason && event.reason.message ? event.reason.message : String(event.reason || '');
+  if (box && reason) box.textContent = 'خطأ اتصال: ' + reason;
+});
+</script>
+<script>
 const { createClient } = supabase;
 const supabaseClient = createClient(
   'https://flrtvxxtlbpjhydtlrwd.supabase.co',
