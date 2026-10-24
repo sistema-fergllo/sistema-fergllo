@@ -5,10 +5,12 @@ on:
 permissions:
   contents: write
 jobs:
-  verify:
+  patch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Clean sidebar menu
+        run: python3 scripts/patch_menu_clean.py
       - name: Verify current system
         run: |
           python3 - <<'PY'
@@ -20,3 +22,11 @@ jobs:
               raise SystemExit('Missing required system parts: '+', '.join(missing))
           print('Faragello System verification passed.')
           PY
+      - name: Commit patched index
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Clean sidebar menu"
+          git push
