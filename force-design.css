@@ -1,10 +1,10 @@
 /* Faragello System — restore the original sea backgrounds and full-screen layout */
 *{box-sizing:border-box}
 html,body{width:100%;min-height:100%;margin:0!important;padding:0!important;overflow-x:hidden!important;background:#06162b!important}
-#login.login-screen{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;min-height:100vh!important;margin:0!important;padding:20px!important;display:grid!important;place-items:center!important;background:#06162b url('./login_web.jpg') center center/cover no-repeat!important;overflow:auto!important}
+#login.login-screen{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;min-height:100vh!important;margin:0!important;padding:20px!important;display:grid!important;place-items:center!important;background:#06162b url('./faragello_external_1920x1080.jpg') center center/cover no-repeat!important;overflow:auto!important}
 #login.login-screen:before{display:none!important}
 #login.login-screen .login-card{position:relative!important;z-index:1!important;margin:auto!important}
-#app{position:relative!important;width:100%!important;min-height:100vh!important;margin:0!important;background:#06162b url('./dashboard_web.jpg') center center/cover no-repeat fixed!important}
+#app{position:relative!important;width:100%!important;min-height:100vh!important;margin:0!important;background:#06162b url('./faragello_internal_1920x1080.jpg') center center/cover no-repeat fixed!important}
 #app .top{width:100%!important}
 #app .layout{min-height:calc(100vh - 84px)!important;background:rgba(3,14,30,.28)!important}
 #app .side{flex-shrink:0}
