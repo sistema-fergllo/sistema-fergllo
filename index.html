@@ -62,7 +62,7 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
   <button class="nav" data-page="coding" onclick="showPage('coding')"><span>▦</span>التكويدات</button>
   <button class="nav" data-page="clients" onclick="showPage('clients')"><span>👥</span>العملاء</button>
   <button class="nav" data-page="settings" onclick="openSettings()"><span>⚙</span>الإعدادات</button>
-  <button class="logout" onclick="location.reload()">⏻ تسجيل الخروج</button>
+  <button class="logout" onclick="logoutSystem()">⏻ تسجيل الخروج</button>
 </aside>
 <main>
 <div id="home" class="page">
@@ -268,6 +268,7 @@ async function syncInventoryToCloud(){
   const {error}=await supabaseClient.from('shared_inventory').upsert(rows,{onConflict:'code'});
   if(error) throw error;
 }
+async function logoutSystem(){try{await supabaseClient.auth.signOut()}catch(e){}currentProfileRole='admin';activeClient=null;cloudReady=false;localStorage.removeItem('frg_active_client');location.reload()}
 function money(n){return Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' EGP'}
 function now(){return new Date().toLocaleString('ar-EG')}
 function updateClock(){let d=new Date();document.getElementById('date').textContent=d.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'2-digit',day:'2-digit'});document.getElementById('time').textContent=d.toLocaleTimeString('ar-EG')}
@@ -384,6 +385,7 @@ async function doLogin(){
   }
 }
 function requestPage(p){
+  if(currentProfileRole==='client'){showPage(p);return}
   pendingPage=p;
   document.getElementById('loginText').textContent='أدخل كلمة مرور صفحة '+(p==='inventory'?'المخزون':'الكاشير');
   document.getElementById('email').classList.add('hidden');
@@ -478,7 +480,7 @@ function renderSales(){let total=sales.reduce((a,x)=>a+Number(x.total||0),0);doc
 function openItemModal(){editIndex=null;document.getElementById('modalTitle').textContent='إضافة صنف';['mCode','mName','mPrice','mQty'].forEach(id=>document.getElementById(id).value='');document.getElementById('modalBg').classList.remove('hidden')}
 function editItem(i){editIndex=i;let x=inventory[i];document.getElementById('modalTitle').textContent='تعديل الصنف';document.getElementById('mCode').value=x.code;document.getElementById('mName').value=x.name;document.getElementById('mPrice').value=x.price;document.getElementById('mQty').value=x.qty;document.getElementById('modalBg').classList.remove('hidden')}
 function closeModal(){document.getElementById('modalBg').classList.add('hidden')}
-async function saveItem(){let code=document.getElementById('mCode').value.trim(),name=document.getElementById('mName').value.trim(),price=Number(document.getElementById('mPrice').value||0),qty=Number(document.getElementById('mQty').value||0);if(!code||!name){alert('اكتب الكود والاسم');return}if(editIndex===null)inventory.push({code,name,price,qty,sold:0});else inventory[editIndex]={...inventory[editIndex],code,name,price,qty};save();try{if(cloudReady)await syncInventoryToCloud();closeModal();refreshAll();alert('تم حفظ الصنف ومزامنته مع قاعدة البيانات')}catch(e){alert('تم الحفظ محليًا لكن تعذرت المزامنة: '+e.message)}}
+async function saveItem(){let code=document.getElementById('mCode').value.trim(),name=document.getElementById('mName').value.trim(),price=Number(document.getElementById('mPrice').value||0),qty=Number(document.getElementById('mQty').value||0);if(!code||!name){alert('اكتب الكود والاسم');return}if(editIndex===null)inventory.push({code,name,price,qty,sold:0});else inventory[editIndex]={...inventory[editIndex],code,name,price,qty};save();try{if(cloudReady){if(currentProfileRole==='client')await syncClientInventoryToCloud();else await syncInventoryToCloud()}closeModal();refreshAll();alert('تم حفظ الصنف ومزامنته مع قاعدة البيانات')}catch(e){alert('تعذر مزامنة الصنف: '+e.message)}}
 function savePasswords(){let a=document.getElementById('invPass').value.trim(),b=document.getElementById('cashPass').value.trim();if(a)passes.inventory=a;if(b)passes.cashier=b;localStorage.setItem(KEYS.pass,JSON.stringify(passes));alert('تم حفظ كلمات المرور')}
 function resetData(){if(!confirm('سيتم حذف المبيعات وإرجاع المخزون لبيانات البداية. هل أنت متأكد؟'))return;inventory=ORIGINAL.map(x=>({...x,sold:0}));sales=[];save();refreshAll();alert('تمت إعادة النظام لبيانات البداية')}
 refreshAll();
