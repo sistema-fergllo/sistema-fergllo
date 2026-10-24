@@ -314,17 +314,6 @@ function saveSettingsPin(){const p=document.getElementById('newSettingsPin').val
 const CLIENTS_KEY='frg_clients';
 let clients=JSON.parse(localStorage.getItem(CLIENTS_KEY)||'[]');
 let clientEditIndex=-1;
-function saveClients(){localStorage.setItem(CLIENTS_KEY,JSON.stringify(clients));}
-function openClientModal(index=-1){clientEditIndex=index;const c=index>=0?clients[index]:{name:'',project:'',email:'',status:'نشط'};document.getElementById('clientModal').classList.remove('hidden');document.getElementById('clientName').value=c.name||'';document.getElementById('clientProject').value=c.project||'';document.getElementById('clientEmail').value=c.email||'';document.getElementById('clientStatus').value=c.status||'نشط';}
-function closeClientModal(){document.getElementById('clientModal').classList.add('hidden')}
-function saveClient(){const name=document.getElementById('clientName').value.trim(),project=document.getElementById('clientProject').value.trim(),email=document.getElementById('clientEmail').value.trim(),status=document.getElementById('clientStatus').value;if(!name||!email){alert('اكتب اسم العميل والبريد الإلكتروني');return}const item={name,project,email,status,date:new Date().toLocaleDateString('ar-EG')};if(clientEditIndex>=0){item.date=clients[clientEditIndex].date;clients[clientEditIndex]=item}else clients.push(item);saveClients();closeClientModal();renderClients()}
-function editClient(i){openClientModal(i)}
-function toggleClient(i){clients[i].status=clients[i].status==='نشط'?'موقوف':'نشط';saveClients();renderClients()}
-function deleteClient(i){if(!confirm('حذف حساب العميل؟'))return;clients.splice(i,1);saveClients();renderClients()}
-function renderClients(){const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase(),list=clients.filter(c=>[c.name,c.project,c.email].join(' ').toLowerCase().includes(q));document.getElementById('clCount').textContent=clients.length;document.getElementById('clActive').textContent=clients.filter(c=>c.status==='نشط').length;document.getElementById('clInactive').textContent=clients.filter(c=>c.status!=='نشط').length;document.getElementById('clLast').textContent=clients.length?clients[clients.length-1].date:'—';document.getElementById('clientsBody').innerHTML=list.length?list.map(c=>{const i=clients.indexOf(c);return `<tr><td>${c.name}</td><td>${c.project||'—'}</td><td>${c.email}</td><td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td><td>${c.date}</td><td><button class="btn gray" onclick="editClient(${i})">تعديل</button> <button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button> <button class="btn red" onclick="deleteClient(${i})">حذف</button></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'}
-const CLIENTS_KEY='frg_clients';
-let clients=JSON.parse(localStorage.getItem(CLIENTS_KEY)||'[]');
-let clientEditIndex=-1;
 let activeClient=JSON.parse(localStorage.getItem('frg_active_client')||'null');
 function workspaceKey(base){return activeClient ? base+'_'+activeClient.id : base}
 function saveClients(){localStorage.setItem(CLIENTS_KEY,JSON.stringify(clients));}
