@@ -1,12 +1,10 @@
 name: Apply Faragello exact reference design
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
   redesign:
-    if: github.event.head_commit.message != 'Apply exact Faragello reference design'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
