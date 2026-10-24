@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Repair login profile fallback and cache CSS
+      - name: Apply final login repair and design
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -20,10 +20,16 @@ jobs:
           new="if(profileError||!profile){if(selectedLoginRole==='admin'){profile={role:'admin'}}else{await supabaseClient.auth.signOut();throw new Error('تعذر قراءة ملف الصلاحيات: '+(profileError?.message||'لا يوجد صف مطابق في user_profiles'))}}"
           if old in s:
               s=s.replace(old,new,1)
+          link='<link id="faragello-final-css" rel="stylesheet" href="force-design.css?v=20261024-4">'
+          if 'id="faragello-final-css"' in s:
+              import re
+              s=re.sub(r'<link id="faragello-final-css"[^>]*>',link,s,count=1)
+          else:
+              s=s.replace('</head>',link+'\n</head>',1)
           p.write_text(s,encoding='utf-8')
           PY
           git config user.name 'Faragello System'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git diff --cached --quiet || git commit -m 'Fix admin login profile fallback'
+          git diff --cached --quiet || git commit -m 'Apply final sea background and login fix'
           git push
