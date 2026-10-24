@@ -1,0 +1,33 @@
+name: Activate Faragello reference design
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Link reference design
+        run: |
+          if grep -q 'force-design.css' index.html; then
+            echo 'Reference design already linked.'
+            exit 0
+          fi
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '<link rel="stylesheet" href="force-design.css">'
+          s = s.replace('</head>', marker + '\n</head>', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+          git config user.name 'Faragello System'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Activate exact Faragello reference design' || exit 0
+          git push
