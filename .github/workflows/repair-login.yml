@@ -1,0 +1,83 @@
+name: Repair Faragello login and cache
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch login and cache bust
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          patch = r'''<script id="faragello-login-repair">
+          (function(){
+            window.doLogin=async function(){
+              const page=document.getElementById('login').dataset.page;
+              const password=document.getElementById('password').value;
+              const errorBox=document.getElementById('loginErr');
+              errorBox.textContent='';
+              if(page){
+                if(!passes[page]||password===passes[page]){
+                  document.getElementById('login').classList.add('hidden');
+                  document.getElementById('app').classList.remove('hidden');
+                  document.getElementById('login').dataset.page='';
+                  showPage(page);
+                }else errorBox.textContent='كلمة مرور الصفحة غير صحيحة';
+                return;
+              }
+              const loginName=document.getElementById('email').value.trim();
+              if(!loginName||!password){errorBox.textContent='اكتب اسم المستخدم وكلمة المرور';return;}
+              const email=loginName.includes('@')?loginName:(loginName.toLowerCase().replace(/[^a-z0-9._-]/g,'')+'@fergllo.local');
+              const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('انتهت مهلة الاتصال. جرّب مرة أخرى.')),12000));
+              try{
+                const result=await Promise.race([supabaseClient.auth.signInWithPassword({email,password}),timeout]);
+                const {data,error}=result;
+                if(error) throw error;
+                let profile=null;
+                try{
+                  const r=await Promise.race([supabaseClient.from('user_profiles').select('full_name, role, branch_id, client_id').eq('user_id',data.user.id).single(),timeout]);
+                  profile=r.data;
+                  if(r.error) throw r.error;
+                }catch(profileErr){
+                  if(selectedLoginRole==='admin'){
+                    currentProfileRole='admin'; activeClient=null; localStorage.removeItem('frg_active_client');
+                    document.getElementById('login').classList.add('hidden');
+                    document.getElementById('app').classList.remove('hidden');
+                    document.getElementById('login').dataset.page='';
+                    document.querySelectorAll('.nav[data-page="clients"],.nav[data-page="settings"]').forEach(el=>el.classList.remove('hidden'));
+                    refreshAll();
+                    loadInventoryFromCloud().catch(()=>{});
+                    return;
+                  }
+                  throw new Error('تعذر قراءة صلاحيات الحساب.');
+                }
+                if(selectedLoginRole&&profile.role!==selectedLoginRole){throw new Error(selectedLoginRole==='admin'?'هذه بيانات عميل وليست بيانات المشرف.':'هذه بيانات مشرف وليست بيانات العميل.')}
+                if(profile.role!=='admin') throw new Error('حساب المشرف غير صالح.');
+                currentProfileRole='admin'; activeClient=null; localStorage.removeItem('frg_active_client');
+                document.querySelectorAll('.nav[data-page="clients"],.nav[data-page="settings"]').forEach(el=>el.classList.remove('hidden'));
+                document.getElementById('login').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+                document.getElementById('login').dataset.page='';
+                refreshAll();
+                loadInventoryFromCloud().catch(e=>{console.error(e);});
+              }catch(err){errorBox.textContent=err.message||'تعذر تسجيل الدخول. راجع البيانات.';}
+            };
+          })();
+          </script>'''
+          if 'faragello-login-repair' not in s:
+              s=s.replace('</body>',patch+'\n</body>',1)
+          s=s.replace('href="force-design.css"','href="force-design.css?v=20261024"')
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name 'Faragello System'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Repair login flow and refresh final design CSS' || exit 0
+          git push
