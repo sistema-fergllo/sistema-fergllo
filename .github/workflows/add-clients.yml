@@ -12,13 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add clients management
+      - name: Add clients management and workspace opening
         shell: python
         run: |
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
+          # Add clients navigation/page if not already present.
           nav_old = '''  <button class="nav" data-page="coding" onclick="showPage('coding')"><span>▦</span>التكويدات</button>\n  <button class="nav" data-page="settings" onclick="openSettings()"><span>⚙</span>الإعدادات</button>'''
           nav_new = '''  <button class="nav" data-page="coding" onclick="showPage('coding')"><span>▦</span>التكويدات</button>\n  <button class="nav" data-page="clients" onclick="showPage('clients')"><span>👥</span>العملاء</button>\n  <button class="nav" data-page="settings" onclick="openSettings()"><span>⚙</span>الإعدادات</button>'''
           if 'data-page="clients"' not in s:
@@ -31,19 +32,40 @@ jobs:
               if page_anchor not in s: raise SystemExit('settings page anchor not found')
               s = s.replace(page_anchor, clients_page + page_anchor, 1)
 
-          js_anchor = 'function showPage(id){'
-          js_code = '''const CLIENTS_KEY='frg_clients';\nlet clients=JSON.parse(localStorage.getItem(CLIENTS_KEY)||'[]');\nlet clientEditIndex=-1;\nfunction saveClients(){localStorage.setItem(CLIENTS_KEY,JSON.stringify(clients));}\nfunction openClientModal(index=-1){clientEditIndex=index;const c=index>=0?clients[index]:{name:'',project:'',email:'',status:'نشط'};document.getElementById('clientModal').classList.remove('hidden');document.getElementById('clientName').value=c.name||'';document.getElementById('clientProject').value=c.project||'';document.getElementById('clientEmail').value=c.email||'';document.getElementById('clientStatus').value=c.status||'نشط';}\nfunction closeClientModal(){document.getElementById('clientModal').classList.add('hidden')}\nfunction saveClient(){const name=document.getElementById('clientName').value.trim(),project=document.getElementById('clientProject').value.trim(),email=document.getElementById('clientEmail').value.trim(),status=document.getElementById('clientStatus').value;if(!name||!email){alert('اكتب اسم العميل والبريد الإلكتروني');return}const item={name,project,email,status,date:new Date().toLocaleDateString('ar-EG')};if(clientEditIndex>=0){item.date=clients[clientEditIndex].date;clients[clientEditIndex]=item}else clients.push(item);saveClients();closeClientModal();renderClients()}\nfunction editClient(i){openClientModal(i)}\nfunction toggleClient(i){clients[i].status=clients[i].status==='نشط'?'موقوف':'نشط';saveClients();renderClients()}\nfunction deleteClient(i){if(!confirm('حذف حساب العميل؟'))return;clients.splice(i,1);saveClients();renderClients()}\nfunction renderClients(){const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase(),list=clients.filter(c=>[c.name,c.project,c.email].join(' ').toLowerCase().includes(q));document.getElementById('clCount').textContent=clients.length;document.getElementById('clActive').textContent=clients.filter(c=>c.status==='نشط').length;document.getElementById('clInactive').textContent=clients.filter(c=>c.status!=='نشط').length;document.getElementById('clLast').textContent=clients.length?clients[clients.length-1].date:'—';document.getElementById('clientsBody').innerHTML=list.length?list.map(c=>{const i=clients.indexOf(c);return `<tr><td>${c.name}</td><td>${c.project||'—'}</td><td>${c.email}</td><td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td><td>${c.date}</td><td><button class="btn gray" onclick="editClient(${i})">تعديل</button> <button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button> <button class="btn red" onclick="deleteClient(${i})">حذف</button></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'}\n'''
-          if 'const CLIENTS_KEY=' not in s:
-              if js_anchor not in s: raise SystemExit('showPage anchor not found')
-              s = s.replace(js_anchor, js_code + js_anchor, 1)
-
+          # Client modal.
           modal_anchor = '<div id="modalBg" class="modal-bg hidden">'
-          client_modal = '''<div id="clientModal" class="modal-bg hidden"><div class="modal"><h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ سجل العميل من حساب المدير.</p><input id="clientName" placeholder="اسم العميل"><input id="clientProject" placeholder="النشاط / اسم المشروع"><input id="clientEmail" type="email" placeholder="البريد الإلكتروني"><select id="clientStatus" style="width:100%;background:#041326;color:white;border:1px solid #155083;border-radius:9px;padding:11px"><option>نشط</option><option>موقوف</option></select><div class="modal-actions"><button class="btn" onclick="saveClient()">حفظ</button><button class="btn gray" onclick="closeClientModal()">إلغاء</button></div></div></div>\n'''
+          client_modal = '''<div id="clientModal" class="modal-bg hidden"><div class="modal"><h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ مساحة عمل مستقلة للعميل.</p><input id="clientName" placeholder="اسم العميل"><input id="clientProject" placeholder="النشاط / اسم المشروع"><input id="clientEmail" type="email" placeholder="البريد الإلكتروني"><select id="clientStatus" style="width:100%;background:#041326;color:white;border:1px solid #155083;border-radius:9px;padding:11px"><option>نشط</option><option>موقوف</option></select><div class="modal-actions"><button class="btn" onclick="saveClient()">حفظ</button><button class="btn gray" onclick="closeClientModal()">إلغاء</button></div></div></div>\n'''
           if 'id="clientModal"' not in s:
               if modal_anchor not in s: raise SystemExit('modal anchor not found')
               s = s.replace(modal_anchor, client_modal + modal_anchor, 1)
 
-          s = s.replace("if(id==='coding')renderCoding();", "if(id==='coding')renderCoding();if(id==='clients')renderClients();", 1)
+          # Client workspace helpers and actions.
+          js_anchor = 'function showPage(id){'
+          js_code = '''const CLIENTS_KEY='frg_clients';\nlet clients=JSON.parse(localStorage.getItem(CLIENTS_KEY)||'[]');\nlet clientEditIndex=-1;\nlet activeClient=JSON.parse(localStorage.getItem('frg_active_client')||'null');\nfunction workspaceKey(base){return activeClient ? base+'_'+activeClient.id : base}\nfunction saveClients(){localStorage.setItem(CLIENTS_KEY,JSON.stringify(clients));}\nfunction openClientModal(index=-1){clientEditIndex=index;const c=index>=0?clients[index]:{name:'',project:'',email:'',status:'نشط'};document.getElementById('clientModal').classList.remove('hidden');document.getElementById('clientName').value=c.name||'';document.getElementById('clientProject').value=c.project||'';document.getElementById('clientEmail').value=c.email||'';document.getElementById('clientStatus').value=c.status||'نشط';}\nfunction closeClientModal(){document.getElementById('clientModal').classList.add('hidden')}\nfunction saveClient(){const name=document.getElementById('clientName').value.trim(),project=document.getElementById('clientProject').value.trim(),email=document.getElementById('clientEmail').value.trim(),status=document.getElementById('clientStatus').value;if(!name||!email){alert('اكتب اسم العميل والبريد الإلكتروني');return}const item={id:clientEditIndex>=0?clients[clientEditIndex].id:('client_'+Date.now()),name,project,email,status,date:new Date().toLocaleDateString('ar-EG')};if(clientEditIndex>=0){item.date=clients[clientEditIndex].date;clients[clientEditIndex]=item}else clients.push(item);saveClients();closeClientModal();renderClients()}\nfunction editClient(i){openClientModal(i)}\nfunction toggleClient(i){clients[i].status=clients[i].status==='نشط'?'موقوف':'نشط';saveClients();renderClients()}\nfunction deleteClient(i){if(!confirm('حذف حساب العميل؟'))return;clients.splice(i,1);saveClients();renderClients()}\nfunction openClientWorkspace(i){const c=clients[i];if(!c||c.status!=='نشط'){alert('حساب العميل موقوف أو غير موجود');return}activeClient={id:c.id,name:c.name,project:c.project,email:c.email};localStorage.setItem('frg_active_client',JSON.stringify(activeClient));loadWorkspaceData();document.querySelector('.brand small').textContent=c.name+(c.project?' • '+c.project:'');document.querySelector('.user b').textContent=c.name;document.querySelector('.user small').textContent='حساب العميل';showPage('home')}\nfunction loadWorkspaceData(){const invKey=workspaceKey(KEYS.inv),salesKey=workspaceKey(KEYS.sales);inventory=JSON.parse(localStorage.getItem(invKey)||'null')||ORIGINAL.map(x=>({...x,sold:0}));sales=JSON.parse(localStorage.getItem(salesKey)||'[]');cloudReady=false;cart=[];refreshAll()}\nfunction leaveClientWorkspace(){activeClient=null;localStorage.removeItem('frg_active_client');inventory=JSON.parse(localStorage.getItem(KEYS.inv)||'null')||ORIGINAL.map(x=>({...x,sold:0}));sales=JSON.parse(localStorage.getItem(KEYS.sales)||'[]');cloudReady=false;document.querySelector('.brand small').textContent='Farag El-Sayed • مشرف النظام';document.querySelector('.user b').textContent='admin';document.querySelector('.user small').textContent='مدير النظام';showPage('clients')}\nfunction renderClients(){const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase(),list=clients.filter(c=>[c.name,c.project,c.email].join(' ').toLowerCase().includes(q));document.getElementById('clCount').textContent=clients.length;document.getElementById('clActive').textContent=clients.filter(c=>c.status==='نشط').length;document.getElementById('clInactive').textContent=clients.filter(c=>c.status!=='نشط').length;document.getElementById('clLast').textContent=clients.length?clients[clients.length-1].date:'—';document.getElementById('clientsBody').innerHTML=list.length?list.map(c=>{const i=clients.indexOf(c);return `<tr><td>${c.name}</td><td>${c.project||'—'}</td><td>${c.email}</td><td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td><td>${c.date}</td><td><button class="btn green" onclick="openClientWorkspace(${i})">فتح السيستم</button> <button class="btn gray" onclick="editClient(${i})">تعديل</button> <button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button> <button class="btn red" onclick="deleteClient(${i})">حذف</button></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'}\n'''
+          if 'function openClientWorkspace(' not in s:
+              if js_anchor not in s: raise SystemExit('showPage anchor not found')
+              s = s.replace(js_anchor, js_code + js_anchor, 1)
+
+          # Make local saves use the active client's isolated workspace.
+          old_save = "function save(){localStorage.setItem(KEYS.inv,JSON.stringify(inventory));localStorage.setItem(KEYS.sales,JSON.stringify(sales));if(cloudReady) syncInventoryToCloud().catch(e=>console.error('Cloud inventory save failed',e))}"
+          new_save = "function save(){localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify(sales));if(cloudReady) syncInventoryToCloud().catch(e=>console.error('Cloud inventory save failed',e))}"
+          if old_save in s:
+              s = s.replace(old_save,new_save,1)
+
+          # Add a clear workspace header action when inside a client.
+          home_anchor = '<div id="home" class="page">'
+          home_old = home_anchor
+          home_new = '''<div id="home" class="page">\n  <div id="clientWorkspaceBar" class="cash-panel" style="margin-bottom:16px;display:none;border-color:#21d46b"><b>مساحة عمل العميل:</b> <span id="clientWorkspaceName"></span> <button class="btn gray" style="float:left" onclick="leaveClientWorkspace()">↩ العودة للعملاء</button></div>'''
+          if 'id="clientWorkspaceBar"' not in s:
+              if home_anchor not in s: raise SystemExit('home anchor not found')
+              s = s.replace(home_anchor,home_new,1)
+
+          # Update showPage to refresh client workspace bar.
+          old_show = "function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));if(id==='inventory')renderInventory();if(id==='sales')renderSales();if(id==='reports')renderReports();if(id==='coding')renderCoding();if(id==='clients')renderClients();if(id==='cashier'){renderCart();setTimeout(()=>document.getElementById('scan').focus(),100)}}"
+          new_show = "function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));const bar=document.getElementById('clientWorkspaceBar');if(bar){bar.style.display=activeClient?'block':'none';document.getElementById('clientWorkspaceName').textContent=activeClient?(activeClient.name+(activeClient.project?' • '+activeClient.project:'')):'';}if(id==='inventory')renderInventory();if(id==='sales')renderSales();if(id==='reports')renderReports();if(id==='coding')renderCoding();if(id==='clients')renderClients();if(id==='cashier'){renderCart();setTimeout(()=>document.getElementById('scan').focus(),100)}}"
+          if old_show in s:
+              s = s.replace(old_show,new_show,1)
+
           p.write_text(s, encoding='utf-8')
 
       - name: Commit changes
@@ -51,5 +73,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Add client account management"
+          git diff --cached --quiet || git commit -m "Add client workspace opening"
           git push
