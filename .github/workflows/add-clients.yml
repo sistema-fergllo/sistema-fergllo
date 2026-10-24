@@ -1,0 +1,55 @@
+name: Add client accounts UI
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add clients management
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          nav_old = '''  <button class="nav" data-page="coding" onclick="showPage('coding')"><span>▦</span>التكويدات</button>\n  <button class="nav" data-page="settings" onclick="openSettings()"><span>⚙</span>الإعدادات</button>'''
+          nav_new = '''  <button class="nav" data-page="coding" onclick="showPage('coding')"><span>▦</span>التكويدات</button>\n  <button class="nav" data-page="clients" onclick="showPage('clients')"><span>👥</span>العملاء</button>\n  <button class="nav" data-page="settings" onclick="openSettings()"><span>⚙</span>الإعدادات</button>'''
+          if 'data-page="clients"' not in s:
+              if nav_old not in s: raise SystemExit('navigation anchor not found')
+              s = s.replace(nav_old, nav_new, 1)
+
+          page_anchor = '<div id="settings" class="page hidden">'
+          clients_page = '''<div id="clients" class="page hidden">\n  <div class="title"><div><h2>👥 العملاء</h2><div class="sub">إدارة حسابات العملاء المستقلة للنظام</div></div><button class="btn" onclick="openClientModal()">＋ إضافة حساب عميل</button></div>\n  <div class="cards">\n    <div class="card"><div class="label">إجمالي العملاء</div><div id="clCount" class="value cyan">0</div></div>\n    <div class="card"><div class="label">حسابات نشطة</div><div id="clActive" class="value green">0</div></div>\n    <div class="card"><div class="label">حسابات موقوفة</div><div id="clInactive" class="value gold">0</div></div>\n    <div class="card"><div class="label">آخر إضافة</div><div id="clLast" class="value" style="font-size:18px">—</div></div>\n  </div>\n  <div class="toolbar"><input id="clientSearch" placeholder="ابحث باسم العميل أو البريد أو النشاط..." oninput="renderClients()"><button class="btn gray" onclick="document.getElementById('clientSearch').value='';renderClients()">مسح</button></div>\n  <div class="table-wrap"><table class="table"><thead><tr><th>اسم العميل</th><th>النشاط / المشروع</th><th>البريد الإلكتروني</th><th>حالة الحساب</th><th>تاريخ الإضافة</th><th>إجراء</th></tr></thead><tbody id="clientsBody"></tbody></table></div>\n</div>\n\n'''
+          if 'id="clients"' not in s:
+              if page_anchor not in s: raise SystemExit('settings page anchor not found')
+              s = s.replace(page_anchor, clients_page + page_anchor, 1)
+
+          js_anchor = 'function showPage(id){'
+          js_code = '''const CLIENTS_KEY='frg_clients';\nlet clients=JSON.parse(localStorage.getItem(CLIENTS_KEY)||'[]');\nlet clientEditIndex=-1;\nfunction saveClients(){localStorage.setItem(CLIENTS_KEY,JSON.stringify(clients));}\nfunction openClientModal(index=-1){clientEditIndex=index;const c=index>=0?clients[index]:{name:'',project:'',email:'',status:'نشط'};document.getElementById('clientModal').classList.remove('hidden');document.getElementById('clientName').value=c.name||'';document.getElementById('clientProject').value=c.project||'';document.getElementById('clientEmail').value=c.email||'';document.getElementById('clientStatus').value=c.status||'نشط';}\nfunction closeClientModal(){document.getElementById('clientModal').classList.add('hidden')}\nfunction saveClient(){const name=document.getElementById('clientName').value.trim(),project=document.getElementById('clientProject').value.trim(),email=document.getElementById('clientEmail').value.trim(),status=document.getElementById('clientStatus').value;if(!name||!email){alert('اكتب اسم العميل والبريد الإلكتروني');return}const item={name,project,email,status,date:new Date().toLocaleDateString('ar-EG')};if(clientEditIndex>=0){item.date=clients[clientEditIndex].date;clients[clientEditIndex]=item}else clients.push(item);saveClients();closeClientModal();renderClients()}\nfunction editClient(i){openClientModal(i)}\nfunction toggleClient(i){clients[i].status=clients[i].status==='نشط'?'موقوف':'نشط';saveClients();renderClients()}\nfunction deleteClient(i){if(!confirm('حذف حساب العميل؟'))return;clients.splice(i,1);saveClients();renderClients()}\nfunction renderClients(){const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase(),list=clients.filter(c=>[c.name,c.project,c.email].join(' ').toLowerCase().includes(q));document.getElementById('clCount').textContent=clients.length;document.getElementById('clActive').textContent=clients.filter(c=>c.status==='نشط').length;document.getElementById('clInactive').textContent=clients.filter(c=>c.status!=='نشط').length;document.getElementById('clLast').textContent=clients.length?clients[clients.length-1].date:'—';document.getElementById('clientsBody').innerHTML=list.length?list.map(c=>{const i=clients.indexOf(c);return `<tr><td>${c.name}</td><td>${c.project||'—'}</td><td>${c.email}</td><td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td><td>${c.date}</td><td><button class="btn gray" onclick="editClient(${i})">تعديل</button> <button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button> <button class="btn red" onclick="deleteClient(${i})">حذف</button></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'}\n'''
+          if 'const CLIENTS_KEY=' not in s:
+              if js_anchor not in s: raise SystemExit('showPage anchor not found')
+              s = s.replace(js_anchor, js_code + js_anchor, 1)
+
+          modal_anchor = '<div id="modalBg" class="modal-bg hidden">'
+          client_modal = '''<div id="clientModal" class="modal-bg hidden"><div class="modal"><h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ سجل العميل من حساب المدير.</p><input id="clientName" placeholder="اسم العميل"><input id="clientProject" placeholder="النشاط / اسم المشروع"><input id="clientEmail" type="email" placeholder="البريد الإلكتروني"><select id="clientStatus" style="width:100%;background:#041326;color:white;border:1px solid #155083;border-radius:9px;padding:11px"><option>نشط</option><option>موقوف</option></select><div class="modal-actions"><button class="btn" onclick="saveClient()">حفظ</button><button class="btn gray" onclick="closeClientModal()">إلغاء</button></div></div></div>\n'''
+          if 'id="clientModal"' not in s:
+              if modal_anchor not in s: raise SystemExit('modal anchor not found')
+              s = s.replace(modal_anchor, client_modal + modal_anchor, 1)
+
+          s = s.replace("if(id==='coding')renderCoding();", "if(id==='coding')renderCoding();if(id==='clients')renderClients();", 1)
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Add client account management"
+          git push
