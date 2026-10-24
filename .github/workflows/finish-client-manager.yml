@@ -9,27 +9,79 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch client manager
+      - name: Patch manager client accounts
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
 
-          old='''<input id="clientName" placeholder="اسم العميل">\n    <input id="clientProject" placeholder="النشاط / اسم المشروع">\n    <input id="clientEmail" type="email" placeholder="البريد الإلكتروني">\n    <select id="clientStatus" style="width:100%;background:#041326;color:white;border:1px solid #155083;border-radius:9px;padding:11px 12px;margin:8px 0">'''
-          new='''<input id="clientName" placeholder="اسم العميل">\n    <input id="clientUsername" placeholder="اسم المستخدم للدخول" autocomplete="username">\n    <input id="clientPassword" type="password" placeholder="كلمة مرور الدخول" autocomplete="new-password">\n    <input id="clientProject" placeholder="النشاط / اسم المشروع">\n    <input id="clientEmail" type="email" placeholder="البريد الإلكتروني للتواصل (اختياري)">\n    <select id="clientStatus" style="width:100%;background:#041326;color:white;border:1px solid #155083;border-radius:9px;padding:11px 12px;margin:8px 0">'''
-          if old not in s: raise SystemExit('modal pattern not found')
-          s=s.replace(old,new,1)
+          # Add username/password fields to the manager's client form.
+          if 'id="clientUsername"' not in s:
+              s=re.sub(r'<input id="clientName"[^>]*>', r'\g<0>\n    <input id="clientUsername" placeholder="اسم المستخدم للدخول" autocomplete="username">\n    <input id="clientPassword" type="password" placeholder="كلمة مرور الدخول" autocomplete="new-password">', s, count=1)
 
-          old='''function openClientModal(index=-1){\n  clientEditIndex=index;\n  const c=index>=0?clients[index]:{name:'',project:'',email:'',status:'نشط'};\n  document.getElementById('clientModal').classList.remove('hidden');\n  document.getElementById('clientName').value=c.name||'';\n  document.getElementById('clientProject').value=c.project||'';\n  document.getElementById('clientEmail').value=c.email||'';\n  document.getElementById('clientStatus').value=c.status||'نشط';\n}'''
-          new='''function openClientModal(index=-1){\n  clientEditIndex=index;\n  const c=index>=0?clients[index]:{name:'',username:'',project:'',email:'',status:'نشط'};\n  document.getElementById('clientModal').classList.remove('hidden');\n  document.getElementById('clientName').value=c.name||'';\n  document.getElementById('clientUsername').value=c.username||'';\n  document.getElementById('clientPassword').value='';\n  document.getElementById('clientProject').value=c.project||'';\n  document.getElementById('clientEmail').value=c.email||'';\n  document.getElementById('clientStatus').value=c.status||'نشط';\n}'''
-          if old not in s: raise SystemExit('open modal pattern not found')
-          s=s.replace(old,new,1)
+          # Replace the client form handlers with a manager-friendly version.
+          start=s.find('function openClientModal(')
+          end=s.find('function editClient(i)', start)
+          if start == -1 or end == -1:
+              raise SystemExit('client manager functions not found')
 
-          start=s.index('async function saveClient(){')
-          end=s.index('\nfunction editClient(i)',start)
-          newfun='''async function saveClient(){\n  const name=document.getElementById('clientName').value.trim(),\n        username=document.getElementById('clientUsername').value.trim().toLowerCase(),\n        password=document.getElementById('clientPassword').value,\n        project=document.getElementById('clientProject').value.trim(),\n        email=document.getElementById('clientEmail').value.trim().toLowerCase(),\n        status=document.getElementById('clientStatus').value;\n  if(!name||!username){alert('اكتب اسم العميل واسم المستخدم');return}\n  if(clientEditIndex<0 && password.length<6){alert('كلمة المرور يجب أن تكون 6 أحرف أو أكثر');return}\n  if(!/^[a-z0-9._-]+$/.test(username)){alert('اسم المستخدم يجب أن يكون بالإنجليزية وأرقام فقط مثل: babafino');return}\n  const item={\n    id:clientEditIndex>=0?clients[clientEditIndex].id:crypto.randomUUID(),\n    name,username,project,email,status,\n    date:clientEditIndex>=0?clients[clientEditIndex].date:new Date().toLocaleDateString('ar-EG')\n  };\n  try{\n    if(clientEditIndex<0){\n      const authEmail=username+'@fergllo.local';\n      const signupClient=window.__frgSignupClient || (window.__frgSignupClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}));\n      const {data:authData,error:authError}=await signupClient.auth.signUp({email:authEmail,password});\n      if(authError)throw authError;\n      if(!authData.user)throw new Error('تعذر إنشاء حساب الدخول');\n      const {error:dbError}=await supabaseClient.from('client_accounts').insert({id:item.id,name:item.name,username:item.username,project:item.project,email:item.email,status:item.status});\n      if(dbError)throw dbError;\n      const {error:profileError}=await supabaseClient.from('user_profiles').insert({user_id:authData.user.id,full_name:item.name,role:'client',client_id:item.id});\n      if(profileError)throw profileError;\n      clients.push(item);\n    }else{\n      const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);\n      if(error)throw error;\n      clients[clientEditIndex]=item;\n    }\n    saveClients();closeClientModal();renderClients();\n    alert(clientEditIndex<0?'تم إنشاء حساب العميل بالكامل — اسم المستخدم وكلمة المرور جاهزان للدخول.':'تم تعديل بيانات العميل بنجاح.');\n  }catch(e){\n    alert('تعذر حفظ حساب العميل: '+(e?.message||e));\n  }\n}'''
+          newfun=r'''function openClientModal(index=-1){
+  clientEditIndex=index;
+  const c=index>=0?clients[index]:{name:'',username:'',project:'',email:'',status:'نشط'};
+  document.getElementById('clientModal').classList.remove('hidden');
+  document.getElementById('clientName').value=c.name||'';
+  document.getElementById('clientUsername').value=c.username||'';
+  document.getElementById('clientPassword').value='';
+  document.getElementById('clientProject').value=c.project||'';
+  document.getElementById('clientEmail').value=c.email||'';
+  document.getElementById('clientStatus').value=c.status||'نشط';
+}
+function closeClientModal(){document.getElementById('clientModal').classList.add('hidden')}
+
+async function saveClient(){
+  const name=document.getElementById('clientName').value.trim();
+  const username=document.getElementById('clientUsername').value.trim().toLowerCase();
+  const password=document.getElementById('clientPassword').value;
+  const project=document.getElementById('clientProject').value.trim();
+  const email=document.getElementById('clientEmail').value.trim().toLowerCase();
+  const status=document.getElementById('clientStatus').value;
+  if(!name||!username){alert('اكتب اسم العميل واسم المستخدم');return}
+  if(!/^[a-z0-9._-]+$/.test(username)){alert('اسم المستخدم يكون بالإنجليزية والأرقام فقط مثل: babafino');return}
+  if(clientEditIndex<0 && password.length<6){alert('كلمة المرور يجب أن تكون 6 أحرف أو أكثر');return}
+  const old=clientEditIndex>=0?clients[clientEditIndex]:null;
+  const item={id:old?old.id:crypto.randomUUID(),name,username,project,email,status,date:old?old.date:new Date().toLocaleDateString('ar-EG')};
+  try{
+    if(!old){
+      const authEmail=username+'@fergllo.local';
+      const signupClient=window.__frgSignupClient || (window.__frgSignupClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}));
+      const {data:authData,error:authError}=await signupClient.auth.signUp({email:authEmail,password});
+      if(authError)throw authError;
+      if(!authData.user)throw new Error('تعذر إنشاء حساب الدخول');
+      const {error:dbError}=await supabaseClient.from('client_accounts').insert({id:item.id,name:item.name,username:item.username,project:item.project,email:item.email,status:item.status});
+      if(dbError)throw dbError;
+      const {error:profileError}=await supabaseClient.from('user_profiles').insert({user_id:authData.user.id,full_name:item.name,role:'client',client_id:item.id});
+      if(profileError)throw profileError;
+      clients.push(item);
+    }else{
+      const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);
+      if(error)throw error;
+      clients[clientEditIndex]=item;
+      if(password) alert('تم تعديل بيانات العميل. تغيير كلمة المرور يحتاج مسار إدارة آمن من Supabase.');
+    }
+    saveClients();closeClientModal();renderClients();
+    alert(old?'تم تعديل بيانات العميل بنجاح.':'تم إنشاء حساب العميل وبيانات دخوله.');
+  }catch(e){alert('تعذر حفظ حساب العميل: '+(e?.message||e))}
+}
+'''
           s=s[:start]+newfun+s[end:]
+
+          # Show username in the client table and add a clear password-change action.
+          marker='<th>اسم العميل</th>'
+          if marker in s and '<th>اسم المستخدم</th>' not in s:
+              s=s.replace(marker, marker+'<th>اسم المستخدم</th>',1)
+          s=s.replace("<td>${c.project||'—'}</td>","<td>${c.username||'—'}</td><td>${c.project||'—'}</td>",1)
 
           p.write_text(s,encoding='utf-8')
           PY
@@ -39,5 +91,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Finish manager client account creation"
+          git commit -m "Finish manager client account UI"
           git push
