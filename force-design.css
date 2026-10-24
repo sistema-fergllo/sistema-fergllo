@@ -1,13 +1,32 @@
-/* Faragello System - final image backgrounds */
+/* Faragello System - exact full-screen image backgrounds */
+html,body{
+  width:100%;
+  min-height:100%;
+  margin:0!important;
+  padding:0!important;
+  overflow-x:hidden!important;
+}
 #login.login-screen{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100vh!important;
+  min-height:100vh!important;
+  margin:0!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
   background-image:url('./faragello_external_1920x1080.jpg')!important;
   background-position:center center!important;
   background-size:cover!important;
   background-repeat:no-repeat!important;
-  background-attachment:fixed!important;
+  background-attachment:scroll!important;
 }
 #login.login-screen:before{display:none!important}
+#login.login-screen .login-card{margin:0!important}
 #app{
+  min-height:100vh!important;
+  margin:0!important;
   background-image:url('./faragello_internal_1920x1080.jpg')!important;
   background-position:center center!important;
   background-size:cover!important;
