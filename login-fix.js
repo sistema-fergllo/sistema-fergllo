@@ -1,5 +1,39 @@
 /* Login recovery + final login visual fixes. */
 (function () {
+  function addInventoryCountMenu() {
+    if (document.getElementById('faragello-inventory-count-nav')) return;
+    var navs = document.querySelectorAll('#app .side .nav');
+    for (var i = 0; i < navs.length; i++) {
+      var text = (navs[i].textContent || '').replace(/\s+/g, ' ').trim();
+      if (text.indexOf('المخزون') !== -1 && text.indexOf('الجرد') === -1) {
+        var item = document.createElement('button');
+        item.id = 'faragello-inventory-count-nav';
+        item.className = 'nav';
+        item.type = 'button';
+        item.textContent = 'الجرد';
+        item.style.fontWeight = '800';
+        item.style.fontSize = '17px';
+        item.style.width = '100%';
+        item.style.textAlign = 'right';
+        item.style.color = '#e9f4ff';
+        item.addEventListener('click', function () {
+          var stock = document.querySelector('#app .side .nav');
+          var target = document.getElementById('inventory');
+          if (target) {
+            document.querySelectorAll('#app .side .nav').forEach(function (n) { n.classList.remove('active'); });
+            item.classList.add('active');
+            document.querySelectorAll('#app main .page').forEach(function (p) { p.classList.add('hidden'); });
+            target.classList.remove('hidden');
+          } else if (stock) {
+            stock.click();
+          }
+        });
+        navs[i].parentNode.insertBefore(item, navs[i].nextSibling);
+        break;
+      }
+    }
+  }
+
   function applyLoginDesign() {
     var old = document.getElementById('faragello-login-design-fix');
     if (old) old.remove();
@@ -16,7 +50,6 @@
         box-shadow: 0 5px 14px rgba(0,160,255,.25) !important;
       }
 
-      /* External branding: visibly light/regular, never bold. */
       #login .login-card h1,
       #login .login-card h1 *,
       #login .login-card p,
@@ -28,7 +61,6 @@
         font-style: normal !important;
       }
 
-      /* Keep actual buttons emphasized. */
       #login .login-card button {
         font-family: Tahoma, Arial, sans-serif !important;
         font-weight: 600 !important;
@@ -82,6 +114,15 @@
 
   function init() {
     applyLoginDesign();
+    addInventoryCountMenu();
+
+    if (!window.__faragelloMenuObserver) {
+      window.__faragelloMenuObserver = new MutationObserver(function () {
+        addInventoryCountMenu();
+      });
+      var app = document.getElementById('app');
+      if (app) window.__faragelloMenuObserver.observe(app, {childList:true,subtree:true});
+    }
 
     function recoverChoice(buttonId, role) {
       var button = document.getElementById(buttonId);
