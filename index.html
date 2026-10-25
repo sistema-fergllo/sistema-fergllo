@@ -263,25 +263,58 @@ let saleSaved=false;
 try{
 const isCustomer=currentProfileRole==='client';
 if(isCustomer&&!activeClient?.id)throw new Error('حساب العميل غير محدد؛ افتح حساب العميل من جديد ثم حاول.');
+const shiftValue=document.getElementById('shift').value,payValue=document.getElementById('pay').value;
 const rpcResult=isCustomer
-?await supabaseClient.rpc('complete_client_sale',{p_shift:document.getElementById('shift').value,p_pay:document.getElementById('pay').value,p_items:payload})
-:await supabaseClient.rpc('complete_admin_shared_sale',{p_shift:document.getElementById('shift').value,p_pay:document.getElementById('pay').value,p_items:payload});
+?await supabaseClient.rpc('complete_client_sale',{p_shift:shiftValue,p_pay:payValue,p_items:payload})
+:await supabaseClient.rpc('complete_admin_shared_sale',{p_shift:shiftValue,p_pay:payValue,p_items:payload});
 if(rpcResult.error)throw rpcResult.error;
 saleSaved=true;
 const returned=rpcResult.data;
-const saleId=returned&&typeof returned==='object'?(returned.id??returned.sale_id??JSON.stringify(returned)):returned;
-const savedSale={id:saleId??('local-'+Date.now()),created_at:new Date().toISOString(),date:new Date().toLocaleString('ar-EG'),shift:document.getElementById('shift').value,pay:document.getElementById('pay').value,total:payload.reduce((n,x)=>n+x.line_total,0),items:payload};
+const saleId=returned&&typeof returned==='object'?(returned.id??returned.sale_id??returned.saleId??JSON.stringify(returned)):returned;
+const savedSale={id:saleId??('sale-'+Date.now()),created_at:new Date().toISOString(),date:new Date().toLocaleString('ar-EG'),shift:shiftValue,pay:payValue,total:payload.reduce((n,x)=>n+x.line_total,0),items:payload};
 cart=[];
+/* سجّل البيع في الواجهة فور نجاح قاعدة البيانات، حتى لو فشل تحديث قائمة البيانات بعدها */
+sales=[savedSale,...(sales||[]).filter(x=>String(x.id)!==String(savedSale.id))].slice(0,300);
+localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify(sales));
+localStorage.setItem(KEYS.sales,JSON.stringify(sales));
+refreshAll();
+renderReports();
 let inventoryRefreshError='';
-try{if(isCustomer)await loadClientWorkspaceFromCloud(activeClient.id);else await loadInventoryFromCloud()}catch(refreshError){inventoryRefreshError=refreshError.message||String(refreshError);console.error('تم حفظ البيع لكن تعذر تحديث المخزون:',refreshError)}
+try{
+if(isCustomer)await loadClientWorkspaceFromCloud(activeClient.id);
+else await loadInventoryFromCloud();
+}catch(refreshError){
+inventoryRefreshError=refreshError.message||String(refreshError);
+console.error('تم حفظ البيع لكن تعذر تحديث المخزون:',refreshError);
+}
 let salesRefreshError='';
-try{await refreshSalesFromCloud()}catch(refreshError){salesRefreshError=refreshError.message||String(refreshError);console.error('تم حفظ البيع لكن تعذر تحديث قائمة المبيعات:',refreshError);if(!sales.some(x=>String(x.id)===String(savedSale.id)))sales.unshift(savedSale);localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify(sales));renderSales();updateDashboard();renderReports()}
+try{
+await refreshSalesFromCloud();
+if(!sales.some(x=>String(x.id)===String(savedSale.id))){
+sales=[savedSale,...sales].slice(0,300);
+localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify(sales));
+localStorage.setItem(KEYS.sales,JSON.stringify(sales));
+renderSales();updateDashboard();renderReports();
+}
+}catch(refreshError){
+salesRefreshError=refreshError.message||String(refreshError);
+console.error('تم حفظ البيع لكن تعذر تحديث قائمة المبيعات:',refreshError);
+sales=[savedSale,...(sales||[]).filter(x=>String(x.id)!==String(savedSale.id))].slice(0,300);
+localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify(sales));
+localStorage.setItem(KEYS.sales,JSON.stringify(sales));
+renderSales();updateDashboard();renderReports();
+}
 refreshAll();
 showPage('cashier');
-if(salesRefreshError||inventoryRefreshError){alert('تم حفظ البيع بنجاح برقم '+saleId+'، لكن حصلت مشكلة في تحديث '+[salesRefreshError?'المبيعات والتقارير':'',inventoryRefreshError?'المخزون':''].filter(Boolean).join(' و ')+'. تفاصيل التحديث: '+[salesRefreshError,inventoryRefreshError].filter(Boolean).join(' | '))}
-else{alert('تم البيع وحفظه بنجاح برقم '+saleId+'. اتحدثت المبيعات والتقارير والمخزون.')}
-}catch(e){if(saleSaved){alert('البيع محفوظ بالفعل في قاعدة البيانات. حصل خطأ بعد الحفظ فقط: '+(e.message||'خطأ غير معروف'));return}alert('لم يتم حفظ البيع في قاعدة البيانات. لم يتم تأكيد العملية. السبب: '+(e.message||'خطأ غير معروف'))}
-finally{if(button){button.disabled=false;button.textContent='إتمام البيع'}}
+if(salesRefreshError||inventoryRefreshError){
+alert('تم حفظ البيع في قاعدة البيانات، وأُضيف مباشرة إلى المبيعات والتقارير. لكن تعذر تحديث '+[salesRefreshError?'بيانات المبيعات من الخادم':'',inventoryRefreshError?'المخزون من الخادم':''].filter(Boolean).join(' و ')+'. السبب: '+[salesRefreshError,inventoryRefreshError].filter(Boolean).join(' | '));
+}else{
+alert('تم حفظ البيع وتحديث المبيعات والتقارير والمخزون بنجاح. رقم العملية: '+saleId);
+}
+}catch(e){
+if(saleSaved){alert('البيع محفوظ بالفعل في قاعدة البيانات؛ حدث خطأ بعد الحفظ فقط: '+(e.message||'خطأ غير معروف'));return}
+alert('لم يتم حفظ البيع في قاعدة البيانات. السبب: '+(e.message||'خطأ غير معروف'));
+}finally{if(button){button.disabled=false;button.textContent='إتمام البيع'}}
 }
 function saleItemsArray(x){let v=x.items??x.items_summary??[];if(Array.isArray(v))return v;if(typeof v==='string'){try{const parsed=JSON.parse(v);return Array.isArray(parsed)?parsed:[]}catch(e){return []}}return []}
 function saleItemsText(x){return saleItemsArray(x).map(i=>(i.name||i.code||'صنف')+' × '+Number(i.qty||1)).join('، ')||'—'}
