@@ -209,6 +209,30 @@
     else if(!phone.parentNode)card.appendChild(phone);
   }
 
+  function normalizeLoginScreen(){
+    var login=document.getElementById('login');
+    var email=document.getElementById('email');
+    var password=document.getElementById('password');
+    var fields=document.getElementById('loginFields');
+    var admin=document.getElementById('adminLoginChoice');
+    var client=document.getElementById('clientLoginToggle');
+    var title=document.getElementById('loginText');
+    var error=document.getElementById('loginErr');
+    var wasPagePin=!!(login&&login.dataset.page);
+    if(login)login.dataset.page='';
+    if(email){email.classList.remove('hidden');email.placeholder='اسم المستخدم';email.autocomplete='username';}
+    if(password){password.classList.remove('hidden');password.autocomplete='current-password';}
+    if(wasPagePin){
+      if(fields)fields.classList.add('hidden');
+      if(admin)admin.classList.remove('hidden');
+      if(client)client.classList.remove('hidden');
+      if(email)email.value='';
+      if(password)password.value='';
+      if(title)title.textContent='اختر نوع الدخول';
+      if(error)error.textContent='';
+    }
+  }
+
   function applyLoginDesign(){
     var old=document.getElementById('faragello-login-design-fix'); if(old) old.remove();
     var style=document.createElement('style'); style.id='faragello-login-design-fix'; style.textContent=`
@@ -226,6 +250,7 @@
   }
 
   function init(){
+    normalizeLoginScreen();
     ensurePublicPhone();
     applyLoginDesign(); startMenuRecovery();
     setTimeout(ensurePublicPhone,100); setTimeout(ensurePublicPhone,700);
