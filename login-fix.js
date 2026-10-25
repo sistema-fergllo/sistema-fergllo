@@ -26,8 +26,11 @@
         font-weight: 400 !important;
       }
 
-      /* Keep the remaining login controls slightly emphasized. */
+      /* Keep the external login description and supervisor line light; keep buttons emphasized. */
       #login .login-card p,
+      #login .login-card p * {
+        font-weight: 400 !important;
+      }
       #login .login-card button {
         font-weight: 600 !important;
       }
@@ -58,9 +61,11 @@
       var nodes = document.querySelectorAll('#login .login-card *');
       nodes.forEach(function (el) {
         var text = (el.textContent || '').trim();
-        if (text.indexOf('Farag El-Sayed') !== -1) {
-          el.style.setProperty('color', '#8deaff', 'important');
+        if (text.indexOf('Farag El-Sayed') !== -1 || text.indexOf('سيستم محاسبة') !== -1) {
           el.style.setProperty('font-weight', '400', 'important');
+          if (text.indexOf('Farag El-Sayed') !== -1) {
+            el.style.setProperty('color', '#8deaff', 'important');
+          }
         }
       });
     }
