@@ -221,8 +221,7 @@ if (password || username !== (old.username || '').toLowerCase()) {
 const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);    if(error)throw error;
     clients[clientEditIndex]=item;
     saveClients();closeClientModal();renderClients();
-    if(password) alert('تم تعديل بيانات العميل. كلمة المرور الجديدة تحتاج تنفيذ عملية Auth آمنة من السيرفر؛ لم يتم تخزين كلمة المرور داخل الموقع.');
-    else alert('تم تعديل بيانات العميل بنجاح.');
+if(password) alert('تم تعديل بيانات العميل وكلمة المرور بنجاح.');else alert('تم تعديل بيانات العميل بنجاح.');
   }catch(e){alert('تعذر حفظ حساب العميل: '+(e?.message||e))}
 }
 function editClient(i){openClientModal(i)}async function toggleClient(i){const next=clients[i].status==='نشط'?'موقوف':'نشط';try{const{error}=await supabaseClient.from('client_accounts').update({status:next}).eq('id',clients[i].id);if(error)throw error;clients[i].status=next;saveClients();renderClients()}catch(e){alert('تعذر تحديث الحساب: '+e.message)}}async function deleteClient(i){if(!confirm('حذف سجل العميل ومساحة عمله؟'))return;try{const{error}=await supabaseClient.from('client_accounts').delete().eq('id',clients[i].id);if(error)throw error;clients.splice(i,1);saveClients();renderClients()}catch(e){alert('تعذر حذف الحساب: '+e.message)}}
