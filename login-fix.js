@@ -1,6 +1,29 @@
-/* Login recovery: make role-choice buttons respond even if inline handlers fail. */
+/* Login recovery + final login visual fixes. */
 (function () {
+  function applyLoginDesign() {
+    if (document.getElementById('faragello-login-design-fix')) return;
+    var style = document.createElement('style');
+    style.id = 'faragello-login-design-fix';
+    style.textContent = `
+      #login #clientLoginToggle {
+        background: linear-gradient(100deg,#00c8ff,#0877ff) !important;
+        border: 1px solid #29dfff !important;
+        color: #fff !important;
+        box-shadow: 0 5px 14px rgba(0,160,255,.25) !important;
+      }
+      #login .login-card > div:last-child {
+        color: #8deaff !important;
+      }
+      #login .login-card > div:last-child::first-letter {
+        color: #8deaff !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   function init() {
+    applyLoginDesign();
+
     function recoverChoice(buttonId, role) {
       var button = document.getElementById(buttonId);
       if (!button || button.dataset.recoveryBound === 'yes') return;
@@ -25,8 +48,10 @@
         }
       });
     }
+
     recoverChoice('adminLoginChoice', 'admin');
     recoverChoice('clientLoginToggle', 'client');
+
     var submit = document.getElementById('loginSubmit');
     if (submit && submit.dataset.recoveryBound !== 'yes') {
       submit.dataset.recoveryBound = 'yes';
@@ -47,11 +72,13 @@
         }
       });
     }
+
     window.addEventListener('error', function (event) {
       var box = document.getElementById('loginText');
       if (box && event.message) box.textContent = 'خطأ تشغيل بالموقع: ' + event.message;
     });
   }
+
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
