@@ -39,3 +39,12 @@ html,body{width:100%;min-height:100%;margin:0!important;padding:0!important;over
 #login .login-card > div:last-child{color:#8deaff!important}
 
 @media(max-width:700px){#app{background-attachment:scroll!important}#login.login-screen{padding:12px!important}}
+
+
+/* Replace the internal home-screen window/hash symbol with a calculator icon */
+#app #home .cash-panel:before{
+  content:'🧮' !important;
+  font-family:Arial,sans-serif !important;
+  font-size:76px !important;
+  line-height:1 !important;
+}
