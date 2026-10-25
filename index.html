@@ -335,19 +335,23 @@ function printBarcodeByCode(code,qty=1){
   printLabelsInFrame(Array.from({length:count},()=>({code:String(item.code),name:String(item.name||''),price:Number(item.price||0)})));
 }
 function printLabelsInFrame(labels){
-  if(typeof window.JsBarcode!=='function'){alert('مكتبة الباركود لم تتحمل. اعمل Ctrl+F5 وتأكد من اتصال الإنترنت ثم جرّب تاني.');return}
+  if(typeof window.JsBarcode!=='function'){alert('مكتبة الباركود لم تتحمل. اعمل Ctrl+F5 ثم جرّب تاني.');return}
   const w=window.open('','_blank','width=900,height=700');
-  if(!w){alert('المتصفح منع نافذة المعاينة. اسمح بالنوافذ المنبثقة للموقع ثم جرّب تاني.');return}
+  if(!w){alert('اسمح بالنوافذ المنبثقة للموقع ثم جرّب تاني.');return}
   try{
     const labelHtml=labels.map(x=>{
+      const code=String(x.code||'').trim();
+      if(!code) return '';
       const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-      window.JsBarcode(svg,String(x.code||''),{format:'CODE128',displayValue:false,margin:0,height:54,width:1.6,lineColor:'#000',background:'#fff'});
+      window.JsBarcode(svg,code,{format:'CODE128',displayValue:false,margin:0,height:70,width:2,lineColor:'#000',background:'#fff'});
       svg.setAttribute('class','barcode');
-      svg.setAttribute('aria-label','Barcode '+String(x.code||''));
+      svg.setAttribute('role','img');
+      svg.setAttribute('aria-label','Barcode');
       return '<section class="label">'+new XMLSerializer().serializeToString(svg)+'</section>';
     }).join('');
+    if(!labelHtml){w.close();alert('مفيش أكواد صالحة للطباعة.');return}
     w.document.open();
-    w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Barcode</title><style>@page{size:50mm 30mm;margin:0}*{box-sizing:border-box}html,body{margin:0!important;padding:0!important;width:50mm;background:#fff!important}.label{width:50mm;height:30mm;margin:0;padding:0;display:flex;align-items:center;justify-content:center;overflow:hidden;page-break-after:always;break-after:page}.barcode{display:block;width:47mm;height:26mm;max-width:47mm;max-height:26mm} @media screen{body{background:#ddd!important}.label{background:white;margin:8px auto;box-shadow:0 0 3px #888}}</style></head><body>'+labelHtml+'</body></html>');
+    w.document.write('<!doctype html><html><head><meta charset="utf-8"><title> </title><style>@page{size:50mm 30mm;margin:0}html,body{margin:0!important;padding:0!important;width:50mm!important;background:#fff!important}*{box-sizing:border-box}.label{width:50mm;height:30mm;margin:0;padding:1mm;display:flex;align-items:center;justify-content:center;overflow:hidden;page-break-after:always;break-after:page}.barcode{display:block;width:48mm;height:27mm;max-width:48mm;max-height:27mm} @media screen{body{background:#ddd!important}.label{background:white;margin:8px auto;box-shadow:0 0 3px #888}}</style></head><body>'+labelHtml+'</body></html>');
     w.document.close();
     w.focus();
     setTimeout(()=>{try{w.print()}catch(e){alert('تعذر فتح الطباعة: '+(e.message||e))}},500);
