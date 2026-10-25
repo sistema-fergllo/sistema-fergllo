@@ -300,16 +300,19 @@ function renderInventory(){updateDashboard();let q=(document.getElementById('inv
 // أدوات التكويدات والباركود — ملصقات مناسبة للطباعة الحرارية على Xprinter
 function renderCoding(){
   const body=document.getElementById('codingBody');if(!body)return;
-  const q=(document.getElementById('bcSearch')?.value||'').trim().toLowerCase();
-  const rows=(inventory||[]).filter(x=>!q||String(x.code||'').toLowerCase().includes(q)||String(x.name||'').toLowerCase().includes(q));
-  const codes=(inventory||[]).map(x=>String(x.code||'').trim()).filter(Boolean);
-  const dup=codes.filter((c,i)=>codes.indexOf(c)!==i);
-  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
-  set('bcItemCount',(inventory||[]).length.toLocaleString('ar-EG'));
-  set('bcDuplicateCount',dup.length.toLocaleString('ar-EG'));
-  set('bcReadyCount',rows.filter(x=>String(x.code||'').trim()).length.toLocaleString('ar-EG'));
-  body.innerHTML=rows.map(x=>'<tr><td>'+escapeBarcodeText(x.code)+'</td><td>'+escapeBarcodeText(x.name)+'</td><td>'+money(x.price)+'</td><td>'+Number(x.qty||0)+'</td><td><button class="btn gold" onclick="printBarcodeByCode('+JSON.stringify(String(x.code||''))+')">طباعة الملصق</button></td></tr>').join('')||'<tr><td colspan="5" class="empty">لا توجد أصناف مطابقة للبحث</td></tr>';
+  const q=(document.getElementById('bcSearch')?.value||'').trim().toLocaleLowerCase();
+  const all=Array.isArray(inventory)?inventory:[];
+  const rows=all.map((item,index)=>({item,index})).filter(({item:x})=>!q||String(x.code||'').toLocaleLowerCase().includes(q)||String(x.name||'').toLocaleLowerCase().includes(q));
+  const codes=all.map(x=>String(x.code||'').trim()).filter(Boolean);
+  const counts={};codes.forEach(c=>counts[c]=(counts[c]||0)+1);
+  const duplicates=Object.values(counts).filter(n=>n>1).reduce((a,n)=>a+n-1,0);
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=String(v)};
+  set('bcItemCount',all.length.toLocaleString('ar-EG'));
+  set('bcDuplicateCount',duplicates.toLocaleString('ar-EG'));
+  set('bcReadyCount',all.filter(x=>String(x.code||'').trim()).length.toLocaleString('ar-EG'));
+  body.innerHTML=rows.map(({item:x,index})=>'<tr><td>'+escapeBarcodeText(x.code)+'</td><td>'+escapeBarcodeText(x.name)+'</td><td>'+escapeBarcodeText(money(x.price))+'</td><td>'+Number(x.qty||0)+'</td><td><button class="btn gold" onclick="printBarcodeByIndex('+index+')">طباعة الملصق</button></td></tr>').join('')||'<tr><td colspan="5" class="empty">لا توجد أصناف مطابقة للبحث</td></tr>';
 }
+function printBarcodeByIndex(index){const item=Array.isArray(inventory)?inventory[Number(index)]:null;if(!item){alert('الصنف غير موجود في المخزون');return}printBarcodeByCode(String(item.code||''))}
 function escapeBarcodeText(v){return String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function openBarcodeModal(){
   const select=document.getElementById('bcSelect');if(!select)return;
