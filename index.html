@@ -158,7 +158,12 @@ function mergeSalesWithCache(rows){
   const cached=(()=>{try{return JSON.parse(localStorage.getItem(workspaceKey(KEYS.sales))||'[]')||[]}catch(e){return []}})();
   const merged=new Map();
   cached.forEach(x=>{if(x&&x.id!=null)merged.set(String(x.id),x)});
-  (rows||[]).forEach(x=>{if(x&&x.id!=null)merged.set(String(x.id),{id:x.id,created_at:x.created_at,date:new Date(x.created_at||Date.now()).toLocaleString('ar-EG'),shift:x.shift,pay:x.pay,total:Number(x.total||0),items:x.items_summary||[]})});
+  (rows||[]).forEach(x=>{if(x&&x.id!=null){
+    const old=merged.get(String(x.id))||{};
+    let parsedItems=x.items_summary||[];
+    if(typeof parsedItems==='string'){try{const parsed=JSON.parse(parsedItems);if(Array.isArray(parsed))parsedItems=parsed}catch(e){}}
+    merged.set(String(x.id),{...old,id:x.id,created_at:x.created_at,date:new Date(x.created_at||old.created_at||Date.now()).toLocaleString('ar-EG'),shift:x.shift||old.shift,pay:x.pay||old.pay,total:Number(x.total??old.total??0),items:Array.isArray(old.items)&&old.items.length?old.items:parsedItems,items_summary:x.items_summary||old.items_summary||''})
+  }});
   return [...merged.values()].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0)).slice(0,300)
 }
 async function loadInventoryFromCloud(){const{data,error}=await supabaseClient.from('shared_inventory').select('code,name,price,qty,sold').order('code');if(error)throw new Error('تعذر تحميل المخزون المشترك: '+error.message);inventory=data&&data.length?data.map(x=>({code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)})):[];localStorage.setItem(KEYS.inv,JSON.stringify(inventory));const{data:cloudSales,error:salesError}=await supabaseClient.from('shared_sales').select('id,created_at,shift,pay,total,items_summary').order('created_at',{ascending:false}).limit(300);if(salesError)throw new Error('تعذر تحميل الفواتير المشتركة: '+salesError.message);sales=mergeSalesWithCache(cloudSales);localStorage.setItem(KEYS.sales,JSON.stringify(sales));cloudReady=true;refreshAll()}
@@ -334,7 +339,7 @@ window.renderSales=function renderSales(){const total=sales.reduce((a,x)=>a+Numb
 function renderSales(){return window.renderSales()}
 function renderReports(){return window.renderReports()}
 
-async function refreshSalesFromCloud(){if(!cloudReady)return;if(currentProfileRole==='client'){if(!activeClient?.id)return;const{data,error}=await supabaseClient.from('client_sales').select('id,created_at,shift,pay,total,items_summary').eq('client_id',activeClient.id).order('created_at',{ascending:false}).limit(300);if(error)throw error;sales=mergeSalesWithCache(data)}else{const{data,error}=await supabaseClient.from('shared_sales').select('id,created_at,shift,pay,total,items_summary').order('created_at',{ascending:false}).limit(300);if(error)throw error;sales=(data||[]).map(x=>({id:x.id,created_at:x.created_at,date:new Date(x.created_at).toLocaleString('ar-EG'),shift:x.shift,pay:x.pay,total:Number(x.total||0),items:x.items_summary||[]}))}localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify(sales));window.renderSales();updateDashboard();if(!document.getElementById('reports').classList.contains('hidden'))renderReports()}
+async function refreshSalesFromCloud(){if(!cloudReady)return;if(currentProfileRole==='client'){if(!activeClient?.id)return;const{data,error}=await supabaseClient.from('client_sales').select('id,created_at,shift,pay,total,items_summary').eq('client_id',activeClient.id).order('created_at',{ascending:false}).limit(300);if(error)throw error;sales=mergeSalesWithCache(data)}else{const{data,error}=await supabaseClient.from('shared_sales').select('id,created_at,shift,pay,total,items_summary').order('created_at',{ascending:false}).limit(300);if(error)throw error;sales=mergeSalesWithCache(data)}localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify(sales));window.renderSales();updateDashboard();if(!document.getElementById('reports').classList.contains('hidden'))renderReports()}
 function printReport(){
 window.renderReports();
 const old=document.title;
