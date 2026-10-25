@@ -21,6 +21,17 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
 .modal-bg{position:fixed;inset:0;background:#000b;display:grid;place-items:center;z-index:10}.modal{width:min(460px,94vw);background:#081d37;border:1px solid #1e83c6;border-radius:18px;padding:24px}.modal h3{margin-top:0}.modal input{width:100%;margin:8px 0}.modal-actions{display:flex;gap:8px;margin-top:12px}
 @media(max-width:900px){.side{width:75px}.nav{font-size:0;text-align:center}.nav span{font-size:22px;margin:0}.cards{grid-template-columns:repeat(2,1fr)}.cash-layout{grid-template-columns:1fr}.top{padding:0 12px}.brand h1{font-size:20px}.userbox .clock{display:none}}
 @media print{body{background:#fff!important;color:#000!important}.top,.side,.toolbar,.btn,.title button{display:none!important}main{padding:0!important}.page{display:none!important}#cashier.printing{display:block!important}#reports.printing{display:block!important}}
+
+/* إخفاء رأس لوحة التحكم في مساحة العميل فقط */
+body.client-workspace-mode .top,
+body.client-workspace-mode #clientWorkspaceBar,
+body.client-workspace-mode #home > .title,
+body.client-workspace-mode #home > .cash-panel:first-of-type {
+  display: none !important;
+}
+body.client-workspace-mode .layout {
+  min-height: 100vh;
+}
 </style>
 
 <style>
@@ -225,8 +236,8 @@ if(password) alert('تم تعديل بيانات العميل وكلمة الم�
   }catch(e){alert('تعذر حفظ حساب العميل: '+(e?.message||e))}
 }
 function editClient(i){openClientModal(i)}async function toggleClient(i){const next=clients[i].status==='نشط'?'موقوف':'نشط';try{const{error}=await supabaseClient.from('client_accounts').update({status:next}).eq('id',clients[i].id);if(error)throw error;clients[i].status=next;saveClients();renderClients()}catch(e){alert('تعذر تحديث الحساب: '+e.message)}}async function deleteClient(i){if(!confirm('حذف سجل العميل ومساحة عمله؟'))return;try{const{error}=await supabaseClient.from('client_accounts').delete().eq('id',clients[i].id);if(error)throw error;clients.splice(i,1);saveClients();renderClients()}catch(e){alert('تعذر حذف الحساب: '+e.message)}}
-async function openClientWorkspace(i){const c=clients[i];if(!c||c.status!=='نشط'){alert('حساب العميل موقوف أو غير موجود');return}activeClient={id:c.id,name:c.name,project:c.project,email:c.email};localStorage.setItem('frg_active_client',JSON.stringify(activeClient));document.querySelector('.brand small').textContent=c.name+(c.project?' • '+c.project:'');document.querySelector('.user b').textContent=c.name;document.querySelector('.user small').textContent='حساب العميل';try{await loadClientWorkspaceFromCloud(c.id);showPage('home')}catch(e){cloudReady=false;alert('تعذر تحميل مخزون العميل من قاعدة البيانات: '+(e?.message||e))}}
-function loadWorkspaceData(){const invKey=workspaceKey(KEYS.inv),salesKey=workspaceKey(KEYS.sales);inventory=JSON.parse(localStorage.getItem(invKey)||'null')||[];sales=JSON.parse(localStorage.getItem(salesKey)||'[]');cloudReady=false;cart=[];refreshAll()}function leaveClientWorkspace(){activeClient=null;localStorage.removeItem('frg_active_client');const invNav=document.getElementById('navInventory');if(invNav)invNav.classList.add('hidden');inventory=[];sales=[];localStorage.setItem(KEYS.inv,'[]');localStorage.setItem(KEYS.sales,'[]');cloudReady=false;document.querySelector('.brand small').textContent='Farag El-Sayed • مشرف النظام';document.querySelector('.user b').textContent='admin';document.querySelector('.user small').textContent='مدير النظام';showPage('clients')}
+async function openClientWorkspace(i){const c=clients[i];if(!c||c.status!=='نشط'){alert('حساب العميل موقوف أو غير موجود');return}document.body.classList.add('client-workspace-mode');activeClient={id:c.id,name:c.name,project:c.project,email:c.email};localStorage.setItem('frg_active_client',JSON.stringify(activeClient));document.querySelector('.brand small').textContent=c.name+(c.project?' • '+c.project:'');document.querySelector('.user b').textContent=c.name;document.querySelector('.user small').textContent='حساب العميل';try{await loadClientWorkspaceFromCloud(c.id);showPage('home')}catch(e){cloudReady=false;alert('تعذر تحميل مخزون العميل من قاعدة البيانات: '+(e?.message||e))}}
+function loadWorkspaceData(){const invKey=workspaceKey(KEYS.inv),salesKey=workspaceKey(KEYS.sales);inventory=JSON.parse(localStorage.getItem(invKey)||'null')||[];sales=JSON.parse(localStorage.getItem(salesKey)||'[]');cloudReady=false;cart=[];refreshAll()}function leaveClientWorkspace(){document.body.classList.remove('client-workspace-mode');activeClient=null;localStorage.removeItem('frg_active_client');const invNav=document.getElementById('navInventory');if(invNav)invNav.classList.add('hidden');inventory=[];sales=[];localStorage.setItem(KEYS.inv,'[]');localStorage.setItem(KEYS.sales,'[]');cloudReady=false;document.querySelector('.brand small').textContent='Farag El-Sayed • مشرف النظام';document.querySelector('.user b').textContent='admin';document.querySelector('.user small').textContent='مدير النظام';showPage('clients')}
 function renderClients(){
   const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase();
   const list=clients.filter(c=>[c.name,c.username,c.project,c.email].join(' ').toLowerCase().includes(q));
