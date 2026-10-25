@@ -22,9 +22,12 @@ main{flex:1;padding:25px;overflow:auto}.page{max-width:1450px;margin:auto}.title
 @media(max-width:900px){.side{width:75px}.nav{font-size:0;text-align:center}.nav span{font-size:22px;margin:0}.cards{grid-template-columns:repeat(2,1fr)}.cash-layout{grid-template-columns:1fr}.top{padding:0 12px}.brand h1{font-size:20px}.userbox .clock{display:none}}
 @media print{body{background:#fff!important;color:#000!important}.top,.side,.toolbar,.btn,.title button{display:none!important}main{padding:0!important}.page{display:none!important}#cashier.printing{display:block!important}#reports.printing{display:block!important}}
 
-/* مساحة العميل: إظهار كل عناصر الصفحة بدون إخفاء */
+/* مساحة العميل: نفس شكل لوحة التحكم المرجعية */
 body.client-workspace-mode .layout {
   min-height: 100vh;
+}
+body.client-workspace-mode #clientWorkspaceBar {
+  display: none !important;
 }
 </style>
 
