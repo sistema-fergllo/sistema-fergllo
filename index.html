@@ -336,22 +336,24 @@ function printBarcodeByCode(code,qty=1){
 }
 function printLabelsInFrame(labels){
   if(typeof window.JsBarcode!=='function'){alert('مكتبة الباركود لم تتحمل. اعمل Ctrl+F5 ثم جرّب تاني.');return}
-  const valid=(Array.isArray(labels)?labels:[]).map(x=>({code:String(x.code||'').trim()})).filter(x=>x.code);
+  const valid=(Array.isArray(labels)?labels:[]).map(x=>({code:String(x.code||'').trim(),price:Number(x.price||0)})).filter(x=>x.code);
   if(!valid.length){alert('مفيش أكواد صالحة للطباعة.');return}
   const w=window.open('','_blank','width=900,height=700');
   if(!w){alert('اسمح بالنوافذ المنبثقة للموقع ثم جرّب تاني.');return}
   try{
-    const svgs=valid.map(x=>{
+    const pages=valid.map(x=>{
       const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-      window.JsBarcode(svg,x.code,{format:'CODE128',displayValue:false,margin:2,height:90,width:2,lineColor:'#000',background:'#fff'});
+      window.JsBarcode(svg,x.code,{format:'CODE128',displayValue:false,margin:1,height:45,width:1.6,lineColor:'#000',background:'#fff'});
       svg.setAttribute('xmlns','http://www.w3.org/2000/svg');
-      return new XMLSerializer().serializeToString(svg);
-    });
-    const pages=svgs.map(svg=>'<section class="label"><img alt="" src="data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)))+'"></section>').join('');
+      const svgText=new XMLSerializer().serializeToString(svg);
+      const src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svgText)));
+      const price=Number.isFinite(x.price)?x.price.toFixed(2):'0.00';
+      return '<section class="label"><img class="bars" alt="" src="'+src+'"><div class="code">'+x.code.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+'</div><div class="price">'+price+' ج.م</div></section>';
+    }).join('');
     w.document.open();
-    w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Barcode</title><style>@page{size:50mm 30mm;margin:0}html,body{margin:0!important;padding:0!important;width:50mm!important;background:#fff!important}*{box-sizing:border-box}.label{width:50mm;height:30mm;margin:0;padding:1mm;display:flex;align-items:center;justify-content:center;overflow:hidden;page-break-after:always;break-after:page}.label img{display:block;width:48mm;height:27mm;object-fit:fill}@media screen{body{width:100%!important;background:#ddd!important}.label{background:white;margin:8px auto;box-shadow:0 0 3px #888}}</style></head><body>'+pages+'</body></html>');
+    w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Barcode</title><style>@page{size:50mm 30mm;margin:0}html,body{margin:0!important;padding:0!important;width:50mm!important;background:#fff!important}*{box-sizing:border-box}.label{width:50mm;height:30mm;margin:0;padding:1mm;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;overflow:hidden;page-break-after:always;break-after:page;font-family:Arial,sans-serif;color:#000;background:#fff}.bars{display:block;width:47mm;height:15mm;object-fit:fill}.code{font-size:10pt;font-weight:700;line-height:1.15;margin-top:1mm;white-space:nowrap}.price{font-size:12pt;font-weight:700;line-height:1.15;margin-top:1mm;white-space:nowrap}@media screen{body{width:100%!important;background:#ddd!important}.label{background:white;margin:8px auto;box-shadow:0 0 3px #888}}</style></head><body>'+pages+'</body></html>');
     w.document.close();
-    const doPrint=()=>{try{if(!w.document.querySelector('.label img')){alert('الباركود لم يظهر في صفحة الطباعة. اعمل تحديث قوي Ctrl+F5 وجرب مرة أخرى.');return}w.focus();w.print()}catch(e){alert('تعذر الطباعة: '+(e.message||e))}};
+    const doPrint=()=>{try{if(!w.document.querySelector('.label .bars')){alert('الباركود لم يظهر في صفحة الطباعة. اعمل تحديث قوي Ctrl+F5 وجرب مرة أخرى.');return}w.focus();w.print()}catch(e){alert('تعذر الطباعة: '+(e.message||e))}};
     w.onload=()=>setTimeout(doPrint,700);
     setTimeout(()=>{if(!w.closed&&w.document.readyState==='complete')doPrint()},1400);
   }catch(e){try{w.close()}catch(_){}alert('تعذر إنشاء الباركود: '+(e.message||e))}
