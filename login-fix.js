@@ -192,6 +192,23 @@
     }
   }
 
+  function ensurePublicPhone(){
+    var loginText=document.getElementById('loginText');
+    var card=document.querySelector('#login .login-card');
+    if(!card)return;
+    var phone=document.getElementById('faragello-public-phone');
+    if(!phone){
+      phone=document.createElement('div');
+      phone.id='faragello-public-phone';
+      phone.innerHTML='<div style="margin-bottom:3px">للتواصل والاستفسار</div><a href="tel:01128777287" dir="ltr" style="display:inline-block;color:#ffffff;font-size:20px;font-weight:700;letter-spacing:1px;text-decoration:none">01128777287</a>';
+    }
+    phone.style.cssText='display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;margin:10px auto 14px!important;padding:10px!important;width:100%!important;max-width:290px!important;box-sizing:border-box!important;text-align:center!important;border:1px solid rgba(41,223,255,.7)!important;border-radius:12px!important;background:rgba(0,110,180,.22)!important;color:#dff8ff!important;font-family:Tahoma,Arial,sans-serif!important;font-size:14px!important;line-height:1.7!important;z-index:2!important;';
+    var link=phone.querySelector('a');
+    if(link)link.style.cssText='display:inline-block!important;visibility:visible!important;opacity:1!important;color:#ffffff!important;font-size:20px!important;font-weight:700!important;letter-spacing:1px!important;text-decoration:none!important;direction:ltr!important;';
+    if(loginText && loginText.parentNode===card && loginText.nextElementSibling!==phone)loginText.insertAdjacentElement('afterend',phone);
+    else if(!phone.parentNode)card.appendChild(phone);
+  }
+
   function applyLoginDesign(){
     var old=document.getElementById('faragello-login-design-fix'); if(old) old.remove();
     var style=document.createElement('style'); style.id='faragello-login-design-fix'; style.textContent=`
@@ -209,7 +226,9 @@
   }
 
   function init(){
+    ensurePublicPhone();
     applyLoginDesign(); startMenuRecovery();
+    setTimeout(ensurePublicPhone,100); setTimeout(ensurePublicPhone,700);
     function recoverChoice(buttonId,role){var button=document.getElementById(buttonId);if(!button||button.dataset.recoveryBound==='yes')return;button.dataset.recoveryBound='yes';button.addEventListener('click',function(){try{if(typeof window.chooseLogin==='function'){window.chooseLogin(role)}else{var fields=document.getElementById('loginFields');var admin=document.getElementById('adminLoginChoice');var client=document.getElementById('clientLoginToggle');if(fields)fields.classList.remove('hidden');if(admin)admin.classList.add('hidden');if(client)client.classList.add('hidden');var title=document.getElementById('loginText');if(title)title.textContent=role==='admin'?'دخول المشرف — اكتب بياناتك':'دخول العميل — اكتب بياناتك'}}catch(e){var title=document.getElementById('loginText');if(title)title.textContent='حصل خطأ عند فتح الدخول: '+(e.message||String(e))}})}
     recoverChoice('adminLoginChoice','admin');recoverChoice('clientLoginToggle','client');
     var submit=document.getElementById('loginSubmit'); if(submit&&submit.dataset.recoveryBound!=='yes'){submit.dataset.recoveryBound='yes';submit.addEventListener('click',function(event){event.preventDefault();var errorBox=document.getElementById('loginErr');if(errorBox)errorBox.textContent='تم الضغط على زر الدخول، جاري فحص النظام...';try{if(typeof window.doLogin!=='function'){if(errorBox)errorBox.textContent='زر الدخول استجاب، لكن كود تسجيل الدخول الرئيسي لا يعمل.';return}Promise.resolve(window.doLogin()).catch(function(err){if(errorBox)errorBox.textContent='خطأ أثناء الدخول: '+(err&&err.message?err.message:String(err))})}catch(err){if(errorBox)errorBox.textContent='خطأ أثناء الدخول: '+(err&&err.message?err.message:String(err))}})}
