@@ -205,8 +205,20 @@ async function saveClient(){
       alert('تم إنشاء حساب العميل بالكامل. اسم المستخدم: '+username);
       return;
     }
-    const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);
-    if(error)throw error;
+if (password || username !== (old.username || '').toLowerCase()) {
+  const { error: authUpdateError } = await supabaseClient.rpc(
+    'admin_update_client_credentials',
+    {
+      p_client_id: item.id,
+      p_username: username,
+      p_password: password || null
+    }
+  );
+
+  if (authUpdateError) throw authUpdateError;
+}
+
+const {error}=await supabaseClient.from('client_accounts').update({name:item.name,username:item.username,project:item.project,email:item.email,status:item.status}).eq('id',item.id);    if(error)throw error;
     clients[clientEditIndex]=item;
     saveClients();closeClientModal();renderClients();
     if(password) alert('تم تعديل بيانات العميل. كلمة المرور الجديدة تحتاج تنفيذ عملية Auth آمنة من السيرفر؛ لم يتم تخزين كلمة المرور داخل الموقع.');
