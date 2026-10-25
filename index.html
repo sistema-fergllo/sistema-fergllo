@@ -359,33 +359,38 @@ function printReport(){
   const page=document.getElementById('reports');
   if(!page){alert('صفحة التقارير غير موجودة');return}
   window.renderReports();
-  const reportWindow=window.open('','_blank','width=1000,height=750');
-  if(!reportWindow){alert('المتصفح منع نافذة الطباعة. اسمح بالنوافذ المنبثقة ثم جرّب مرة أخرى.');return}
+  const w=window.open('','_blank','width=900,height=700');
+  if(!w){alert('اسمح بفتح النوافذ المنبثقة حتى تتمكن من طباعة التقرير');return}
+  const from=document.getElementById('repFrom')?.value||'كل التواريخ';
+  const to=document.getElementById('repTo')?.value||'حتى الآن';
+  const shift=document.getElementById('repShift')?.value||'كل الشيفتات';
+  const value=id=>document.getElementById(id)?.textContent||'—';
   const report=page.cloneNode(true);
-  report.querySelectorAll('button,.toolbar').forEach(el=>el.remove());
-  report.classList.remove('page','hidden','printing');
+  report.querySelectorAll('button,.toolbar,.title,.cards').forEach(el=>el.remove());
+  const tables=report.innerHTML;
   const styles=`
     @page{size:auto;margin:12mm}
     *{box-sizing:border-box}
-    body{font-family:Tahoma,Arial,sans-serif;direction:rtl;color:#111;background:#fff;margin:0;padding:18px}
-    h1,h2,h3{color:#111;margin:0 0 12px}
-    .title{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-    .sub{color:#444;margin-top:6px}
-    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
-    .card,.panel{border:1px solid #bbb;border-radius:6px;padding:10px;margin-bottom:12px;background:#fff;box-shadow:none}
-    table{width:100%;border-collapse:collapse;margin:10px 0 18px;font-size:12px}
-    th,td{border:1px solid #777;padding:7px;text-align:right;color:#111;background:#fff}
-    th{font-weight:bold;background:#eee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    input,select{border:1px solid #999;padding:5px;color:#111;background:#fff}
-    button,.btn,.toolbar{display:none!important}
-    .page,.hidden{display:block!important}
-    @media print{body{padding:0}.panel,.card{break-inside:avoid}}
+    body{font-family:Tahoma,Arial,sans-serif;direction:rtl;padding:28px;color:#111;background:#fff;font-size:13px}
+    h1{text-align:center;margin:0 0 6px;font-size:25px}
+    .subtitle{text-align:center;color:#444;margin:0 0 24px}
+    .meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0}
+    .field{border:1px solid #999;padding:12px;border-radius:5px;min-height:42px}
+    .summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+    .summary .field{font-size:14px}
+    h3{font-size:16px;margin:18px 0 8px;border:1px solid #999;padding:10px;background:#f3f3f3}
+    table{width:100%;border-collapse:collapse;margin:0 0 22px;table-layout:auto}
+    th,td{border:1px solid #777;padding:10px;text-align:center;color:#111;background:#fff}
+    th{background:#eee!important;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .cash-panel,.table-wrap{width:100%;margin:0;padding:0;border:0;box-shadow:none;background:#fff}
+    .empty{color:#444}
+    .sign{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:55px;text-align:center}
+    .sign div{border-top:1px solid #555;padding-top:10px}
+    @media print{body{padding:0}h3,table,.meta,.summary{break-inside:avoid}}
   `;
-  reportWindow.document.open();
-  reportWindow.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير سيستم فرجللو</title><style>'+styles+'</style></head><body><h1 style="text-align:center;margin-bottom:18px">سيستم فرجللو — تقرير المبيعات</h1>'+report.innerHTML+'</body></html>');
-  reportWindow.document.close();
-  reportWindow.focus();
-  reportWindow.onload=()=>{reportWindow.focus();reportWindow.print()};
+  w.document.open();
+  w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير سيستم فرجللو</title><style>'+styles+'</style></head><body><h1>سيستم فرجللو</h1><p class="subtitle">تقرير المبيعات وحركة الأصناف</p><div class="meta"><div class="field"><b>من تاريخ:</b> '+from+'</div><div class="field"><b>إلى تاريخ:</b> '+to+'</div><div class="field"><b>الشيفت:</b> '+shift+'</div><div class="field"><b>تاريخ الطباعة:</b> '+new Date().toLocaleString('ar-EG')+'</div></div><div class="summary"><div class="field"><b>إجمالي المبيعات:</b> '+value('rTotal')+'</div><div class="field"><b>عدد عمليات البيع:</b> '+value('rInvoices')+'</div><div class="field"><b>إجمالي القطع:</b> '+value('rUnits')+'</div><div class="field"><b>متوسط البيع:</b> '+value('rAvg')+'</div></div>'+tables+'<div class="sign"><div>إعداد التقرير</div><div>مراجعة المسؤول</div><div>اعتماد الإدارة</div></div><script>window.onload=()=>window.print()<\\/script></body></html>');
+  w.document.close();
 }
 
 
