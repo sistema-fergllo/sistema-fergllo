@@ -7,7 +7,6 @@
     var style = document.createElement('style');
     style.id = 'faragello-login-design-fix';
     style.textContent = `
-      /* Client login button: force the same light-blue/cyan look as supervisor login. */
       #login .login-card #clientLoginToggle,
       #login .login-card .btn.gray,
       #login .login-card button:nth-of-type(2) {
@@ -17,21 +16,27 @@
         box-shadow: 0 5px 14px rgba(0,160,255,.25) !important;
       }
 
-      /* Make the text below "سيستم فرجللو" a little bolder. */
-      #login .login-card p,
-      #login .login-card button,
+      /* External login title and supervisor line: normal/light weight. */
+      #login .login-card h1,
+      #login .login-card h1 * {
+        font-weight: 400 !important;
+      }
       #login .login-card > div:last-child,
       #login .login-card > div:last-child * {
+        font-weight: 400 !important;
+      }
+
+      /* Keep the remaining login controls slightly emphasized. */
+      #login .login-card p,
+      #login .login-card button {
         font-weight: 600 !important;
       }
 
-      /* Footer/name line: force light blue even if an older inline style exists. */
       #login .login-card > div:last-child,
       #login .login-card > div:last-child * {
         color: #8deaff !important;
       }
 
-      /* Faragello System: make the whole sidebar menu clearly bold. */
       #app .side .nav,
       #app .side .nav a,
       #app .side .nav button,
@@ -55,7 +60,7 @@
         var text = (el.textContent || '').trim();
         if (text.indexOf('Farag El-Sayed') !== -1) {
           el.style.setProperty('color', '#8deaff', 'important');
-          el.style.setProperty('font-weight', '600', 'important');
+          el.style.setProperty('font-weight', '400', 'important');
         }
       });
     }
