@@ -1,27 +1,57 @@
 /* Login recovery + final login visual fixes. */
 (function () {
   function applyLoginDesign() {
-    if (document.getElementById('faragello-login-design-fix')) return;
+    var old = document.getElementById('faragello-login-design-fix');
+    if (old) old.remove();
+
     var style = document.createElement('style');
     style.id = 'faragello-login-design-fix';
     style.textContent = `
-      #login #clientLoginToggle {
+      /* Client login button: force the same light-blue/cyan look as supervisor login. */
+      #login .login-card #clientLoginToggle,
+      #login .login-card .btn.gray,
+      #login .login-card button:nth-of-type(2) {
         background: linear-gradient(100deg,#00c8ff,#0877ff) !important;
         border: 1px solid #29dfff !important;
         color: #fff !important;
         box-shadow: 0 5px 14px rgba(0,160,255,.25) !important;
       }
-      #login .login-card > div:last-child {
+
+      /* Make the text below "سيستم فرجللو" a little bolder. */
+      #login .login-card p,
+      #login .login-card button,
+      #login .login-card > div:last-child,
+      #login .login-card > div:last-child * {
+        font-weight: 600 !important;
+      }
+
+      /* Footer/name line: force light blue even if an older inline style exists. */
+      #login .login-card > div:last-child,
+      #login .login-card > div:last-child * {
         color: #8deaff !important;
       }
     `;
     document.head.appendChild(style);
 
-    var footer = Array.from(document.querySelectorAll('#login .login-card > div')).find(function (el) {
-      return (el.textContent || '').indexOf('Farag El-Sayed') !== -1;
-    });
-    if (footer) {
-      footer.style.setProperty('color', '#8deaff', 'important');
+    function colorFooter() {
+      var nodes = document.querySelectorAll('#login .login-card *');
+      nodes.forEach(function (el) {
+        var text = (el.textContent || '').trim();
+        if (text.indexOf('Farag El-Sayed') !== -1) {
+          el.style.setProperty('color', '#8deaff', 'important');
+          el.style.setProperty('font-weight', '600', 'important');
+        }
+      });
+    }
+
+    colorFooter();
+
+    if (!window.__faragelloLoginObserver) {
+      window.__faragelloLoginObserver = new MutationObserver(function () {
+        colorFooter();
+      });
+      var login = document.getElementById('login');
+      if (login) window.__faragelloLoginObserver.observe(login, {childList:true,subtree:true,characterData:true});
     }
   }
 
