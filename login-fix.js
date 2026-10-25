@@ -133,12 +133,15 @@
   function escapeAttr(s){ return escapeHtml(s); }
 
   function openInventoryCountReport(clicked){
-    addInventoryCountReportPage();
+    // Use the single, official report page from index.html. Do not create/show the old inventory-count table.
     document.querySelectorAll('#app main .page').forEach(function(p){ p.classList.add('hidden'); });
     document.querySelectorAll('#app .side .nav').forEach(function(n){ n.classList.remove('active'); });
     if(clicked) clicked.classList.add('active');
-    var target=document.getElementById('faragello-inventory-count-page');
-    if(target){ target.classList.remove('hidden'); renderCountReport(); }
+    var target=document.getElementById('stocktake');
+    if(target){
+      target.classList.remove('hidden');
+      if(typeof window.renderInventoryAudit==='function') window.renderInventoryAudit();
+    }
   }
 
   function bindInventoryCountNavigation(){
@@ -157,7 +160,7 @@
   }
 
   function addInventoryCountMenu(){
-    addInventoryCountReportPage();
+    // The official "الجرد" menu item already exists in index.html; keep it and route it to the summary report.
     bindInventoryCountNavigation();
     var side = document.querySelector('#app .side');
     if(!side) return;
