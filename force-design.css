@@ -12,16 +12,30 @@ html,body{width:100%;min-height:100%;margin:0!important;padding:0!important;over
 
 /* Sidebar: text only — remove all menu icons */
 #app .side .nav-icon{display:none!important}
-#app .side .nav{padding-right:16px!important;padding-left:16px!important}
+#app .side .nav{padding-right:16px!important;padding-left:16px!important;font-weight:700!important;font-size:17px!important;letter-spacing:.1px}
+#app .side .nav *{font-weight:700!important}
+
+/* All visible menu/navigation labels inside the system */
+#app .nav,
+#app .nav span,
+#app .side button,
+#app .side a,
+#app .side .logout,
+#app .toolbar button,
+#app .toolbar select,
+#app .toolbar label,
+#app .title button,
+#app .btn,
+#app .table th,
+#app .table td,
+#app .card .label,
+#app .card .value,
+#app .modal button,
+#app .modal label,
+#app .modal h3{font-weight:700!important}
 
 /* Login screen final colors */
-#login #clientLoginToggle{
-  background:linear-gradient(100deg,#00c8ff,#0877ff)!important;
-  border:1px solid #29dfff!important;
-  color:#fff!important;
-}
-#login .login-card > div:last-child{
-  color:#8deaff!important;
-}
+#login #clientLoginToggle{background:linear-gradient(100deg,#00c8ff,#0877ff)!important;border:1px solid #29dfff!important;color:#fff!important}
+#login .login-card > div:last-child{color:#8deaff!important}
 
 @media(max-width:700px){#app{background-attachment:scroll!important}#login.login-screen{padding:12px!important}}
