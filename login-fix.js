@@ -213,4 +213,67 @@
     window.addEventListener('error',function(event){var box=document.getElementById('loginText');if(box&&event.message)box.textContent='خطأ تشغيل بالموقع: '+event.message});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();(function () {
+  function connectClientCredentialUpdate() {
+    if (window.__faragelloCredentialUpdateBound) return;
+    if (typeof window.saveClient !== 'function') return;
+
+    window.__faragelloCredentialUpdateBound = true;
+
+    const originalSaveClient = window.saveClient;
+
+    window.saveClient = async function () {
+      try {
+        const index = typeof clientEditIndex === 'number' ? clientEditIndex : -1;
+        const old = index >= 0 && Array.isArray(clients) ? clients[index] : null;
+
+        if (!old) {
+          return originalSaveClient.apply(this, arguments);
+        }
+
+        const usernameInput = document.getElementById('clientUsername');
+        const passwordInput = document.getElementById('clientPassword');
+
+        const username = (usernameInput?.value || '').trim().toLowerCase();
+        const password = passwordInput?.value || '';
+
+        if (!/^[a-z0-9._-]+$/.test(username)) {
+          return originalSaveClient.apply(this, arguments);
+        }
+
+        if (password && password.length < 6) {
+          return originalSaveClient.apply(this, arguments);
+        }
+
+        const { error } = await supabaseClient.rpc(
+          'admin_update_client_credentials',
+          {
+            p_client_id: old.id,
+            p_username: username,
+            p_password: password || null
+          }
+        );
+
+        if (error) {
+          alert('تعذر تحديث بيانات دخول العميل: ' + (error.message || error));
+          return;
+        }
+
+        if (passwordInput) passwordInput.value = '';
+
+        await originalSaveClient.apply(this, arguments);
+
+      } catch (e) {
+        alert('تعذر تحديث حساب العميل: ' + (e.message || e));
+      }
+    };
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(connectClientCredentialUpdate, 500);
+    });
+  } else {
+    setTimeout(connectClientCredentialUpdate, 500);
+  }
 })();
