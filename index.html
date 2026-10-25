@@ -356,16 +356,36 @@ function renderReports(){return window.renderReports()}
 
 async function refreshSalesFromCloud(){if(!cloudReady)return;if(currentProfileRole==='client'){if(!activeClient?.id)return;const{data,error}=await supabaseClient.from('client_sales').select('id,created_at,shift,pay,total,items_summary').eq('client_id',activeClient.id).order('created_at',{ascending:false}).limit(300);if(error)throw error;sales=mergeSalesWithCache(data)}else{const{data,error}=await supabaseClient.from('shared_sales').select('id,created_at,shift,pay,total,items_summary').order('created_at',{ascending:false}).limit(300);if(error)throw error;sales=mergeSalesWithCache(data)}localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify(sales));window.renderSales();updateDashboard();if(!document.getElementById('reports').classList.contains('hidden'))renderReports()}
 function printReport(){
-const page=document.getElementById('reports');
-if(!page){alert('صفحة التقارير غير موجودة');return}
-window.renderReports();
-const oldTitle=document.title;
-document.title='تقرير سيستم فرجللو';
-page.classList.add('printing');
-const cleanup=()=>{page.classList.remove('printing');document.title=oldTitle;window.removeEventListener('afterprint',cleanup)};
-window.addEventListener('afterprint',cleanup);
-window.print();
-setTimeout(()=>{page.classList.remove('printing');document.title=oldTitle;window.removeEventListener('afterprint',cleanup)},1000);
+  const page=document.getElementById('reports');
+  if(!page){alert('صفحة التقارير غير موجودة');return}
+  window.renderReports();
+  const reportWindow=window.open('','_blank','width=1000,height=750');
+  if(!reportWindow){alert('المتصفح منع نافذة الطباعة. اسمح بالنوافذ المنبثقة ثم جرّب مرة أخرى.');return}
+  const report=page.cloneNode(true);
+  report.querySelectorAll('button,.toolbar').forEach(el=>el.remove());
+  report.classList.remove('page','hidden','printing');
+  const styles=`
+    @page{size:auto;margin:12mm}
+    *{box-sizing:border-box}
+    body{font-family:Tahoma,Arial,sans-serif;direction:rtl;color:#111;background:#fff;margin:0;padding:18px}
+    h1,h2,h3{color:#111;margin:0 0 12px}
+    .title{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .sub{color:#444;margin-top:6px}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+    .card,.panel{border:1px solid #bbb;border-radius:6px;padding:10px;margin-bottom:12px;background:#fff;box-shadow:none}
+    table{width:100%;border-collapse:collapse;margin:10px 0 18px;font-size:12px}
+    th,td{border:1px solid #777;padding:7px;text-align:right;color:#111;background:#fff}
+    th{font-weight:bold;background:#eee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    input,select{border:1px solid #999;padding:5px;color:#111;background:#fff}
+    button,.btn,.toolbar{display:none!important}
+    .page,.hidden{display:block!important}
+    @media print{body{padding:0}.panel,.card{break-inside:avoid}}
+  `;
+  reportWindow.document.open();
+  reportWindow.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير سيستم فرجللو</title><style>'+styles+'</style></head><body><h1 style="text-align:center;margin-bottom:18px">سيستم فرجللو — تقرير المبيعات</h1>'+report.innerHTML+'</body></html>');
+  reportWindow.document.close();
+  reportWindow.focus();
+  reportWindow.onload=()=>{reportWindow.focus();reportWindow.print()};
 }
 
 
