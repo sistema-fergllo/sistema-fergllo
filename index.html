@@ -324,26 +324,35 @@ function closeBarcodeModal(){document.getElementById('barcodeModal')?.classList.
 function printSelectedBarcode(){const code=document.getElementById('bcSelect')?.value;const qty=Math.max(1,Math.min(500,parseInt(document.getElementById('bcQty')?.value||'1',10)));if(!code){alert('اختار الصنف الأول');return}closeBarcodeModal();printBarcodeByCode(code,qty)}
 function printBarcode(code){printBarcodeByCode(code,1)}
 function printAllBarcodes(){
-  if(!inventory||!inventory.length){alert('المخزون فارغ، أضف أصنافًا أولًا');return}
-  const w=window.open('','_blank','width=600,height=700');
-  if(!w){alert('اسمح بالنوافذ المنبثقة للطباعة');return}
-  const labels=inventory.filter(x=>String(x.code||'').trim()).map(x=>({code:String(x.code),name:String(x.name||''),price:Number(x.price||0)}));
-  writeBarcodePrintWindow(w,labels);
+  const rows=(Array.isArray(inventory)?inventory:[]).filter(x=>String(x.code||'').trim());
+  if(!rows.length){alert('مفيش أصناف بأكواد في المخزون علشان نطبعها');return}
+  printLabelsInFrame(rows.map(x=>({code:String(x.code),name:String(x.name||''),price:Number(x.price||0)})));
 }
 function printBarcodeByCode(code,qty=1){
-  const item=(inventory||[]).find(x=>String(x.code)===String(code));
-  if(!item){alert('الصنف غير موجود في المخزون');return}
-  const w=window.open('','_blank','width=600,height=700');
-  if(!w){alert('اسمح بالنوافذ المنبثقة للطباعة');return}
+  const item=(Array.isArray(inventory)?inventory:[]).find(x=>String(x.code)===String(code));
+  if(!item){alert('الصنف مش موجود في المخزون. افتح المخزون وتأكد من الكود.');return}
   const count=Math.max(1,Math.min(500,parseInt(qty||1,10)));
-  writeBarcodePrintWindow(w,Array.from({length:count},()=>({code:String(item.code),name:String(item.name||''),price:Number(item.price||0)})));
+  printLabelsInFrame(Array.from({length:count},()=>({code:String(item.code),name:String(item.name||''),price:Number(item.price||0)})));
 }
-function writeBarcodePrintWindow(w,labels){
-  const labelHtml=labels.map(x=>'<section class="label"><div class="name">'+escapeBarcodeText(x.name)+'</div><svg class="barcode" data-code="'+escapeBarcodeText(x.code)+'"></svg><div class="code">'+escapeBarcodeText(x.code)+'</div><div class="price">'+(x.price?money(x.price):'')+'</div></section>').join('');
-  w.document.open();
-  w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>باركود فرجللو</title><style>@page{size:50mm 30mm;margin:0}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#000;font-family:Tahoma,Arial,sans-serif}.label{width:50mm;height:30mm;padding:1.2mm 1.5mm;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;page-break-after:always;break-after:page}.name{font-size:9pt;font-weight:bold;text-align:center;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.barcode{width:46mm;height:14mm;max-width:100%}.code{font-size:8pt;direction:ltr;text-align:center;line-height:1.1}.price{font-size:8pt;font-weight:bold;margin-top:1mm}@media screen{body{padding:10px}.label{border:1px dashed #bbb;margin:0 auto 8px}}</style></head><body>'+labelHtml+'<script>function makePrint(){try{var maker=(window.opener&&window.opener.JsBarcode)||window.JsBarcode;if(maker){document.querySelectorAll("svg.barcode").forEach(function(svg){maker(svg,svg.getAttribute("data-code"),{format:"CODE128",displayValue:false,margin:0,height:42,width:1.35,lineColor:"#000",background:"#fff"});});}else{document.querySelectorAll("svg.barcode").forEach(function(svg){var c=svg.getAttribute("data-code")||"";var d=document.createElement("div");d.style.cssText="font-family:monospace;font-size:15pt;letter-spacing:1px;direction:ltr";d.textContent=c;svg.replaceWith(d);});}setTimeout(function(){try{window.focus();window.print()}catch(e){alert("تعذر فتح نافذة الطباعة: "+e.message)}},500)}catch(e){alert("تعذر تجهيز الملصقات: "+e.message);setTimeout(function(){window.print()},500)}}if(document.readyState==="complete")makePrint();else window.addEventListener("load",makePrint);<\/script></body></html>');
-  w.document.close();
+function printLabelsInFrame(labels){
+  if(typeof window.JsBarcode!=='function'){alert('مكتبة الباركود لم تتحمل. اعمل Ctrl+F5 وتأكد من اتصال الإنترنت ثم جرّب تاني.');return}
+  let frame=document.getElementById('ferglloBarcodePrintFrame');
+  if(frame)frame.remove();
+  frame=document.createElement('iframe');
+  frame.id='ferglloBarcodePrintFrame';
+  frame.style.cssText='position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0;pointer-events:none';
+  document.body.appendChild(frame);
+  const d=frame.contentDocument;
+  const labelHtml=labels.map(x=>'<section class="label"><div class="name">'+escapeBarcodeText(x.name)+'</div><svg class="barcode" data-code="'+escapeBarcodeText(x.code)+'"></svg><div class="code">'+escapeBarcodeText(x.code)+'</div><div class="price">'+(x.price?escapeBarcodeText(money(x.price)):'')+'</div></section>').join('');
+  d.open();
+  d.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>ملصقات فرجللو</title><style>@page{size:50mm 30mm;margin:0}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#000;font-family:Tahoma,Arial,sans-serif}.label{width:50mm;height:30mm;padding:1mm 1.5mm;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;page-break-after:always;break-after:page}.name{font-size:9pt;font-weight:bold;text-align:center;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.barcode{width:46mm;height:14mm;max-width:100%}.code{font-size:8pt;direction:ltr;text-align:center;line-height:1.1}.price{font-size:8pt;font-weight:bold;margin-top:1mm}</style></head><body>'+labelHtml+'</body></html>');
+  d.close();
+  try{
+    d.querySelectorAll('svg.barcode').forEach(svg=>window.JsBarcode(svg,svg.getAttribute('data-code'),{format:'CODE128',displayValue:false,margin:0,height:42,width:1.35,lineColor:'#000',background:'#fff'}));
+    setTimeout(()=>{try{frame.contentWindow.focus();frame.contentWindow.print()}catch(e){alert('المتصفح منع فتح الطباعة: '+(e.message||e))}},250);
+  }catch(e){frame.remove();alert('تعذر تجهيز الباركود: '+(e.message||e))}
 }
+function writeBarcodePrintWindow(w,labels){printLabelsInFrame(labels);try{w.close()}catch(e){}}
 function renderCart(){let b=document.getElementById('cartBody');b.innerHTML='';let total=0;if(!cart.length)b.innerHTML='<tr><td colspan="6" class="empty">امسح الباركود أو اكتب الكود لإضافة صنف</td></tr>';cart.forEach((x,i)=>{let t=x.qty*x.price;total+=t;b.innerHTML+=`<tr><td>${x.code}</td><td>${x.name}</td><td><input style="width:70px;background:#041326;color:#fff;border:1px solid #155083;border-radius:6px;padding:7px;text-align:center" type="number" min="1" value="${x.qty}" onchange="changeCartQty(${i},this.value)"></td><td>${money(x.price)}</td><td>${money(t)}</td><td><button class="btn red" onclick="removeCart(${i})">حذف</button></td></tr>`});document.getElementById('cartTotal').textContent=money(total)}
 function addToCart(){let input=document.getElementById('scan'),code=input.value.trim();if(!code)return;let item=inventory.find(x=>String(x.code)===code);if(!item){alert('الكود غير موجود في المخزون');input.select();return}let existing=cart.find(x=>x.code===item.code);if(existing){if(existing.qty+1>item.qty)alert('الكمية المتاحة غير كافية');else existing.qty++}else{if(item.qty<1){alert('الصنف نافد من المخزون');input.select();return}cart.push({code:item.code,name:item.name,price:Number(item.price||0),qty:1})}input.value='';renderCart();input.focus()}function changeCartQty(i,v){let n=Math.max(1,Number(v||1)),stock=inventory.find(x=>x.code===cart[i].code);cart[i].qty=Math.min(n,Number(stock.qty||0));renderCart()}function removeCart(i){cart.splice(i,1);renderCart()}function clearCart(){cart=[];renderCart()}
 async function completeSale(){
