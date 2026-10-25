@@ -129,47 +129,69 @@
     if(items) items.textContent=rows.length; if(okEl) okEl.textContent=ok; if(shortEl) shortEl.textContent=short; if(overEl) overEl.textContent=over;
   }
 
-  function escapeHtml(s){ return String(s).replace(/[&<>'"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]; }); }
+  function escapeHtml(s){ return String(s).replace(/[&<>'\"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]; }); }
   function escapeAttr(s){ return escapeHtml(s); }
 
-  function addInventoryCountMenu() {
-    var side = document.querySelector('#app .side');
-    if (!side) return;
+  function openInventoryCountReport(clicked){
     addInventoryCountReportPage();
-    if (document.getElementById('faragello-inventory-count-nav')) return;
+    document.querySelectorAll('#app main .page').forEach(function(p){ p.classList.add('hidden'); });
+    document.querySelectorAll('#app .side .nav').forEach(function(n){ n.classList.remove('active'); });
+    if(clicked) clicked.classList.add('active');
+    var target=document.getElementById('faragello-inventory-count-page');
+    if(target){ target.classList.remove('hidden'); renderCountReport(); }
+  }
+
+  function bindInventoryCountNavigation(){
+    if(window.__faragelloCountCaptureBound) return;
+    window.__faragelloCountCaptureBound = true;
+    document.addEventListener('click', function(event){
+      var nav = event.target.closest ? event.target.closest('#app .side .nav') : null;
+      if(!nav) return;
+      var text = (nav.textContent || '').replace(/\s+/g,' ').trim();
+      if(text.indexOf('الجرد') !== -1){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        openInventoryCountReport(nav);
+      }
+    }, true);
+  }
+
+  function addInventoryCountMenu(){
+    addInventoryCountReportPage();
+    bindInventoryCountNavigation();
+    var side = document.querySelector('#app .side');
+    if(!side) return;
     var navs = Array.prototype.slice.call(side.querySelectorAll('.nav'));
-    var inventory = navs.find(function (el) {
-      var t = (el.textContent || '').replace(/\s+/g, ' ').trim();
+    var originalCount = navs.find(function(el){ return (el.textContent || '').replace(/\s+/g,' ').trim().indexOf('الجرد') !== -1; });
+    if(originalCount) return;
+    var inventory = navs.find(function(el){
+      var t=(el.textContent || '').replace(/\s+/g,' ').trim();
       return t.indexOf('المخزون') !== -1 && t.indexOf('الجرد') === -1;
     });
-    if (!inventory) return;
-    var item = document.createElement('button');
-    item.id = 'faragello-inventory-count-nav';
-    item.className = 'nav';
-    item.type = 'button';
-    item.textContent = 'الجرد';
-    item.setAttribute('aria-label', 'الجرد');
-    item.style.cssText = 'font-weight:800!important;font-size:17px!important;width:100%;text-align:right;color:#e9f4ff;display:block;visibility:visible;opacity:1;';
-    item.addEventListener('click', function () {
-      document.querySelectorAll('#app .side .nav').forEach(function (n) { n.classList.remove('active'); });
-      item.classList.add('active');
-      document.querySelectorAll('#app main .page').forEach(function (p) { p.classList.add('hidden'); });
-      var target = document.getElementById('faragello-inventory-count-page');
-      if (target) target.classList.remove('hidden');
-      renderCountReport();
-    });
+    if(!inventory || document.getElementById('faragello-inventory-count-nav')) return;
+    var item=document.createElement('button');
+    item.id='faragello-inventory-count-nav';
+    item.className='nav';
+    item.type='button';
+    item.textContent='الجرد';
+    item.setAttribute('aria-label','الجرد');
+    item.style.cssText='font-weight:800!important;font-size:17px!important;width:100%;text-align:right;color:#e9f4ff;display:block;visibility:visible;opacity:1;';
     inventory.parentNode.insertBefore(item, inventory.nextSibling);
   }
 
-  function startMenuRecovery() {
+  function startMenuRecovery(){
     addInventoryCountMenu();
-    setTimeout(addInventoryCountMenu, 100); setTimeout(addInventoryCountMenu, 500); setTimeout(addInventoryCountMenu, 1000); setTimeout(addInventoryCountMenu, 2000); setTimeout(addInventoryCountMenu, 4000);
-    if (!window.__faragelloMenuObserver) { window.__faragelloMenuObserver = new MutationObserver(function () { addInventoryCountMenu(); }); var app = document.getElementById('app'); if (app) window.__faragelloMenuObserver.observe(app, {childList:true,subtree:true}); }
+    setTimeout(addInventoryCountMenu,100); setTimeout(addInventoryCountMenu,500); setTimeout(addInventoryCountMenu,1000); setTimeout(addInventoryCountMenu,2000); setTimeout(addInventoryCountMenu,4000);
+    if(!window.__faragelloMenuObserver){
+      window.__faragelloMenuObserver=new MutationObserver(function(){ addInventoryCountMenu(); });
+      var app=document.getElementById('app');
+      if(app) window.__faragelloMenuObserver.observe(app,{childList:true,subtree:true});
+    }
   }
 
-  function applyLoginDesign() {
-    var old = document.getElementById('faragello-login-design-fix'); if (old) old.remove();
-    var style = document.createElement('style'); style.id = 'faragello-login-design-fix'; style.textContent = `
+  function applyLoginDesign(){
+    var old=document.getElementById('faragello-login-design-fix'); if(old) old.remove();
+    var style=document.createElement('style'); style.id='faragello-login-design-fix'; style.textContent=`
       #login .login-card #clientLoginToggle,#login .login-card .btn.gray,#login .login-card button:nth-of-type(2){background:linear-gradient(100deg,#00c8ff,#0877ff)!important;border:1px solid #29dfff!important;color:#fff!important;box-shadow:0 5px 14px rgba(0,160,255,.25)!important}
       #login .login-card h1,#login .login-card h1 *,#login .login-card p,#login .login-card p *,#login .login-card > div:last-child,#login .login-card > div:last-child *{font-family:Arial,sans-serif!important;font-weight:300!important;font-style:normal!important}
       #login .login-card button{font-family:Tahoma,Arial,sans-serif!important;font-weight:600!important}
