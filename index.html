@@ -267,16 +267,59 @@ function renderTransfers(){const b=document.getElementById('transfersBody');if(!
 function createTransferPermit(){const from=document.getElementById('trFrom').value.trim(),to=document.getElementById('trTo').value.trim();if(!from||!to){alert('اكتب جهة الإرسال وجهة الاستلام أولًا');return}const id='TR-'+String(Date.now()).slice(-6);transferPermits.push({id,from,to,note:document.getElementById('trNote').value.trim(),date:new Date().toLocaleString('ar-EG'),status:'قيد المراجعة'});localStorage.setItem('frg_transfer_permits',JSON.stringify(transferPermits));document.getElementById('trFrom').value='';document.getElementById('trTo').value='';document.getElementById('trNote').value='';renderTransfers();alert('تم إنشاء إذن التحويل رقم '+id)}
 function printTransferPermit(){const from=document.getElementById('trFrom').value.trim()||'—',to=document.getElementById('trTo').value.trim()||'—',note=document.getElementById('trNote').value.trim()||'—';const w=window.open('','_blank','width=800,height=700');if(!w){alert('اسمح بالنوافذ المنبثقة ثم جرّب الطباعة.');return}w.document.write('<!doctype html><html dir="rtl"><head><meta charset="utf-8"><title>إذن تحويل - سيستم فرجللو</title><style>body{font-family:Tahoma,Arial;padding:30px;color:#111}.box{border:2px solid #111;padding:25px}.row{padding:12px;border-bottom:1px solid #ddd;font-size:18px}h1{text-align:center}</style></head><body><div class="box"><h1>إذن تحويل - سيستم فرجللو</h1><div class="row"><b>من:</b> '+from+'</div><div class="row"><b>إلى:</b> '+to+'</div><div class="row"><b>التاريخ:</b> '+new Date().toLocaleString('ar-EG')+'</div><div class="row"><b>ملاحظات:</b> '+note+'</div><div style="margin-top:60px;display:flex;justify-content:space-between"><b>توقيع المرسل: __________</b><b>توقيع المستلم: __________</b></div></div><script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>');w.document.close()}
 ```js
-function renderReports(){const from=document.getElementById('repFrom').value,to=document.getElementById('repTo').value,shift=document.getElementById('repShift').value,list=(sales||[]).map(s=>{let items=Array.isArray(s.items)?s.items:(s.items_summary&&Array.isArray(s.items_summary)?s.items_summary:[]);return {...s,itemsArr:items,reportDate:s.created_at?new Date(s.created_at):new Date(s.date)}}).filter(s=>{if(isNaN(s.reportDate.getTime()))return false;const day=s.reportDate.toISOString().slice(0,10);return(!from||day>=from)&&(!to||day<=to)&&(!shift||s.shift===shift)}),total=list.reduce((a,s)=>a+Number(s.total||0),0),units=list.reduce((a,s)=>a+s.itemsArr.reduce((n,i)=>n+Number(i.qty||0),0),0);document.getElementById('rTotal').textContent=money(total);document.getElementById('rInvoices').textContent=list.length;document.getElementById('rUnits').textContent=units;document.getElementById('rAvg').textContent=money(list.length?total/list.length:0);const sb=document.getElementById('shiftBody');sb.innerHTML='';['صباحي','مسائي','السهرة'].forEach(sh=>{const a=list.filter(x=>x.shift===sh),t=a.reduce((n,x)=>n+Number(x.total||0),0);sb.innerHTML+=`<tr><td>${sh}</td><td>${a.length}</td><td>${money(t)}</td></tr>`});const top={};list.forEach(s=>s.itemsArr.forEach(i=>{const name=i.name||'غير معروف',qty=Number(i.qty||0);top[name]=(top[name]||0)+qty}));const tb=document.getElementById('topBody');tb.innerHTML='';Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,20).forEach(([name,qty])=>{const it=inventory.find(x=>x.name===name);tb.innerHTML+=`<tr><td>${name}</td><td>${it?it.code:'-'}</td><td>${qty}</td><td>${it?money(qty*it.price):'-'}</td></tr>`})}
-```</script>
-</body></html>
 
-<!-- deploy-trigger-20261024-optional-page-passwords -->
+function renderReports(){
+const from=document.getElementById('repFrom').value;
+const to=document.getElementById('repTo').value;
+const shift=document.getElementById('repShift').value;
 
-<!-- deploy-trigger-20261024-client-credentials-v2 -->
+const filtered=(sales||[]).map(s=>{
+let items=Array.isArray(s.items)?s.items:
+(Array.isArray(s.items_summary)?s.items_summary:[]);
+let date=s.created_at||s.date;
+let d=new Date(date);
+return {...s,itemsArr:items,reportDate:d};
+}).filter(s=>{
+if(isNaN(s.reportDate.getTime()))return false;
+const day=s.reportDate.toISOString().slice(0,10);
+return (!from||day>=from)&&(!to||day<=to)&&(!shift||s.shift===shift);
+});
 
-<!-- deploy-trigger-20261024-client-credentials-v3 -->
+const total=filtered.reduce((a,s)=>a+Number(s.total||0),0);
+const units=filtered.reduce((a,s)=>a+s.itemsArr.reduce((n,i)=>n+Number(i.qty||0),0),0);
 
-<!-- deploy-trigger-20261024-calculator-icon-v1 -->
+document.getElementById('rTotal').textContent=money(total);
+document.getElementById('rInvoices').textContent=filtered.length;
+document.getElementById('rUnits').textContent=units;
+document.getElementById('rAvg').textContent=money(filtered.length?total/filtered.length:0);
 
-<!-- deploy-trigger-20261024-manager-client-menu-v1 -->
+const sb=document.getElementById('shiftBody');
+sb.innerHTML='';
+['صباحي','مسائي','السهرة'].forEach(sh=>{
+const a=filtered.filter(x=>x.shift===sh);
+const t=a.reduce((n,x)=>n+Number(x.total||0),0);
+sb.innerHTML+=`<tr><td>${sh}</td><td>${a.length}</td><td>${money(t)}</td></tr>`;
+});
+
+const top={};
+filtered.forEach(s=>s.itemsArr.forEach(i=>{
+const name=i.name||'غير معروف';
+top[name]=(top[name]||0)+Number(i.qty||0);
+}));
+
+const tb=document.getElementById('topBody');
+tb.innerHTML='';
+Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,20).forEach(([name,qty])=>{
+const it=inventory.find(x=>x.name===name);
+tb.innerHTML+=`<tr><td>${name}</td><td>${it?it.code:'-'}</td><td>${qty}</td><td>${it?money(qty*it.price):'-'}</td></tr>`;
+});
+}
+
+function printReport(){
+renderReports();
+const old=document.title;
+document.title='تقرير سيستم فرجللو';
+window.print();
+document.title=old;
+}
+</script>
