@@ -14,11 +14,15 @@
       #login .login-card > div:last-child {
         color: #8deaff !important;
       }
-      #login .login-card > div:last-child::first-letter {
-        color: #8deaff !important;
-      }
     `;
     document.head.appendChild(style);
+
+    var footer = Array.from(document.querySelectorAll('#login .login-card > div')).find(function (el) {
+      return (el.textContent || '').indexOf('Farag El-Sayed') !== -1;
+    });
+    if (footer) {
+      footer.style.setProperty('color', '#8deaff', 'important');
+    }
   }
 
   function init() {
