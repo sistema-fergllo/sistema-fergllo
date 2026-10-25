@@ -30,6 +30,22 @@
       #login .login-card > div:last-child * {
         color: #8deaff !important;
       }
+
+      /* Faragello System: make the whole sidebar menu clearly bold. */
+      #app .side .nav,
+      #app .side .nav a,
+      #app .side .nav button,
+      #app .side .nav span,
+      #app .side .nav * {
+        font-weight: 800 !important;
+      }
+      #app .side .nav {
+        font-size: 17px !important;
+      }
+      #app .side .logout,
+      #app .side .logout * {
+        font-weight: 800 !important;
+      }
     `;
     document.head.appendChild(style);
 
