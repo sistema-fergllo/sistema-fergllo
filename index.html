@@ -417,10 +417,17 @@ function printReport(){
     .sign div{border-top:1px solid #555;padding-top:10px}
     @media print{body{padding:0}h3,table,.meta,.summary{break-inside:avoid}}
   `;
+  let printStarted=false;
+  const openPrintDialog=()=>{
+    if(printStarted||w.closed)return;
+    printStarted=true;
+    try{w.focus();w.print()}catch(e){console.error('تعذر فتح نافذة طباعة التقرير:',e)}
+  };
+  w.addEventListener('load',()=>setTimeout(openPrintDialog,500),{once:true});
   w.document.open();
   w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير سيستم فرجللو</title><style>'+styles+'</style></head><body><h1>سيستم فرجللو</h1><p class="subtitle">تقرير المبيعات وحركة الأصناف</p><div class="meta"><div class="field"><b>من تاريخ:</b> '+from+'</div><div class="field"><b>إلى تاريخ:</b> '+to+'</div><div class="field"><b>الشيفت:</b> '+shift+'</div><div class="field"><b>تاريخ الطباعة:</b> '+new Date().toLocaleString('ar-EG')+'</div></div><div class="summary"><div class="field"><b>إجمالي المبيعات:</b> '+value('rTotal')+'</div><div class="field"><b>عدد عمليات البيع:</b> '+value('rInvoices')+'</div><div class="field"><b>إجمالي القطع:</b> '+value('rUnits')+'</div><div class="field"><b>متوسط البيع:</b> '+value('rAvg')+'</div></div>'+tables+'<div class="sign"><div>إعداد التقرير</div><div>مراجعة المسؤول</div><div>اعتماد الإدارة</div></div></body></html>');
   w.document.close();
-  setTimeout(()=>{try{w.focus();w.print()}catch(e){console.error(e)}}, 800);
+  setTimeout(openPrintDialog,1200);
 }
 
 
