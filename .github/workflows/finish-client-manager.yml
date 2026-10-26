@@ -3,30 +3,29 @@ on:
   push:
     branches: [main]
 permissions:
-  contents: write
+  contents: read
 jobs:
-  patch:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Clean sidebar menu
-        run: python3 scripts/patch_menu_clean.py
-      - name: Verify current system
+      - name: Verify current system and sidebar labels
         run: |
           python3 - <<'PY'
           from pathlib import Path
           s=Path('index.html').read_text(encoding='utf-8')
-          required=["chooseLogin('admin')","chooseLogin('client')","async function doLogin()","client_accounts","user_profiles"]
+          required=[
+              "chooseLogin('admin')",
+              "chooseLogin('client')",
+              "async function doLogin()",
+              "client_accounts",
+              "user_profiles",
+              "الاستعلامات اليومية",
+              "التقارير اليومية",
+              "تقارير الجرد",
+          ]
           missing=[x for x in required if x not in s]
           if missing:
               raise SystemExit('Missing required system parts: '+', '.join(missing))
           print('Faragello System verification passed.')
           PY
-      - name: Commit patched index
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git diff --cached --quiet && exit 0
-          git commit -m "Clean sidebar menu"
-          git push
