@@ -637,7 +637,7 @@ async function completeSale(){
     if(salesRefreshError||inventoryRefreshError){
       alert('تم حفظ البيع في قاعدة البيانات، وأُضيف للمبيعات والتقارير. تعذر تحديث '+[salesRefreshError?'بيانات المبيعات':'',inventoryRefreshError?'المخزون':''].filter(Boolean).join(' و ')+'. السبب: '+[salesRefreshError,inventoryRefreshError].filter(Boolean).join(' | '));
     }else{
-      alert('تم حفظ البيع وتحديث المبيعات والتقارير والمخزون بنجاح. رقم العملية: '+saleId);
+      
     }
   }catch(e){
     alert('لم يتم تأكيد حفظ البيع. لم يتم تسجيل عملية جديدة في الواجهة. السبب: '+(e.message||'خطأ غير معروف'));
