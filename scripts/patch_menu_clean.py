@@ -12,7 +12,7 @@ nav = '''<aside class="side">
   <button class="nav active" data-page="home" onclick="showPage('home')"><span class="nav-icon">⌂</span>الرئيسية</button>
   <button class="nav" data-page="coding" onclick="showPage('coding')"><span class="nav-icon">▥</span>التكويدات</button>
   <button class="nav" data-page="cashier" onclick="requestPage('cashier')"><span class="nav-icon">▣</span>الكاشير</button>
-  <button class="nav" data-page="sales" onclick="showPage('sales')"><span class="nav-icon">▤</span>المبيعات</button>
+  <button class="nav" data-page="sales" onclick="showPage('sales')"><span class="nav-icon">▤</span>المبيعات اليومية</button>
   <button class="nav" data-page="reports" onclick="showPage('reports')"><span class="nav-icon">▥</span>التقارير</button>
   <button class="nav" data-page="transfers" onclick="showPage('transfers')"><span class="nav-icon">⇄</span>اذن تحويل</button>
   <button id="navInventory" class="nav" data-page="inventory" onclick="requestPage('inventory')"><span class="nav-icon">▦</span>المخزون</button>
