@@ -250,21 +250,20 @@ function renderActivityFeed(rows,mode){
     return '<div class="activity-item"><time class="activity-time" title="'+escapeActivityText(entry.created_at||'')+'">'+escapeActivityText(time)+'</time><span class="activity-message">'+escapeActivityText(entry.message||'نشاط في النظام')+'</span></div>'
   }).join('');
 }
+let activityViewVersion=0;
 function logActivity(message,eventType){
   const cleanMessage=String(message||'').trim().slice(0,300);
   if(!cleanMessage)return;
   const createdAt=new Date().toISOString();
   const entry={id:'local-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),message:cleanMessage,event_type:eventType||'activity',created_at:createdAt,client_id:activeClient&&activeClient.id?activeClient.id:null,user_id:currentAuthUserId||null};
   const key=activityStorageKey();
-  // احتفظ بنسخة محلية للطوارئ فقط؛ لا نعرضها فوق السجل السحابي بعد نجاح المزامنة.
   let rows=[];try{rows=JSON.parse(localStorage.getItem(key)||'[]')||[]}catch(e){}
   rows=[entry].concat(Array.isArray(rows)?rows:[]).slice(0,ACTIVITY_LOCAL_LIMIT);
   try{localStorage.setItem(key,JSON.stringify(rows))}catch(e){}
-  if(!currentAuthUserId||typeof supabaseClient==='undefined'){
-    renderActivityFeed(rows,'local');
-    return;
-  }
-  renderActivityFeed([entry].concat(getLocalActivityRows().filter(function(x){return x.id!==entry.id})).slice(0,ACTIVITY_LOCAL_LIMIT),'local');
+  activityViewVersion++;
+  renderActivityFeed(rows,'local');
+  if(!currentAuthUserId||typeof supabaseClient==='undefined')return;
+  const version=activityViewVersion;
   Promise.resolve(supabaseClient.from('system_activity_log').insert({
     user_id:currentAuthUserId,
     role:currentProfileRole==='client'?'client':'admin',
@@ -272,37 +271,29 @@ function logActivity(message,eventType){
     event_type:eventType||'activity',
     message:cleanMessage
   })).then(function(result){
-    if(result&&result.error){
-      activityCloudAvailable=false;
-      renderActivityFeed(getLocalActivityRows(),'local');
-      return;
-    }
+    if(result&&result.error){activityCloudAvailable=false;return}
     activityCloudAvailable=true;
-    refreshActivityFeed();
-  }).catch(function(){
-    activityCloudAvailable=false;
-    renderActivityFeed(getLocalActivityRows(),'local');
-  });
+    refreshActivityFeed(version);
+  }).catch(function(){activityCloudAvailable=false});
 }
-async function refreshActivityFeed(){
+async function refreshActivityFeed(expectedVersion){
   if(activityFetchBusy)return;
   if(!currentAuthUserId||typeof supabaseClient==='undefined'){renderActivityFeed(getLocalActivityRows(),'local');return}
   if(currentProfileRole==='client'&&!(activeClient&&activeClient.id)){renderActivityFeed(getLocalActivityRows(),'local');return}
+  const versionAtStart=activityViewVersion;
   activityFetchBusy=true;
   try{
     let query=supabaseClient.from('system_activity_log').select('id,event_type,message,created_at,client_id,user_id,role').order('created_at',{ascending:false}).limit(ACTIVITY_LOCAL_LIMIT);
     if((currentProfileRole==='client'||(activeClient&&activeClient.id))&&activeClient&&activeClient.id)query=query.eq('client_id',activeClient.id);
     const result=await query;
     if(result.error)throw result.error;
+    if(versionAtStart!==activityViewVersion||(expectedVersion!==undefined&&expectedVersion!==activityViewVersion))return;
     activityCloudAvailable=true;
-    // عند نجاح الاتصال، اعرض سجل قاعدة البيانات فقط.
-    // لا ندمج سجلات localStorage القديمة لأنها قد تكون من جلسة/عميل سابق أو من إصدار قديم وتعرض أحداثًا غير صحيحة.
     const cloudRows=(Array.isArray(result.data)?result.data:[]).slice();
     cloudRows.sort(function(a,b){return new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime()});
     renderActivityFeed(cloudRows.slice(0,ACTIVITY_LOCAL_LIMIT),'cloud');
   }catch(e){
-    activityCloudAvailable=false;
-    renderActivityFeed(getLocalActivityRows(),'local');
+    if(versionAtStart===activityViewVersion){activityCloudAvailable=false;renderActivityFeed(getLocalActivityRows(),'local')}
   }finally{activityFetchBusy=false}
 }
 function startActivityFeed(){
