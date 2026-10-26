@@ -29,6 +29,17 @@ body.client-workspace-mode .layout {
 body.client-workspace-mode #clientWorkspaceBar {
   display: none !important;
 }
+
+/* Restored Faragello activity panel */
+.activity-panel{margin:14px 18px 0;padding:14px 16px;background:linear-gradient(135deg,#071a33,#0b2444);border:1px solid #14518a;border-radius:14px;box-shadow:0 8px 24px #0004}
+.activity-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.activity-title{font-size:17px;font-weight:700;color:#fff}.activity-subtitle{font-size:12px;color:var(--muted);margin-top:4px}
+#activityStatus{font-size:11px;color:var(--cyan);white-space:nowrap}
+.activity-feed{display:flex;flex-direction:column;gap:7px;max-height:145px;overflow:auto;padding-inline-end:3px}
+.activity-item{display:flex;align-items:flex-start;gap:12px;padding:8px 10px;border:1px solid #123a67;border-radius:8px;background:#06152b}
+.activity-time{font-size:11px;color:var(--cyan);white-space:nowrap;min-width:48px;padding-top:2px}.activity-message{font-size:13px;color:var(--text);line-height:1.6;overflow-wrap:anywhere}
+.activity-empty{padding:12px;text-align:center;color:var(--muted);font-size:13px;border:1px dashed #24517c;border-radius:8px}
+@media(max-width:700px){.activity-panel{margin:10px 8px 0;padding:11px}.activity-head{align-items:flex-start}.activity-title{font-size:15px}.activity-feed{max-height:125px}}
 </style>
 
 <style>
@@ -155,7 +166,13 @@ html,body{min-height:100%;margin:0}
 </div>
 <div id="app" class="hidden">
 <header class="top"><div class="brand"><div class="logo"><svg viewBox="0 0 64 64" width="32" height="32" aria-label="آلة حاسبة" role="img"><rect x="13" y="5" width="38" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="4"/><rect x="19" y="11" width="26" height="10" rx="2" fill="currentColor"/><rect x="19" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="19" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="38" width="7" height="18" rx="1" fill="currentColor"/><rect x="19" y="49" width="17" height="7" rx="1" fill="currentColor"/></svg></div><div><h1>سيستم فرجللو</h1><small>Farag El-Sayed • مشرف النظام</small><div style="margin-top:6px"></div></div></div><div class="userbox"><div class="clock"><b id="date"></b><br><span id="time"></span></div><div class="user">👤 <b>admin</b><br><small>مدير النظام</small></div></div></header>
-<!-- Activity chat disabled at user request. -->
+<section class="activity-panel" aria-label="الأنشطة الحالية">
+  <div class="activity-head">
+    <div><div class="activity-title">Faragello System — الأنشطة الحالية</div><div class="activity-subtitle">تظهر هنا العمليات التي يسجلها النظام فعليًا</div></div>
+    <span id="activityStatus">جاري تحميل الأنشطة…</span>
+  </div>
+  <div id="activityFeed" class="activity-feed" aria-live="polite"><div class="activity-empty">جاري تحميل الأنشطة…</div></div>
+</section>
 <div class="layout"><aside class="side">
   <button class="nav active" data-page="home" onclick="showPage('home')"><span class="nav-icon">⌂</span>الصفحة الرئيسية</button>
   <button class="nav" data-page="coding" onclick="showPage('coding')"><span class="nav-icon">▥</span>تكويد الأصناف</button>
