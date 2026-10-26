@@ -30,16 +30,20 @@ body.client-workspace-mode #clientWorkspaceBar {
   display: none !important;
 }
 
-/* Restored Faragello activity panel */
-.activity-panel{margin:14px 18px 0;padding:14px 16px;background:linear-gradient(135deg,#071a33,#0b2444);border:1px solid #14518a;border-radius:14px;box-shadow:0 8px 24px #0004}
-.activity-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
-.activity-title{font-size:17px;font-weight:700;color:#fff}.activity-subtitle{font-size:12px;color:var(--muted);margin-top:4px}
-#activityStatus{font-size:11px;color:var(--cyan);white-space:nowrap}
-.activity-feed{display:flex;flex-direction:column;gap:7px;max-height:145px;overflow:auto;padding-inline-end:3px}
-.activity-item{display:flex;align-items:flex-start;gap:12px;padding:8px 10px;border:1px solid #123a67;border-radius:8px;background:#06152b}
-.activity-time{font-size:11px;color:var(--cyan);white-space:nowrap;min-width:48px;padding-top:2px}.activity-message{font-size:13px;color:var(--text);line-height:1.6;overflow-wrap:anywhere}
-.activity-empty{padding:12px;text-align:center;color:var(--muted);font-size:13px;border:1px dashed #24517c;border-radius:8px}
-@media(max-width:700px){.activity-panel{margin:10px 8px 0;padding:11px}.activity-head{align-items:flex-start}.activity-title{font-size:15px}.activity-feed{max-height:125px}}
+<style id="faragello-activity-feed-css">
+#app .activity-strip{display:grid;grid-template-columns:minmax(170px,220px) minmax(0,1fr);gap:12px;align-items:stretch;padding:10px 18px;background:rgba(2,13,28,.94);border-bottom:1px solid rgba(36,215,255,.35);box-shadow:0 5px 18px rgba(0,0,0,.22);color:#f4f9ff}
+#app .activity-heading{display:flex;flex-direction:column;justify-content:center;gap:5px;padding:10px 13px;border:1px solid rgba(36,215,255,.42);border-radius:12px;background:linear-gradient(145deg,rgba(8,46,82,.95),rgba(3,20,41,.97));min-width:0}
+#app .activity-heading strong{font-size:17px;color:#fff;font-weight:800}
+#app .activity-heading small{font-size:12px;color:#9ec8e9}
+#app .activity-status{align-self:flex-start;display:inline-block;padding:3px 9px;border-radius:20px;background:rgba(132,158,185,.16);border:1px solid rgba(150,190,220,.28);font-size:11px;color:#c8d9e8;white-space:nowrap}
+#app .activity-status[data-mode="cloud"]{color:#a6ffd0;background:rgba(20,163,89,.14);border-color:rgba(63,221,139,.45)}
+#app .activity-feed{min-width:0;max-height:116px;min-height:66px;overflow-y:auto;overscroll-behavior:contain;border:1px solid rgba(36,215,255,.3);border-radius:12px;background:rgba(1,9,20,.64);padding:5px 10px;display:flex;flex-direction:column;gap:2px}
+#app .activity-item{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:start;padding:6px 3px;border-bottom:1px solid rgba(146,181,211,.12);font-size:12px;line-height:1.6}
+#app .activity-item:last-child{border-bottom:0}
+#app .activity-time{color:#83dfff;font-size:11px;white-space:nowrap;direction:rtl}
+#app .activity-message{color:#eaf4ff;overflow-wrap:anywhere}
+#app .activity-empty{display:flex;align-items:center;justify-content:center;min-height:54px;padding:8px;color:#9bb5ce;font-size:12px;text-align:center}
+@media(max-width:760px){#app .activity-strip{grid-template-columns:1fr;padding:8px 10px;gap:7px}#app .activity-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:8px 11px}#app .activity-heading small{display:none}#app .activity-heading strong{font-size:15px}#app .activity-feed{max-height:112px;min-height:56px}#app .activity-item{grid-template-columns:65px minmax(0,1fr);gap:7px}}
 </style>
 
 <style>
@@ -166,13 +170,16 @@ html,body{min-height:100%;margin:0}
 </div>
 <div id="app" class="hidden">
 <header class="top"><div class="brand"><div class="logo"><svg viewBox="0 0 64 64" width="32" height="32" aria-label="آلة حاسبة" role="img"><rect x="13" y="5" width="38" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="4"/><rect x="19" y="11" width="26" height="10" rx="2" fill="currentColor"/><rect x="19" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="19" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="38" width="7" height="18" rx="1" fill="currentColor"/><rect x="19" y="49" width="17" height="7" rx="1" fill="currentColor"/></svg></div><div><h1>سيستم فرجللو</h1><small>Farag El-Sayed • مشرف النظام</small><div style="margin-top:6px"></div></div></div><div class="userbox"><div class="clock"><b id="date"></b><br><span id="time"></span></div><div class="user">👤 <b>admin</b><br><small>مدير النظام</small></div></div></header>
-<section class="activity-panel" aria-label="الأنشطة الحالية">
-  <div class="activity-head">
-    <div><div class="activity-title">Faragello System — الأنشطة الحالية</div><div class="activity-subtitle">تظهر هنا العمليات التي يسجلها النظام فعليًا</div></div>
-    <span id="activityStatus">جاري تحميل الأنشطة…</span>
+<div id="activityStrip" class="activity-strip" role="region" aria-label="الأنشطة الحالية">
+  <div class="activity-heading">
+    <strong>الأنشطة الحالية</strong>
+    <small>آخر ما يحدث في سيستم فرجللو</small>
+    <span id="activityStatus" class="activity-status" data-mode="local">جارٍ تجهيز السجل</span>
   </div>
-  <div id="activityFeed" class="activity-feed" aria-live="polite"><div class="activity-empty">جاري تحميل الأنشطة…</div></div>
-</section>
+  <div id="activityFeed" class="activity-feed" aria-live="polite">
+    <div class="activity-empty">لسه مفيش أنشطة مسجلة. أي بيع أو تعديل أو تقرير هيظهر هنا.</div>
+  </div>
+</div>
 <div class="layout"><aside class="side">
   <button class="nav active" data-page="home" onclick="showPage('home')"><span class="nav-icon">⌂</span>الصفحة الرئيسية</button>
   <button class="nav" data-page="coding" onclick="showPage('coding')"><span class="nav-icon">▥</span>تكويد الأصناف</button>
