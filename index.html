@@ -722,7 +722,7 @@ function createTransferPermit(){
  const p={id:'tr-'+Date.now(),number:'TR-'+String(next).padStart(5,'0'),from,to,note,items:transferDraft.map(x=>({...x})),date:new Date().toLocaleString('ar-EG'),status:'قيد المراجعة'};
  permits.push(p);saveTransferPermits(permits);logActivity('تم إنشاء إذن صادر تحويل '+p.number+' من '+from+' إلى '+to+' — عدد الأصناف '+p.items.length,'transfer');transferDraft=[];
  ['trFrom','trTo','trNote','trQty','trCode','trName'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
- renderTransfers();alert('تم حفظ إذن صادر تحويل '+p.number+' بنجاح. اطبعه وراجعه قبل تنفيذ النقل.');
+ renderTransfers();
 }
 function markTransferDone(id){
  const permits=getTransferPermits(),p=permits.find(x=>x.id===id);if(!p)return;
