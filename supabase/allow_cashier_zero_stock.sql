@@ -11,7 +11,7 @@ returns bigint
 language plpgsql
 security definer
 set search_path = public
-as $
+as $$
 declare
   v_client_id text := public.current_client_id();
   v_total numeric(12,2) := 0;
@@ -79,7 +79,7 @@ returns text
 language plpgsql
 security definer
 set search_path = public
-as $
+as $$
 declare
   v_total numeric(12,2) := 0;
   v_summary text := '';
