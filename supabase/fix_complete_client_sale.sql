@@ -53,14 +53,7 @@ begin
 
     if not found then raise exception 'صنف غير موجود: %', v_code; end if;
 
-    if v_qty > (
-      select qty from public.client_inventory
-      where client_id = v_client_id and code = v_code
-    ) then
-      raise exception 'الكمية غير كافية للصنف: %', v_name;
-    end if;
-
-    v_total := v_total + (v_qty * v_price);
+v_total := v_total + (v_qty * v_price);
     v_summary := concat_ws('، ', nullif(v_summary,''), v_name || ' × ' || v_qty::text);
   end loop;
 
