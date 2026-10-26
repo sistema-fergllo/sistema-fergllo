@@ -276,8 +276,9 @@ function logActivity(message,eventType){
     refreshActivityFeed(version);
   }).catch(function(){activityCloudAvailable=false});
 }
+let activityRefreshQueued=false;
 async function refreshActivityFeed(expectedVersion){
-  if(activityFetchBusy)return;
+  if(activityFetchBusy){activityRefreshQueued=true;return}
   if(!currentAuthUserId||typeof supabaseClient==='undefined'){renderActivityFeed(getLocalActivityRows(),'local');return}
   if(currentProfileRole==='client'&&!(activeClient&&activeClient.id)){renderActivityFeed(getLocalActivityRows(),'local');return}
   const versionAtStart=activityViewVersion;
@@ -287,14 +288,17 @@ async function refreshActivityFeed(expectedVersion){
     if((currentProfileRole==='client'||(activeClient&&activeClient.id))&&activeClient&&activeClient.id)query=query.eq('client_id',activeClient.id);
     const result=await query;
     if(result.error)throw result.error;
-    if(versionAtStart!==activityViewVersion||(expectedVersion!==undefined&&expectedVersion!==activityViewVersion))return;
+    if(versionAtStart!==activityViewVersion||(expectedVersion!==undefined&&expectedVersion!==activityViewVersion)){activityRefreshQueued=true;return}
     activityCloudAvailable=true;
     const cloudRows=(Array.isArray(result.data)?result.data:[]).slice();
     cloudRows.sort(function(a,b){return new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime()});
     renderActivityFeed(cloudRows.slice(0,ACTIVITY_LOCAL_LIMIT),'cloud');
   }catch(e){
     if(versionAtStart===activityViewVersion){activityCloudAvailable=false;renderActivityFeed(getLocalActivityRows(),'local')}
-  }finally{activityFetchBusy=false}
+  }finally{
+    activityFetchBusy=false;
+    if(activityRefreshQueued){activityRefreshQueued=false;Promise.resolve().then(function(){refreshActivityFeed()})}
+  }
 }
 function startActivityFeed(){
   if(activityRefreshTimer)clearInterval(activityRefreshTimer);
