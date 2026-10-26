@@ -435,7 +435,7 @@ function renderDailyTransfers(){
  }).join('');
 }
 function closeCurrentShift(){
- if(!confirm('تأكيد تقفيل الشيفت؟ سيتم حفظ المبيعات وأذون التحويل الحالية في الاستعلامات اليومية، ثم بدء وردية جديدة.'))return;
+
  const stamp=Date.now(),shiftName=document.getElementById('shift')?.value||'غير محددة';
  const currentSales=(sales||[]).filter(x=>new Date(x.created_at||0).getTime()>getShiftCutoff());
  const permits=getTransferPermits();
