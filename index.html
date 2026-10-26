@@ -104,10 +104,10 @@ main{padding:28px;background:radial-gradient(circle at 0 0,#e8f4ff 0,#f7fbff 35%
 #app main{background:rgba(3,14,30,.38) !important;}
 
 </style>
-<link rel="stylesheet" href="force-design.css?v=20261026-unified-sizing">
+<link rel="stylesheet" href="force-design.css?v=20261026-shift-menu-fix">
 
 
-<link id="faragello-final-css" rel="stylesheet" href="force-design.css?v=20261024-4">
+<link id="faragello-final-css" rel="stylesheet" href="force-design.css?v=20261026-shift-menu-fix">
 
 <style id="faragello-hd-backgrounds-final">
 html,body{min-height:100%;margin:0}
@@ -159,7 +159,7 @@ html,body{min-height:100%;margin:0}
 <body>
 <div id="login" class="login-screen">
   <div class="login-card">
-    <div class="logo" style="margin:auto"><svg viewBox="0 0 64 64" width="34" height="34" aria-label="آلة حاسبة" role="img"><rect x="13" y="5" width="38" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="4"/><rect x="19" y="11" width="26" height="10" rx="2" fill="currentColor"/><rect x="19" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="19" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="38" width="7" height="18" rx="1" fill="currentColor"/><rect x="19" y="49" width="17" height="7" rx="1" fill="currentColor"/></svg></div><h1>سيستم فرجللو</h1><p id="loginText">سيستم محاسبة</p><div style="margin:16px 0 8px"><button id="loginCloseShiftBtn" class="btn red" onclick="alert('سجّل دخول المشرف أولًا، ثم استخدم زر تقفيل الشيفت من داخل السيستم.')">تقفيل الشيفت</button></div>
+    <div class="logo" style="margin:auto"><svg viewBox="0 0 64 64" width="34" height="34" aria-label="آلة حاسبة" role="img"><rect x="13" y="5" width="38" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="4"/><rect x="19" y="11" width="26" height="10" rx="2" fill="currentColor"/><rect x="19" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="19" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="38" width="7" height="18" rx="1" fill="currentColor"/><rect x="19" y="49" width="17" height="7" rx="1" fill="currentColor"/></svg></div><h1>سيستم فرجللو</h1><p id="loginText">سيستم محاسبة</p><div style="margin:16px 0 8px"><button id="loginCloseShiftBtn" class="btn red" onclick="return false">تقفيل الشيفت</button></div>
     <button id="adminLoginChoice" class="btn" style="width:100%;margin-top:8px" onclick="chooseLogin('admin')">دخول المشرف</button>
     <button id="clientLoginToggle" class="btn gray" style="width:100%;margin-top:8px" onclick="chooseLogin('client')">دخول العميل</button>
     <script>try{localStorage.removeItem("frg_remember_login_admin");localStorage.removeItem("frg_remember_login_client")}catch(e){}</script><div id="loginFields" class="hidden"><input id="email" type="text" placeholder="اسم المستخدم" autocomplete="off" onkeydown="if(event.key==='Enter') doLogin()"><input id="password" type="password" placeholder="كلمة المرور" autocomplete="new-password" onkeydown="if(event.key==='Enter') doLogin()"><div id="loginErr" class="err"></div><button id="loginSubmit" class="btn" onclick="return false;">تسجيل الدخول</button><button class="btn gray" onclick="resetLoginChoice()">رجوع</button></div>
@@ -187,6 +187,7 @@ html,body{min-height:100%;margin:0}
   <button class="nav" data-page="reports" onclick="showPage('reports')"><span class="nav-icon">▥</span>التقارير</button>
   <button class="nav" data-page="transfers" onclick="showPage('transfers')"><span class="nav-icon">⇄</span>اذن تحويل</button>
   <button id="navInventory" class="nav" data-page="inventory" onclick="requestPage('inventory')"><span class="nav-icon">▦</span>المخزون</button>
+  <button id="navDailyTransfers" class="nav" data-page="dailyTransfers" onclick="showPage('dailyTransfers')">ترحيل اليومية</button>
   <button id="navSettings" class="nav" data-page="settings" onclick="showPage('settings')"><span class="nav-icon">⚙</span>الإعدادات</button>
   <button id="navClients" class="nav" data-page="clients" onclick="showPage('clients')"><span class="nav-icon">♙</span>العملاء</button>
   <button class="nav logout" onclick="supabaseClient.auth.signOut().finally(()=>location.reload())"><span class="nav-icon">↪</span>تسجيل الخروج</button>
