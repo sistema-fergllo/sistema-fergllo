@@ -662,6 +662,32 @@ function printTransferPermit(id){
  w.document.open();w.document.write(html);w.document.close();
   setTimeout(()=>{try{w.focus();w.print()}catch(e){console.error(e)}}, 800);
 }
-
+<style>
+html,body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden!important;
+}
+.layout{
+  width:100%!important;
+  max-width:100%!important;
+  display:grid!important;
+  grid-template-columns:220px minmax(0,1fr)!important;
+  overflow:hidden!important;
+}
+.layout > .side{
+  width:220px!important;
+  min-width:220px!important;
+  max-width:220px!important;
+  margin:0!important;
+}
+.layout > main{
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin:0!important;
+  overflow-x:hidden!important;
+}
+</style>
 window.doLogin=doLogin;window.chooseLogin=chooseLogin;window.resetLoginChoice=resetLoginChoice;
 </script>
