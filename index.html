@@ -419,7 +419,7 @@ function saveDailyArchive(rows){localStorage.setItem(workspaceKey('frg_daily_arc
 function deleteDailyShift(index){
  const rows=getDailyArchive();
  if(!Number.isInteger(index)||index<0||index>=rows.length)return;
- if(!confirm('هل تريد حذف تقرير هذه الوردية من الاستعلامات اليومية؟ لا يمكن التراجع عن الحذف.'))return;
+ 
  rows.splice(index,1);
  saveDailyArchive(rows);
  renderDailyTransfers();
