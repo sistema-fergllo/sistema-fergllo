@@ -250,6 +250,7 @@ function renderActivityFeed(rows,mode){
     return '<div class="activity-item"><time class="activity-time" title="'+escapeActivityText(entry.created_at||'')+'">'+escapeActivityText(time)+'</time><span class="activity-message">'+escapeActivityText(entry.message||'نشاط في النظام')+'</span></div>'
   }).join('');
 }
+
 let activityViewVersion=0;
 function logActivity(message,eventType){
   const cleanMessage=String(message||'').trim().slice(0,300);
