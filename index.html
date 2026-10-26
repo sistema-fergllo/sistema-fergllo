@@ -237,7 +237,7 @@ function money(n){return Number(n||0).toLocaleString('en-US',{minimumFractionDig
 const ACTIVITY_LOCAL_LIMIT=40;
 function activityStorageKey(){return 'frg_activity_log_v1_'+(activeClient&&activeClient.id?String(activeClient.id):'global')}
 function escapeActivityText(value){return String(value==null?'':value).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
-function getLocalActivityRows(){try{const rows=JSON.parse(localStorage.getItem(activityStorageKey())||'[]');return Array.isArray(rows)?rows.slice(0,ACTIVITY_LOCAL_LIMIT):[]}catch(e){return []}}
+function getLocalActivityRows(){try{const rows=JSON.parse(localStorage.getItem(activityStorageKey())||'[]');return Array.isArray(rows)?rows.filter(function(entry){return entry&&entry.event_type!=='navigation'}).slice(0,ACTIVITY_LOCAL_LIMIT):[]}catch(e){return []}}
 function activityTime(value){const d=new Date(value||Date.now());return Number.isFinite(d.getTime())?d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}):'الآن'}
 function renderActivityFeed(rows,mode){
   const feed=document.getElementById('activityFeed'),status=document.getElementById('activityStatus');
@@ -259,7 +259,7 @@ function logActivity(message,eventType){
   const entry={id:'local-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),message:cleanMessage,event_type:eventType||'activity',created_at:createdAt,client_id:activeClient&&activeClient.id?activeClient.id:null,user_id:currentAuthUserId||null};
   const key=activityStorageKey();
   let rows=[];try{rows=JSON.parse(localStorage.getItem(key)||'[]')||[]}catch(e){}
-  rows=[entry].concat(Array.isArray(rows)?rows:[]).slice(0,ACTIVITY_LOCAL_LIMIT);
+  rows=[entry].concat(Array.isArray(rows)?rows.filter(function(oldEntry){return oldEntry&&oldEntry.event_type!=='navigation'}):[]).slice(0,ACTIVITY_LOCAL_LIMIT);
   try{localStorage.setItem(key,JSON.stringify(rows))}catch(e){}
   activityViewVersion++;
   renderActivityFeed(rows,'local');
@@ -291,7 +291,7 @@ async function refreshActivityFeed(expectedVersion){
     if(result.error)throw result.error;
     if(versionAtStart!==activityViewVersion||(expectedVersion!==undefined&&expectedVersion!==activityViewVersion)){activityRefreshQueued=true;return}
     activityCloudAvailable=true;
-    const cloudRows=(Array.isArray(result.data)?result.data:[]).slice();
+    const cloudRows=(Array.isArray(result.data)?result.data:[]).filter(function(entry){return entry&&entry.event_type!=='navigation'}).slice();
     cloudRows.sort(function(a,b){return new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime()});
     renderActivityFeed(cloudRows.slice(0,ACTIVITY_LOCAL_LIMIT),'cloud');
   }catch(e){
