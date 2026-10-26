@@ -51,3 +51,97 @@ html,body{width:100%;min-height:100%;margin:0!important;padding:0!important;over
       center / 78px 78px no-repeat,
     linear-gradient(145deg,#00cfff,#064bb7) !important;
 }
+
+
+
+/* FARAGELLO — unified sizing pass for every screen and page */
+:root{--fg-space:clamp(10px,1.25vw,20px)}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-size:14px;line-height:1.5}
+#app{width:100%;max-width:100%;overflow-x:clip}
+#app .top{height:clamp(66px,7vw,84px);min-height:66px;padding-inline:clamp(10px,2vw,28px);gap:12px}
+#app .brand{min-width:0;gap:10px}
+#app .brand h1{font-size:clamp(18px,2vw,27px);line-height:1.25}
+#app .brand small{font-size:12px}
+#app .logo{flex:0 0 auto;width:clamp(42px,4.5vw,58px);height:clamp(42px,4.5vw,58px)}
+#app .userbox{gap:10px;min-width:0}
+#app .user{max-width:34vw;overflow-wrap:anywhere;padding:8px 10px}
+#app .layout{display:flex;align-items:stretch;min-height:calc(100vh - 84px);min-width:0}
+#app .side{width:clamp(205px,18vw,250px);flex:0 0 clamp(205px,18vw,250px);padding:16px 10px;gap:6px;min-width:0}
+#app .side .nav{width:100%;min-height:42px;padding:10px 12px;font-size:clamp(13px,1.1vw,16px);line-height:1.45;white-space:normal;overflow-wrap:anywhere}
+#app main{flex:1 1 0;width:0;min-width:0;padding:clamp(12px,2vw,28px);overflow-x:auto}
+#app main>.page,#app main .page{width:100%;max-width:1500px;margin-inline:auto;min-width:0}
+#app .title{gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+#app .title h2{font-size:clamp(21px,2.2vw,30px);line-height:1.3;overflow-wrap:anywhere}
+#app .sub{font-size:clamp(12px,1vw,14px);line-height:1.6}
+#app .cards{grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,1.2vw,16px)}
+#app .card{min-width:0;padding:clamp(12px,1.4vw,18px);overflow-wrap:anywhere}
+#app .card .value{font-size:clamp(19px,2vw,27px);line-height:1.35;overflow-wrap:anywhere}
+#app .toolbar{display:flex;flex-wrap:wrap;gap:8px;padding:clamp(9px,1vw,12px)}
+#app .toolbar input{min-width:min(180px,100%);max-width:100%}
+#app .toolbar button,#app .toolbar select{max-width:100%}
+#app .table-wrap{width:100%;max-width:100%;overflow:auto;overscroll-behavior-x:contain}
+#app .table{width:100%;min-width:760px;border-collapse:collapse}
+#app .table th,#app .table td{padding:clamp(8px,.9vw,12px) 8px;line-height:1.45;overflow-wrap:anywhere}
+#app .cash-layout{grid-template-columns:minmax(0,1.6fr) minmax(260px,.75fr);gap:clamp(10px,1.2vw,16px);align-items:start}
+#app .cash-panel{min-width:0;padding:clamp(10px,1.3vw,16px)}
+#app .scan{display:flex;flex-wrap:wrap;gap:8px}
+#app .scan input{min-width:0;max-width:100%;font-size:16px}
+#app .paybox{min-width:0}
+#app .paybox input,#app .paybox select{max-width:100%;min-width:0}
+#app input,#app select,#app textarea,#app button{max-width:100%}
+#app .btn{min-height:38px;padding:9px 13px;white-space:normal;line-height:1.35}
+#app .modal-bg{padding:14px;overflow:auto}
+#app .modal{width:min(460px,100%);max-height:calc(100dvh - 28px);overflow:auto}
+#app .activity-strip{min-width:0}
+#app .activity-feed,#app .activity-message{min-width:0;overflow-wrap:anywhere}
+#app img,#app svg{max-width:100%}
+@media(max-width:1100px){
+ #app .side{width:205px;flex-basis:205px}
+ #app .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #app .cash-layout{grid-template-columns:minmax(0,1fr)}
+ #app .userbox .clock{display:none}
+}
+@media(max-width:760px){
+ #app .top{height:auto;min-height:64px;padding:8px 10px;flex-wrap:wrap}
+ #app .brand{gap:8px}
+ #app .brand h1{font-size:18px}
+ #app .brand small{font-size:10px}
+ #app .userbox{gap:6px}
+ #app .user{font-size:12px;max-width:42vw;padding:6px 8px}
+ #app .layout{flex-direction:column;min-height:calc(100vh - 64px)}
+ #app .side{width:100%;flex:0 0 auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:9px;border-left:0;border-bottom:1px solid #0873b8}
+ #app .side .nav{min-width:0;min-height:38px;padding:8px 7px;text-align:center;font-size:12px;line-height:1.35;border-radius:8px}
+ #app .side .logout{margin-top:0;width:100%;text-align:center}
+ #app main{width:100%;padding:12px;overflow-x:hidden}
+ #app .title{align-items:flex-start}
+ #app .title h2{font-size:22px}
+ #app .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ #app .card{padding:11px;border-radius:12px}
+ #app .card .value{font-size:20px}
+ #app .toolbar{align-items:stretch}
+ #app .toolbar input{flex:1 1 100%;width:100%;min-width:0}
+ #app .toolbar button,#app .toolbar select{flex:1 1 auto}
+ #app .table{min-width:680px}
+ #app .cash-layout{grid-template-columns:minmax(0,1fr)}
+ #app .cash-panel{padding:10px}
+ #app .scan{display:grid;grid-template-columns:minmax(0,1fr)}
+ #app .scan input{width:100%}
+ #app .activity-strip{grid-template-columns:minmax(0,1fr);padding:8px;gap:7px}
+}
+@media(max-width:420px){
+ #app .brand h1{font-size:16px}
+ #app .brand small{font-size:9px}
+ #app .logo{width:38px;height:38px}
+ #app .cards{grid-template-columns:minmax(0,1fr)}
+ #app .side{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #app .side .nav{font-size:11px;padding:7px 5px}
+ #app .title h2{font-size:20px}
+ #app .user{max-width:38vw;font-size:11px}
+}
+@media print{
+ #app .side,#app .top{display:none!important}
+ #app main{width:100%!important;padding:0!important}
+ #app .table-wrap{overflow:visible!important}
+ #app .table{min-width:0!important}
+}
