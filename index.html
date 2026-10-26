@@ -294,7 +294,18 @@ async function refreshActivityFeed(expectedVersion){
     activityCloudAvailable=true;
     const cloudRows=(Array.isArray(result.data)?result.data:[]).filter(function(entry){return entry&&entry.event_type!=='navigation'}).slice();
     cloudRows.sort(function(a,b){return new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime()});
-    renderActivityFeed(cloudRows.slice(0,ACTIVITY_LOCAL_LIMIT),'cloud');
+    const localRows=getLocalActivityRows();
+    const mergedRows=cloudRows.slice();
+    localRows.forEach(function(localEntry){
+      const localTime=new Date(localEntry.created_at||0).getTime();
+      const duplicate=mergedRows.some(function(cloudEntry){
+        const cloudTime=new Date(cloudEntry.created_at||0).getTime();
+        return String(cloudEntry.message||'')===String(localEntry.message||'')&&Math.abs(cloudTime-localTime)<15000;
+      });
+      if(!duplicate)mergedRows.push(localEntry);
+    });
+    mergedRows.sort(function(a,b){return new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime()});
+    renderActivityFeed(mergedRows.slice(0,ACTIVITY_LOCAL_LIMIT),cloudRows.length?'cloud':'local');
   }catch(e){
     if(versionAtStart===activityViewVersion){activityCloudAvailable=false;renderActivityFeed(getLocalActivityRows(),'local')}
   }finally{
