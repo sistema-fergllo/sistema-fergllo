@@ -1,10 +1,15 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
+<head>
 <script>
 (function () {
-  window.alert = function () {};
+  const originalConfirm = window.confirm.bind(window);
+  window.confirm = function (message) {
+    if (typeof message === 'string' && message.includes('تأكيد تقفيل الشيفت؟')) return true;
+    return originalConfirm(message);
+  };
 })();
-</script><head>
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>سيستم فرجللو</title>
