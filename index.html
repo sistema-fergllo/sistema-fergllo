@@ -283,7 +283,21 @@ async function refreshActivityFeed(){
     const result=await query;
     if(result.error)throw result.error;
     activityCloudAvailable=true;
-    renderActivityFeed(result.data||[],'cloud');
+    // Keep local events visible while cloud writes sync, and merge matching copies only once.
+    const cloudRows=Array.isArray(result.data)?result.data:[];
+    const localRows=getLocalActivityRows();
+    const merged=cloudRows.slice();
+    localRows.forEach(function(local){
+      const localTime=new Date(local.created_at||0).getTime();
+      const duplicate=cloudRows.some(function(remote){
+        if(String(remote.message||'')!==String(local.message||''))return false;
+        const remoteTime=new Date(remote.created_at||0).getTime();
+        return Number.isFinite(localTime)&&Number.isFinite(remoteTime)&&Math.abs(remoteTime-localTime)<60000;
+      });
+      if(!duplicate)merged.push(local);
+    });
+    merged.sort(function(a,b){return new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime()});
+    renderActivityFeed(merged.slice(0,ACTIVITY_LOCAL_LIMIT),'cloud');
   }catch(e){
     activityCloudAvailable=false;
     renderActivityFeed(getLocalActivityRows(),'local');
