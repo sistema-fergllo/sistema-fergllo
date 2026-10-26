@@ -430,7 +430,22 @@ function renderDailyTransfers(){
   return '<div class="cash-panel" style="margin-bottom:14px"><div class="title"><div><h3>وردية '+escapeTransferText(r.shiftName||'غير محددة')+' — '+escapeTransferText(r.number||'')+'</h3><div class="sub">وقت التقفيل: '+escapeTransferText(r.closedAt||'')+'</div></div></div><div class="cards"><div class="card"><div class="label">عدد فواتير البيع</div><div class="value cyan">'+Number(r.salesCount||0)+'</div></div><div class="card"><div class="label">إجمالي المبيعات</div><div class="value gold">'+money(r.salesTotal)+'</div></div><div class="card"><div class="label">أذون التحويل</div><div class="value">'+(r.transfers||[]).length+'</div></div></div><div class="table-wrap"><table class="table"><thead><tr><th>وقت البيع</th><th>رقم العملية</th><th>الشيفت</th><th>الإجمالي</th><th>الدفع</th><th>الأصناف</th></tr></thead><tbody>'+salesRows+'</tbody></table></div><h3>أذون التحويل المرحلة</h3><div class="table-wrap"><table class="table"><thead><tr><th>رقم الإذن</th><th>من</th><th>إلى</th><th>عدد الأصناف</th><th>التاريخ</th><th>الحالة</th></tr></thead><tbody>'+transferRows+'</tbody></table></div></div>';
  }).join('');
 }
-function closeCurrentShift(){
+async function clearCurrentActivityFeed(){
+  const key=activityStorageKey();
+  try{localStorage.removeItem(key)}catch(e){}
+  activityViewVersion++;
+  renderActivityFeed([],'local');
+  if(!currentAuthUserId||typeof supabaseClient==='undefined')return;
+  try{
+    let query=supabaseClient.from('system_activity_log').delete();
+    if(activeClient&&activeClient.id){query=query.eq('client_id',activeClient.id)}
+    else if(currentProfileRole==='admin'){query=query.is('client_id',null)}
+    else if(currentProfileRole==='client'){query=query.eq('user_id',currentAuthUserId)}
+    else{return}
+    await query;
+  }catch(e){console.warn('تعذر مسح سجل الأنشطة من قاعدة البيانات:',e)}
+}
+async function closeCurrentShift(){
 
  const stamp=Date.now(),shiftName=document.getElementById('shift')?.value||'غير محددة';
  const currentSales=(sales||[]).filter(x=>new Date(x.created_at||0).getTime()>getShiftCutoff());
@@ -442,7 +457,7 @@ function closeCurrentShift(){
  sales=[];localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify([]));
  saveTransferPermits([]);transferDraft=[];cart=[];
  ['trFrom','trTo','trNote','trQty','trCode','trName'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
- logActivity('تم تقفيل الشيفت وترحيل '+currentSales.length+' فاتورة و'+permits.length+' إذن تحويل إلى الاستعلامات اليومية','shift-close');
+ await clearCurrentActivityFeed();
  refreshAll();renderTransfers();renderDailyTransfers();
  alert('تم ترحيل الشيفت بنجاح. المبيعات وأذون التحويل أصبحت جاهزة لوردية جديدة، والمخزون لم يتم مسحه.');
  showPage('dailyTransfers');
