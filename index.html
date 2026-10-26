@@ -253,13 +253,18 @@ function renderActivityFeed(rows,mode){
 function logActivity(message,eventType){
   const cleanMessage=String(message||'').trim().slice(0,300);
   if(!cleanMessage)return;
-  const entry={id:'local-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),message:cleanMessage,event_type:eventType||'activity',created_at:new Date().toISOString(),client_id:activeClient&&activeClient.id?activeClient.id:null,user_id:currentAuthUserId||null};
+  const createdAt=new Date().toISOString();
+  const entry={id:'local-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),message:cleanMessage,event_type:eventType||'activity',created_at:createdAt,client_id:activeClient&&activeClient.id?activeClient.id:null,user_id:currentAuthUserId||null};
   const key=activityStorageKey();
+  // احتفظ بنسخة محلية للطوارئ فقط؛ لا نعرضها فوق السجل السحابي بعد نجاح المزامنة.
   let rows=[];try{rows=JSON.parse(localStorage.getItem(key)||'[]')||[]}catch(e){}
   rows=[entry].concat(Array.isArray(rows)?rows:[]).slice(0,ACTIVITY_LOCAL_LIMIT);
   try{localStorage.setItem(key,JSON.stringify(rows))}catch(e){}
-  renderActivityFeed(rows,'local');
-  if(!currentAuthUserId||typeof supabaseClient==='undefined')return;
+  if(!currentAuthUserId||typeof supabaseClient==='undefined'){
+    renderActivityFeed(rows,'local');
+    return;
+  }
+  renderActivityFeed([entry].concat(getLocalActivityRows().filter(function(x){return x.id!==entry.id})).slice(0,ACTIVITY_LOCAL_LIMIT),'local');
   Promise.resolve(supabaseClient.from('system_activity_log').insert({
     user_id:currentAuthUserId,
     role:currentProfileRole==='client'?'client':'admin',
@@ -267,10 +272,17 @@ function logActivity(message,eventType){
     event_type:eventType||'activity',
     message:cleanMessage
   })).then(function(result){
-    if(result&&result.error){activityCloudAvailable=false;return}
+    if(result&&result.error){
+      activityCloudAvailable=false;
+      renderActivityFeed(getLocalActivityRows(),'local');
+      return;
+    }
     activityCloudAvailable=true;
     refreshActivityFeed();
-  }).catch(function(){activityCloudAvailable=false});
+  }).catch(function(){
+    activityCloudAvailable=false;
+    renderActivityFeed(getLocalActivityRows(),'local');
+  });
 }
 async function refreshActivityFeed(){
   if(activityFetchBusy)return;
@@ -283,21 +295,11 @@ async function refreshActivityFeed(){
     const result=await query;
     if(result.error)throw result.error;
     activityCloudAvailable=true;
-    // Keep local events visible while cloud writes sync, and merge matching copies only once.
-    const cloudRows=Array.isArray(result.data)?result.data:[];
-    const localRows=getLocalActivityRows();
-    const merged=cloudRows.slice();
-    localRows.forEach(function(local){
-      const localTime=new Date(local.created_at||0).getTime();
-      const duplicate=cloudRows.some(function(remote){
-        if(String(remote.message||'')!==String(local.message||''))return false;
-        const remoteTime=new Date(remote.created_at||0).getTime();
-        return Number.isFinite(localTime)&&Number.isFinite(remoteTime)&&Math.abs(remoteTime-localTime)<60000;
-      });
-      if(!duplicate)merged.push(local);
-    });
-    merged.sort(function(a,b){return new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime()});
-    renderActivityFeed(merged.slice(0,ACTIVITY_LOCAL_LIMIT),'cloud');
+    // عند نجاح الاتصال، اعرض سجل قاعدة البيانات فقط.
+    // لا ندمج سجلات localStorage القديمة لأنها قد تكون من جلسة/عميل سابق أو من إصدار قديم وتعرض أحداثًا غير صحيحة.
+    const cloudRows=(Array.isArray(result.data)?result.data:[]).slice();
+    cloudRows.sort(function(a,b){return new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime()});
+    renderActivityFeed(cloudRows.slice(0,ACTIVITY_LOCAL_LIMIT),'cloud');
   }catch(e){
     activityCloudAvailable=false;
     renderActivityFeed(getLocalActivityRows(),'local');
