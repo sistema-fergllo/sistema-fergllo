@@ -551,14 +551,14 @@ function printLabelsInFrame(labels){
   try{
     const pages=valid.map(x=>{
       const canvas=document.createElement('canvas');
-      window.JsBarcode(canvas,x.code,{format:'CODE128',displayValue:false,margin:0,height:18,width:0.65,lineColor:'#000',background:'#fff'});
+      window.JsBarcode(canvas,x.code,{format:'CODE128',displayValue:false,margin:0,height:10,width:0.45,lineColor:'#000',background:'#fff'});
       const src=canvas.toDataURL('image/png');
       const price=Number.isFinite(x.price)?x.price.toFixed(2):'0.00';
       const safeCode=x.code.replace(/[&<>\\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
       return '<section class="label"><img class="bars" alt="Barcode '+safeCode+'" src="'+src+'"><div class="code">'+safeCode+'</div><div class="price">'+price+' ج.م</div></section>';
     }).join('');
     w.document.open();
-    w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>Barcode</title><style>@page{size:30mm 10mm;margin:0}html,body{margin:0;padding:0;background:#fff;color:#000;font-family:Arial,sans-serif}*{box-sizing:border-box}.label{width:30mm;height:10mm;min-height:10mm;max-height:10mm;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1mm;overflow:hidden;background:#fff;color:#000;break-inside:avoid;page-break-inside:avoid}.label:first-child{break-before:auto!important;page-break-before:auto!important}.label:not(:last-child){break-after:page;page-break-after:always}.bars{display:block;width:88%;max-width:88%;height:auto;max-height:4mm;object-fit:contain;image-rendering:auto}.code{font-size:5pt;font-weight:700;line-height:1.15;white-space:nowrap;direction:ltr}.price{font-size:6pt;font-weight:700;line-height:1.15;white-space:nowrap;direction:rtl}@media print{html,body{margin:0;padding:0}.label{margin:0}}</style></head><body>'+pages+'</body></html>');
+    w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>Barcode</title><style>@page{size:30mm 10mm;margin:0}html,body{margin:0;padding:0;background:#fff;color:#000;font-family:Arial,sans-serif}*{box-sizing:border-box}.label{width:30mm;height:10mm;min-height:10mm;max-height:10mm;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1mm;overflow:hidden;background:#fff;color:#000;break-inside:avoid;page-break-inside:avoid}.label:first-child{break-before:auto!important;page-break-before:auto!important}.label:not(:last-child){break-after:page;page-break-after:always}.label:last-child{break-after:auto!important;page-break-after:auto!important}.bars{display:block;width:75%;max-width:75%;height:auto;max-height:2.5mm;object-fit:contain;image-rendering:auto}.code{font-size:5pt;font-weight:700;line-height:1.15;white-space:nowrap;direction:ltr}.price{font-size:6pt;font-weight:700;line-height:1.15;white-space:nowrap;direction:rtl}@media print{html,body{margin:0;padding:0}.label{margin:0}}</style></head><body>'+pages+'</body></html>');
     w.document.close();
     let printStarted=false;
     const doPrint=async()=>{
