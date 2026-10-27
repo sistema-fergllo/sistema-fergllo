@@ -1,1 +1,1 @@
-apply barcode print visibility + landscape orientation fix
+final barcode repair: raster barcode, no leading blank label, 50x30mm horizontal
