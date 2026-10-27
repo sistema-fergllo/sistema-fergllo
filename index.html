@@ -6,7 +6,11 @@
 <title>سيستم فرجللو</title>
 <style>
 :root{--bg:#050d1d;--panel:#071a33;--panel2:#0b2444;--blue:#168cff;--cyan:#24d7ff;--green:#21d46b;--red:#ff4662;--gold:#f4b62b;--text:#f4f8ff;--muted:#91a7c2;--line:#123a67}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#123c73 0,#071326 38%,#030814 100%);color:var(--text);font-family:Tahoma,Arial,sans-serif;min-height:100vh}
+*{box-sizing:border-box}
+body::after{content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.48;background-image:radial-gradient(1px 1px at 8% 18%,#dff8ff 98%,transparent),radial-gradient(1px 1px at 72% 13%,#8ddcff 98%,transparent),radial-gradient(1.5px 1.5px at 44% 61%,#fff 98%,transparent),radial-gradient(1px 1px at 87% 76%,#bcecff 98%,transparent),linear-gradient(125deg,transparent 0%,transparent 47%,rgba(100,205,255,.0) 48%,rgba(125,220,255,.8) 49%,rgba(100,205,255,.0) 49.4%,transparent 50%);background-size:260px 220px,330px 280px,390px 310px,300px 260px,520px 420px;animation:faragelloMeteors 18s linear infinite}
+@keyframes faragelloMeteors{0%{background-position:0 0,0 0,0 0,0 0,520px -420px}100%{background-position:260px 220px,-330px 280px,390px -310px,-300px 260px,-520px 420px}}
+@media(prefers-reduced-motion:reduce){body::after{animation:none}}
+body{margin:0;background:radial-gradient(circle at 50% -10%,#123c73 0,#071326 38%,#030814 100%);color:var(--text);font-family:Tahoma,Arial,sans-serif;min-height:100vh}
 button,input,select{font:inherit}button{cursor:pointer;border:0}.hidden{display:none!important}
 .top{height:82px;background:linear-gradient(90deg,#06152b,#0a2343,#06152b);border-bottom:1px solid #0d5aa0;display:flex;align-items:center;justify-content:space-between;padding:0 24px;box-shadow:0 5px 25px #0008}
 .brand{display:flex;align-items:center;gap:15px}.logo{width:52px;height:52px;border:2px solid var(--cyan);border-radius:50%;display:grid;place-items:center;font-size:27px;box-shadow:0 0 18px #24d7ff66}.brand h1{margin:0;font-size:28px;color:#fff}.brand small{color:var(--cyan);display:block;margin-top:3px}
