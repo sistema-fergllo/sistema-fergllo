@@ -427,15 +427,38 @@ function deleteDailyShift(index){
 function printDailyShift(button){
   const panel=button&&button.closest('.daily-archive-card');
   if(!panel)return;
-  const printWindow=window.open('','_blank','width=900,height=700');
+  const printWindow=window.open('','_blank','width=1000,height=800');
   if(!printWindow){alert('اسمح بفتح النوافذ المنبثقة للطباعة');return}
   const printable=panel.cloneNode(true);
   printable.querySelectorAll('.daily-print-actions').forEach(el=>el.remove());
+  printable.style.width='100%';
+  printable.style.maxWidth='none';
+  printable.style.margin='0';
+  printable.style.boxSizing='border-box';
+  const styles=`
+    @page{size:A4 portrait;margin:8mm}
+    *{box-sizing:border-box!important}
+    html,body{width:100%;max-width:100%;margin:0;padding:0;background:#fff!important;color:#111!important}
+    body{font-family:Tahoma,Arial,sans-serif;direction:rtl;font-size:10pt;overflow:visible!important}
+    .daily-archive-card,.cash-panel{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:#fff!important;color:#111!important;overflow:visible!important}
+    .title{display:flex!important;width:100%!important;justify-content:space-between;align-items:flex-start;gap:8px;margin:0 0 8px!important}
+    h2,h3{color:#111!important;margin:4px 0!important;font-size:13pt!important;overflow-wrap:anywhere}
+    .sub,.label{color:#333!important;font-size:8pt!important}
+    .cards{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;width:100%!important;gap:6px!important;margin:8px 0!important}
+    .card{min-width:0!important;width:auto!important;padding:7px!important;border:1px solid #bbb!important;border-radius:4px!important;background:#fff!important;color:#111!important;box-shadow:none!important;break-inside:avoid;overflow-wrap:anywhere}
+    .value{font-size:12pt!important;color:#111!important;overflow-wrap:anywhere}
+    .table-wrap{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow:visible!important;border:0!important;box-shadow:none!important}
+    table,.table{width:100%!important;max-width:100%!important;min-width:0!important;table-layout:fixed!important;border-collapse:collapse!important;margin:6px 0 12px!important;font-size:8pt!important}
+    th,td{min-width:0!important;padding:4px 3px!important;border:1px solid #888!important;color:#111!important;background:#fff!important;text-align:right!important;vertical-align:top!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:break-word!important}
+    th{background:#eee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    button,.daily-print-actions{display:none!important}
+    tr{break-inside:avoid;page-break-inside:avoid}
+    @media print{html,body{width:100%!important;overflow:visible!important}.daily-archive-card{break-inside:auto;page-break-inside:auto}}
+  `;
   printWindow.document.open();
-  printWindow.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير الوردية - سيستم فرجللو</title><style>body{font-family:Tahoma,Arial,sans-serif;color:#111;margin:22px;direction:rtl}.cash-panel{border:1px solid #bbb;padding:16px;border-radius:8px}.title{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}h2,h3{margin:8px 0}.sub{color:#555;font-size:12px}.cards{display:flex;gap:10px;margin:14px 0}.card{flex:1;border:1px solid #ccc;padding:10px;border-radius:6px}.label{font-size:12px;color:#444}.value{font-size:18px;font-weight:bold;margin-top:6px}.table-wrap{width:100%;overflow:visible}table{width:100%;border-collapse:collapse;margin:10px 0 18px;font-size:12px}th,td{border:1px solid #aaa;padding:7px;text-align:right;vertical-align:top}th{background:#eee}button{display:none!important}@media print{body{margin:10mm}.cash-panel{border:0;padding:0}.table-wrap{overflow:visible}}</style></head><body>'+printable.outerHTML+'</body></html>');
+  printWindow.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تقرير الوردية - سيستم فرجللو</title><style>'+styles+'</style></head><body>'+printable.outerHTML+'</body></html>');
   printWindow.document.close();
-  printWindow.focus();
-  setTimeout(()=>{printWindow.print();printWindow.close()},300);
+  printWindow.onload=()=>setTimeout(()=>{try{printWindow.focus();printWindow.print()}catch(e){console.error('تعذر طباعة تقرير الوردية:',e)}},500);
 }
 function renderDailyTransfers(){
  const rows=getDailyArchive();
