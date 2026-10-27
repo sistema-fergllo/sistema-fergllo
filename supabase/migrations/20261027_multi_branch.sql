@@ -79,7 +79,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path=public,extensions
-as $$
+as $branch_fn$
 declare v_branch public.client_branches;
 begin
  if not exists(select 1 from public.user_profiles p where p.user_id=auth.uid() and p.role='admin') then
@@ -94,7 +94,7 @@ begin
  from public.client_inventory ci where ci.client_id=p_client_id
  on conflict(branch_id,code) do nothing;
  return jsonb_build_object('id',v_branch.id,'client_id',v_branch.client_id,'name',v_branch.name,'status',v_branch.status,'created_at',v_branch.created_at);
-end $;
+end $branch_fn$;
 revoke all on function public.create_client_branch(uuid,text,text) from public;
 grant execute on function public.create_client_branch(uuid,text,text) to authenticated;
 
@@ -103,7 +103,7 @@ returns boolean
 language plpgsql
 security definer
 set search_path=public,extensions
-as $$
+as $branch_fn$
 declare v_client_id uuid; v_hash text;
 begin
  select b.client_id,s.pin_hash into v_client_id,v_hash
@@ -115,7 +115,7 @@ begin
  if v_client_id is null or v_hash is null or extensions.crypt(coalesce(p_pin,''),v_hash)<>v_hash then return false; end if;
  update public.user_profiles set branch_id=p_branch_id where user_id=auth.uid() and role='client' and client_id=v_client_id;
  return true;
-end $$;
+end $branch_fn$;
 revoke all on function public.verify_client_branch(uuid,text) from public;
 grant execute on function public.verify_client_branch(uuid,text) to authenticated;
 
@@ -124,7 +124,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path=public
-as $$
+as $branch_fn$
 declare v_client uuid; v_branch uuid; v_total numeric:=0; v_item jsonb; v_sale public.client_branch_sales; v_price numeric; v_saved_items jsonb:='[]'::jsonb;
 begin
  select client_id,branch_id into v_client,v_branch from public.user_profiles where user_id=auth.uid() and role='client';
@@ -146,6 +146,6 @@ begin
  insert into public.client_branch_sales(client_id,branch_id,shift,pay,total,items_summary)
  values(v_client,v_branch,p_shift,p_pay,v_total,v_saved_items::text) returning * into v_sale;
  return jsonb_build_object('id',v_sale.id,'total',v_total);
-end $$;
+end $branch_fn$;
 revoke all on function public.complete_client_branch_sale(text,text,jsonb) from public;
 grant execute on function public.complete_client_branch_sale(text,text,jsonb) to authenticated;
