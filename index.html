@@ -169,7 +169,7 @@ html,body{min-height:100%;margin:0}
   </div>
 </div>
 <div id="app" class="hidden">
-<header class="top"><div class="brand"><div class="logo"><svg viewBox="0 0 64 64" width="32" height="32" aria-label="آلة حاسبة" role="img"><rect x="13" y="5" width="38" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="4"/><rect x="19" y="11" width="26" height="10" rx="2" fill="currentColor"/><rect x="19" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="19" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="38" width="7" height="18" rx="1" fill="currentColor"/><rect x="19" y="49" width="17" height="7" rx="1" fill="currentColor"/></svg></div><div><h1>سيستم فرجللو</h1><small>Farag El-Sayed • مشرف النظام</small><div style="margin-top:6px"></div></div></div><div class="userbox"><div class="clock"><b id="date"></b><br><span id="time"></span></div><div class="user">👤 <b>admin</b><br><small>مدير النظام</small></div></div></header>
+<header class="top"><div class="brand"><div class="logo"><svg viewBox="0 0 64 64" width="32" height="32" aria-label="آلة حاسبة" role="img"><rect x="13" y="5" width="38" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="4"/><rect x="19" y="11" width="26" height="10" rx="2" fill="currentColor"/><rect x="19" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="27" width="7" height="7" rx="1" fill="currentColor"/><rect x="19" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="29" y="38" width="7" height="7" rx="1" fill="currentColor"/><rect x="39" y="38" width="7" height="18" rx="1" fill="currentColor"/><rect x="19" y="49" width="17" height="7" rx="1" fill="currentColor"/></svg></div><div><h1>سيستم فرجللو</h1><small>Farag El-Sayed • مشرف النظام</small><div id="activeBranchLabel" style="display:none!important;visibility:visible!important;opacity:1!important;margin-top:7px;padding:6px 12px;background:#fff;color:#0b2a5b;border:2px solid #168cff;border-radius:9px;font-size:15px;font-weight:900;line-height:1.4;width:max-content;max-width:90vw"></div><div style="margin-top:6px"></div></div></div><div class="userbox"><div class="clock"><b id="date"></b><br><span id="time"></span></div><div class="user">👤 <b>admin</b><br><small>مدير النظام</small></div></div></header>
 <div id="activityStrip" class="activity-strip" role="region" aria-label="الأنشطة الحالية">
   <div class="activity-heading">
     <strong>الأنشطة الحالية</strong>
@@ -473,6 +473,7 @@ async function showClientBranchPicker(client){
  return true;
 }
 function selectBranchForPin(id){const branch=availableClientBranches.find(b=>b.id===id);if(!branch)return;pendingBranchId=id;document.getElementById('branchPinTitle').textContent='الرقم السري لفرع '+branch.name;document.getElementById('branchPinArea').classList.remove('hidden');document.getElementById('branchPinInput').value='';document.getElementById('branchPinError').textContent='';document.getElementById('branchPinInput').focus()}
+function renderActiveBranchLabel(){try{const raw=localStorage.getItem('frg_active_client');const client=activeClient||JSON.parse(raw||'null');const el=document.getElementById('activeBranchLabel');if(!el)return;const name=client&&client.branchName?String(client.branchName).trim():'';if(name){el.textContent='🏬 الفرع الحالي: '+name;el.style.setProperty('display','block','important');el.style.setProperty('visibility','visible','important');el.style.setProperty('opacity','1','important');const brandSmall=document.querySelector('.brand small');if(brandSmall)brandSmall.textContent=(client.name||'العميل')+' • '+name;const userSmall=document.querySelector('.user small');if(userSmall)userSmall.textContent='الفرع الحالي: '+name;}else{el.style.setProperty('display','none','important');}}catch(e){console.error('تعذر عرض اسم الفرع',e)}}
 async function enterSelectedBranch(){
  const pin=document.getElementById('branchPinInput').value.trim(),err=document.getElementById('branchPinError');
  err.textContent='';
@@ -486,10 +487,10 @@ async function enterSelectedBranch(){
   if(chosen.error)throw chosen.error;
   activeClient.branchId=chosen.data.id;activeClient.branchName=chosen.data.name;
   localStorage.setItem('frg_active_client',JSON.stringify(activeClient));
-  document.querySelector('.brand small').textContent=activeClient.name+' • '+activeClient.branchName;
-  document.querySelector('.user small').textContent='فرع: '+activeClient.branchName;
+  renderActiveBranchLabel();
   document.getElementById('branchPickerModal').classList.add('hidden');
   await loadClientWorkspaceFromCloud(activeClient.id);
+  renderActiveBranchLabel();
   showPage('home');
   logActivity('تم الدخول إلى فرع '+activeClient.branchName,'login');
  }catch(e){err.textContent='تعذر الدخول للفرع: '+(e?.message||e)}
