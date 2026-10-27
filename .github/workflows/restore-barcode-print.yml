@@ -1,0 +1,22 @@
+name: Restore original barcode print flow
+on:
+  push:
+    paths:
+      - '.github/barcode-print-restore-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore barcode print block
+        run: python3 scripts/restore_barcode_print_original.py
+      - name: Commit restored barcode flow
+        run: |
+          git config user.name 'Faragello Bot'
+          git config user.email 'actions@github.com'
+          git add index.html scripts/restore_barcode_print_original.py .github/workflows/restore-barcode-print.yml .github/barcode-print-restore-trigger.txt
+          git diff --cached --quiet && exit 0
+          git commit -m 'Restore original thermal barcode printing'
+          git push
