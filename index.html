@@ -441,7 +441,7 @@ async function loadManagedBranches(){
  box.innerHTML=managedBranches.length?managedBranches.map(b=>'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px;margin:7px 0;background:#06182e;border:1px solid #145180;border-radius:10px"><span>🏬 '+escapeBranchText(b.name)+' <small class="sub">('+escapeBranchText(b.status||'نشط')+')</small></span><button class="btn '+(b.status==='نشط'?'red':'green')+'" onclick="toggleBranchStatus(\''+b.id+'\',\''+(b.status==='نشط'?'موقوف':'نشط')+'\')">'+(b.status==='نشط'?'إيقاف':'تفعيل')+'</button></div>').join(''):'<p class="sub">العميل ده لسه مضافش فروع.</p>';
 }
 async function saveBranch(){
- const clientId=document.getElementById('branchClientSelect').value,name=document.getElementById('newBranchName').value.trim(),pin=document.getElementById('newBranchPin').value;
+ const clientId=document.getElementById('branchClientSelect').value,name=document.getElementById('newBranchName').value.trim(),pin=document.getElementById('newBranchPin').value.trim();
  if(!clientId){alert('اختار العميل الأول');return}
  if(!name){alert('اكتب اسم الفرع');return}
  if(pin.length<6){alert('الرقم السري للفرع لازم يكون 6 أحرف أو أكثر');return}
@@ -468,13 +468,13 @@ async function showClientBranchPicker(client){
  document.getElementById('branchPinArea').classList.add('hidden');
  document.getElementById('branchPinInput').value='';
  document.getElementById('branchPinError').textContent='';
- document.getElementById('branchPickerCards').innerHTML=data.map(b=>'<button class="card" style="color:#fff;text-align:center;cursor:pointer;border:1px solid #168cff" onclick="selectBranchForPin(\''+b.id+'\')"><div style="font-size:34px">🏬</div><div style="font-size:18px;font-weight:bold;margin-top:8px">'+escapeBranchText(b.name)+'</div><div class="sub">اختيار الفرع</div></button>').join('');
+ document.getElementById('branchPickerCards').innerHTML=data.map(b=>'<button type="button" class="card" style="display:block!important;width:100%;min-height:145px;background:#ffffff!important;color:#0b2a5b!important;text-align:center;cursor:pointer;border:2px solid #168cff!important" onclick="selectBranchForPin(\''+b.id+'\')"><div style="font-size:34px;line-height:1.3">🏬</div><strong style="display:block!important;visibility:visible!important;opacity:1!important;color:#0b2a5b!important;font-size:20px;font-weight:900;margin-top:8px">'+escapeBranchText(b.name||'فرع بدون اسم')+'</strong><span style="display:block!important;color:#37618d!important;font-size:13px;margin-top:8px">اضغط لاختيار الفرع</span></button>').join('');
  document.getElementById('branchPickerModal').classList.remove('hidden');
  return true;
 }
 function selectBranchForPin(id){const branch=availableClientBranches.find(b=>b.id===id);if(!branch)return;pendingBranchId=id;document.getElementById('branchPinTitle').textContent='الرقم السري لفرع '+branch.name;document.getElementById('branchPinArea').classList.remove('hidden');document.getElementById('branchPinInput').value='';document.getElementById('branchPinError').textContent='';document.getElementById('branchPinInput').focus()}
 async function enterSelectedBranch(){
- const pin=document.getElementById('branchPinInput').value,err=document.getElementById('branchPinError');
+ const pin=document.getElementById('branchPinInput').value.trim(),err=document.getElementById('branchPinError');
  err.textContent='';
  if(!pendingBranchId){err.textContent='اختار الفرع الأول';return}
  if(!pin){err.textContent='اكتب الرقم السري للفرع';return}
@@ -482,13 +482,13 @@ async function enterSelectedBranch(){
   const {data,error}=await supabaseClient.rpc('verify_client_branch',{p_branch_id:pendingBranchId,p_pin:pin});
   if(error)throw error;
   if(data!==true){err.textContent='الرقم السري غير صحيح أو الفرع غير متاح';return}
-  document.getElementById('branchPickerModal').classList.add('hidden');
   const chosen=(await supabaseClient.from('client_branches').select('id,name').eq('id',pendingBranchId).single());
   if(chosen.error)throw chosen.error;
   activeClient.branchId=chosen.data.id;activeClient.branchName=chosen.data.name;
   localStorage.setItem('frg_active_client',JSON.stringify(activeClient));
   document.querySelector('.brand small').textContent=activeClient.name+' • '+activeClient.branchName;
   document.querySelector('.user small').textContent='فرع: '+activeClient.branchName;
+  document.getElementById('branchPickerModal').classList.add('hidden');
   await loadClientWorkspaceFromCloud(activeClient.id);
   showPage('home');
   logActivity('تم الدخول إلى فرع '+activeClient.branchName,'login');
