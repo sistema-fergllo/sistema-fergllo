@@ -550,31 +550,18 @@ function printLabelsInFrame(labels){
   if(!w){alert('اسمح بالنوافذ المنبثقة للموقع ثم جرّب تاني.');return}
   try{
     const pages=valid.map(x=>{
-      const canvas=document.createElement('canvas');
-      window.JsBarcode(canvas,x.code,{format:'CODE128',displayValue:false,margin:0,height:10,width:0.45,lineColor:'#000',background:'#fff'});
-      const src=canvas.toDataURL('image/png');
+      const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      window.JsBarcode(svg,x.code,{format:'CODE128',displayValue:false,margin:0,height:10,width:0.45,lineColor:'#000',background:'#fff'});
+      const barcode=svg.outerHTML;
       const price=Number.isFinite(x.price)?x.price.toFixed(2):'0.00';
-      const safeCode=x.code.replace(/[&<>\\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-      return '<section class="label"><img class="bars" alt="Barcode '+safeCode+'" src="'+src+'"><div class="code">'+safeCode+'</div><div class="price">'+price+' ج.م</div></section>';
+      const safeCode=x.code.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+      return '<section class="label"><div class="bars">'+barcode+'</div><div class="code">'+safeCode+'</div><div class="price">'+price+' ج.م</div></section>';
     }).join('');
     w.document.open();
-    w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>Barcode</title><style>@page{size:30mm 10mm;margin:0}html,body{margin:0;padding:0;background:#fff;color:#000;font-family:Arial,sans-serif}*{box-sizing:border-box}.label{width:30mm;height:10mm;min-height:10mm;max-height:10mm;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1mm;overflow:hidden;background:#fff;color:#000;break-inside:avoid;page-break-inside:avoid}.label:first-child{break-before:auto!important;page-break-before:auto!important}.label:not(:last-child){break-after:page;page-break-after:always}.label:last-child{break-after:auto!important;page-break-after:auto!important}.bars{display:block;width:75%;max-width:75%;height:auto;max-height:2.5mm;object-fit:contain;image-rendering:auto}.code{font-size:5pt;font-weight:700;line-height:1.15;white-space:nowrap;direction:ltr}.price{font-size:6pt;font-weight:700;line-height:1.15;white-space:nowrap;direction:rtl}@media print{html,body{margin:0;padding:0}.label{margin:0}}</style></head><body>'+pages+'</body></html>');
+    w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>طباعة الباركود</title><style>@page{size:30mm 10mm;margin:0}html,body{width:30mm;margin:0;padding:0;background:#fff;color:#000;font-family:Arial,sans-serif}*{box-sizing:border-box}.label{width:30mm;height:10mm;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;overflow:hidden;background:#fff;color:#000;break-inside:avoid;page-break-inside:avoid}.label:not(:last-child){break-after:page;page-break-after:always}.bars{width:75%;height:2.5mm;display:flex;align-items:center;justify-content:center;overflow:hidden}.bars svg{display:block;width:100%;height:2.5mm;max-height:2.5mm}.code{font-size:5pt;font-weight:700;line-height:1.1;white-space:nowrap;direction:ltr}.price{font-size:6pt;font-weight:700;line-height:1.1;white-space:nowrap;direction:rtl}@media print{html,body{width:30mm;margin:0;padding:0}}</style></head><body>'+pages+'</body></html>');
     w.document.close();
-    let printStarted=false;
-    const doPrint=async()=>{
-      if(printStarted||w.closed)return;
-      try{
-        const imgs=Array.from(w.document.images);
-        await Promise.all(imgs.map(img=>img.complete&&img.naturalWidth>0?Promise.resolve():new Promise(resolve=>{img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true})})));
-        if(w.document.fonts&&w.document.fonts.ready)await w.document.fonts.ready;
-      }catch(e){}
-      if(w.closed||printStarted)return;
-      printStarted=true;
-      w.focus();
-      try{w.print()}catch(e){printStarted=false;console.error(e)}
-    };
-    w.addEventListener('load',()=>setTimeout(doPrint,250),{once:true});
-    setTimeout(()=>{if(!w.closed&&!printStarted)doPrint()},1500);
+    w.focus();
+    setTimeout(()=>{if(!w.closed){try{w.print()}catch(e){console.error(e)}}},700);
   }catch(e){try{w.close()}catch(_){}alert('تعذر تجهيز صفحة الطباعة: '+(e.message||e))}
 }
 function renderCart(){let b=document.getElementById('cartBody'),totalEl=document.getElementById('cartTotal');if(b){b.innerHTML='';let total=0;if(!cart.length)b.innerHTML='<tr><td colspan="6" class="empty">امسح الباركود أو اكتب الكود لإضافة صنف</td></tr>';cart.forEach((x,i)=>{let t=x.qty*x.price;total+=t;b.innerHTML+=`<tr><td>${x.code}</td><td>${x.name}</td><td><input style="width:70px;background:#041326;color:#fff;border:1px solid #155083;border-radius:6px;padding:7px;text-align:center" type="number" min="1" value="${x.qty}" onchange="changeCartQty(${i},this.value)"></td><td>${money(x.price)}</td><td>${money(t)}</td><td><button class="btn red" onclick="removeCart(${i})">حذف</button></td></tr>`})}if(totalEl)totalEl.textContent=money(cart.reduce((sum,x)=>sum+Number(x.qty||0)*Number(x.price||0),0))}
