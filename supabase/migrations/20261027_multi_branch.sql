@@ -47,6 +47,11 @@ alter table public.client_branches enable row level security;
 alter table public.client_branch_inventory enable row level security;
 alter table public.client_branch_sales enable row level security;
 
+grant select on public.client_branches to authenticated;
+grant select,insert,update,delete on public.client_branch_inventory to authenticated;
+grant select on public.client_branch_sales to authenticated;
+-- Deliberately do not grant direct access to client_branch_secrets.
+
 drop policy if exists "branch admin manage" on public.client_branches;
 create policy "branch admin manage" on public.client_branches for all to authenticated
 using (exists(select 1 from public.user_profiles p where p.user_id=auth.uid() and p.role='admin'))
