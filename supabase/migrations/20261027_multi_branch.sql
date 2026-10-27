@@ -120,7 +120,7 @@ language plpgsql
 security definer
 set search_path=public
 as $$
-declare v_client uuid; v_branch uuid; v_total numeric:=0; v_item jsonb; v_sale public.client_branch_sales;
+declare v_client uuid; v_branch uuid; v_total numeric:=0; v_item jsonb; v_sale public.client_branch_sales; v_price numeric; v_saved_items jsonb:='[]'::jsonb;
 begin
  select client_id,branch_id into v_client,v_branch from public.user_profiles where user_id=auth.uid() and role='client';
  if v_client is null or v_branch is null then raise exception 'اختار الفرع أولًا'; end if;
@@ -132,12 +132,14 @@ begin
      set qty=qty-(v_item->>'qty')::numeric,
          sold=sold+(v_item->>'qty')::numeric,updated_at=now()
      where branch_id=v_branch and client_id=v_client and code=v_item->>'code'
-       and qty >= (v_item->>'qty')::numeric;
+       and qty >= (v_item->>'qty')::numeric
+     returning price into v_price;
    if not found then raise exception 'الصنف غير موجود أو الكمية غير كافية في مخزون الفرع: %',v_item->>'name'; end if;
-   v_total:=v_total+coalesce((v_item->>'line_total')::numeric,((v_item->>'qty')::numeric*(v_item->>'unit_price')::numeric));
+   v_total:=v_total+((v_item->>'qty')::numeric*v_price);
+   v_saved_items:=v_saved_items||jsonb_build_array(jsonb_build_object('code',v_item->>'code','name',v_item->>'name','qty',(v_item->>'qty')::numeric,'unit_price',v_price,'line_total',((v_item->>'qty')::numeric*v_price)));
  end loop;
  insert into public.client_branch_sales(client_id,branch_id,shift,pay,total,items_summary)
- values(v_client,v_branch,p_shift,p_pay,v_total,p_items::text) returning * into v_sale;
+ values(v_client,v_branch,p_shift,p_pay,v_total,v_saved_items::text) returning * into v_sale;
  return jsonb_build_object('id',v_sale.id,'total',v_total);
 end $$;
 revoke all on function public.complete_client_branch_sale(text,text,jsonb) from public;
