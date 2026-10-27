@@ -1,0 +1,1 @@
+apply first-label barcode print fix
