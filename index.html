@@ -949,7 +949,7 @@ async function restartSalesData(){
  try{
   if(cloudReady&&typeof supabaseClient!=='undefined'){
    let result;
-   if(currentProfileRole==='client'&&activeClient&&activeClient.id){
+   if(activeClient&&activeClient.id){
     result=activeClient.branchId
      ?await supabaseClient.from('client_branch_sales').delete().eq('client_id',activeClient.id).eq('branch_id',activeClient.branchId)
      :await supabaseClient.from('client_sales').delete().eq('client_id',activeClient.id);
@@ -964,6 +964,9 @@ async function restartSalesData(){
   localStorage.removeItem(workspaceKey('frg_shift_summary'));
   localStorage.setItem(workspaceKey('frg_shift_cutoff'),String(Date.now()));
   localStorage.removeItem(workspaceKey('frg_active_shift'));
+  // Explicitly clear the shift-closing archive and force both closing/report views to redraw empty.
+  localStorage.setItem(workspaceKey('frg_daily_archive'),JSON.stringify([]));
+  localStorage.removeItem(workspaceKey('frg_shift_summary'));
   const shiftField=document.getElementById('shift');
   if(shiftField){shiftField.value='';shiftField.type='password';shiftField.readOnly=false;shiftField.dataset.verified='false';shiftField.placeholder='اكتب الرقم السري للشيفت ثم Enter';}
   ['repFrom','repTo','repShift'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
