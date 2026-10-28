@@ -1,4 +1,4 @@
-name: Finish client manager
+name: Faragello system verification
 on:
   push:
     branches: [main]
@@ -9,23 +9,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify current system and sidebar labels
+      - name: Verify essential system files and features
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          s=Path('index.html').read_text(encoding='utf-8')
-          required=[
+          html = Path("index.html").read_text(encoding="utf-8")
+          required = [
               "chooseLogin('admin')",
               "chooseLogin('client')",
               "async function doLogin()",
+              'id="navClients"',
+              'id="navCloseShift"',
+              'id="navDailyTransfers"',
               "client_accounts",
               "user_profiles",
-              "الاستعلامات اليومية",
+              "الإستعلامات اليومية",
               "التقارير اليومية",
               "تقارير الجرد",
+              "printAllBarcodes",
+              "force-design.css",
+              "login-fix.js",
           ]
-          missing=[x for x in required if x not in s]
+          missing = [item for item in required if item not in html]
+          for asset in ("force-design.css", "login-fix.js"):
+              if not Path(asset).is_file():
+                  missing.append("file:" + asset)
           if missing:
-              raise SystemExit('Missing required system parts: '+', '.join(missing))
-          print('Faragello System verification passed.')
+              raise SystemExit("System verification failed; missing: " + ", ".join(missing))
+          print("Faragello System verification passed.")
           PY
