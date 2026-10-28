@@ -477,28 +477,43 @@ html,body{min-height:100%;margin:0}
 
 
 
+
 <style id="faragello-sidebar-white-labels">
-/* Requested sidebar labels in white; preserve original button backgrounds. */
+/* White text for every requested sidebar menu button. */
 #app .side .nav[data-page="home"],
 #app .side .nav[data-page="fingerprint"],
 #app .side .nav[data-page="coding"],
 #app .side .nav[data-page="cashier"],
 #app .side .nav[data-page="transfers"],
+#app .side .nav[data-page="sales"],
+#app .side .nav[data-page="reports"],
+#app .side .nav[data-page="purchaseInvoices"],
 #app .side .nav[data-page="inventory"],
 #app .side .nav[data-page="stocktake"],
 #app .side .nav[data-page="payroll"],
+#app .side #navCloseShift,
 #app .side #navDailyTransfers,
-#app .side #navCloseShift {color:#fff!important}
-#app .side .nav[data-page="home"] .nav-icon,
-#app .side .nav[data-page="fingerprint"] .nav-icon,
-#app .side .nav[data-page="coding"] .nav-icon,
-#app .side .nav[data-page="cashier"] .nav-icon,
-#app .side .nav[data-page="transfers"] .nav-icon,
-#app .side .nav[data-page="inventory"] .nav-icon,
-#app .side .nav[data-page="stocktake"] .nav-icon,
-#app .side .nav[data-page="payroll"] .nav-icon,
-#app .side #navDailyTransfers .nav-icon,
-#app .side #navCloseShift .nav-icon {color:#fff!important}
+#app .side #navSettings {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+#app .side .nav[data-page="home"] *,
+#app .side .nav[data-page="fingerprint"] *,
+#app .side .nav[data-page="coding"] *,
+#app .side .nav[data-page="cashier"] *,
+#app .side .nav[data-page="transfers"] *,
+#app .side .nav[data-page="sales"] *,
+#app .side .nav[data-page="reports"] *,
+#app .side .nav[data-page="purchaseInvoices"] *,
+#app .side .nav[data-page="inventory"] *,
+#app .side .nav[data-page="stocktake"] *,
+#app .side .nav[data-page="payroll"] *,
+#app .side #navCloseShift *,
+#app .side #navDailyTransfers *,
+#app .side #navSettings * {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
 </style>
 </head>
 <body>
