@@ -196,8 +196,8 @@ html,body{min-height:100%;margin:0}
   <button class="nav" data-page="reports" onclick="showPage('reports')"><span class="nav-icon">▥</span>التقارير اليومية</button>
   <button id="navInventory" class="nav" data-page="inventory" onclick="requestPage('inventory')"><span class="nav-icon">▦</span>تفاصيل المخزون</button>
   <button class="nav" data-page="stocktake" onclick="showPage('stocktake')">تقارير الجرد</button>
-  <button id="navDailyTransfers" class="nav" data-page="dailyTransfers" onclick="showPage('dailyTransfers')">الإستعلامات اليومية</button>
   <button id="navCloseShift" class="nav" type="button" onclick="closeCurrentShift()">تقفيل الشيفت</button>
+  <button id="navDailyTransfers" class="nav" data-page="dailyTransfers" onclick="showPage('dailyTransfers')">الإستعلامات اليومية</button>
   <button id="navSettings" class="nav" data-page="settings" onclick="showPage('settings')"><span class="nav-icon">⚙</span>الإعدادات</button>
   <button id="navClients" class="nav" data-page="clients" onclick="showPage('clients')"><span class="nav-icon">♙</span>العملاء</button>
   <button class="nav logout" onclick="supabaseClient.auth.signOut().finally(()=>location.reload())"><span class="nav-icon">↪</span>تسجيل الخروج</button>
