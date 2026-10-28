@@ -1235,7 +1235,35 @@ function printRecords(title, summaryId, tableId){
  if(!table||!table.innerHTML.trim()){alert('لا توجد بيانات للطباعة');return}
  const w=window.open('','_blank');
  if(!w){alert('اسمح بفتح النوافذ المنبثقة للطباعة');return}
- w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'+title+'</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #777;padding:8px;text-align:right}th{background:#eee}p{margin:8px 0}@media print{body{padding:0}}</style></head><body><h1>'+title+' - سيستم فرجللو</h1>'+(summary?summary.innerHTML:'')+table.innerHTML+'</body></html>');
+ w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'+title+'</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #777;padding:8px;text-align:right}th{background:#eee}p{margin:8px 0}@media print{body{padding:0}}</style>
+<style id="faragello-sidebar-white-labels">
+/* Force requested sidebar labels to white without changing button backgrounds. */
+#app .side .nav[data-page="home"],
+#app .side .nav[data-page="fingerprint"],
+#app .side .nav[data-page="coding"],
+#app .side .nav[data-page="cashier"],
+#app .side .nav[data-page="transfers"],
+#app .side .nav[data-page="inventory"],
+#app .side .nav[data-page="stocktake"],
+#app .side .nav[data-page="payroll"],
+#app .side #navDailyTransfers,
+#app .side #navCloseShift {
+  color:#fff!important;
+}
+#app .side .nav[data-page="home"] .nav-icon,
+#app .side .nav[data-page="fingerprint"] .nav-icon,
+#app .side .nav[data-page="coding"] .nav-icon,
+#app .side .nav[data-page="cashier"] .nav-icon,
+#app .side .nav[data-page="transfers"] .nav-icon,
+#app .side .nav[data-page="inventory"] .nav-icon,
+#app .side .nav[data-page="stocktake"] .nav-icon,
+#app .side .nav[data-page="payroll"] .nav-icon,
+#app .side #navDailyTransfers .nav-icon,
+#app .side #navCloseShift .nav-icon {
+  color:#fff!important;
+}
+</style>
+</head><body><h1>'+title+' - سيستم فرجللو</h1>'+(summary?summary.innerHTML:'')+table.innerHTML+'</body></html>');
  w.document.close();w.focus();w.print();
 }
 window.fpPrint=()=>printRecords('سجل البصمة والحضور والانصراف','fpSummary','fpTable');
