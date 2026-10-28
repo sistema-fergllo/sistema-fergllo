@@ -668,7 +668,7 @@ async function showClientBranchPicker(client){
  document.getElementById('branchPinArea').classList.add('hidden');
  document.getElementById('branchPinInput').value='';
  document.getElementById('branchPinError').textContent='';
- document.getElementById('branchPickerCards').innerHTML=data.map(b=>'<button type="button" class="card" onclick="selectBranchForPin(\''+b.id+'\')"><div>🏬</div><strong >'+escapeBranchText(b.name||'فرع بدون اسم')+'</strong><span >اضغط لاختيار الفرع</span></button>').join('');
+ document.getElementById('branchPickerCards').innerHTML=data.map(b=>'<button type="button" class="card" onclick="selectBranchForPin(\''+b.id+'\')"><div>🏬</div><strong >'+escapeBranchText(b.name||'فرع بدون اسم')+'</strong></button>').join('');
  document.getElementById('branchPickerModal').classList.remove('hidden');
  return true;
 }
