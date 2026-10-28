@@ -273,6 +273,27 @@ html,body{min-height:100%;margin:0}
 #app #clientWorkspaceBar{background:linear-gradient(100deg,rgba(0,151,164,.25),rgba(16,83,144,.4))!important;border-color:#30e2c4!important}
 @media(max-width:700px){#app #home .cash-panel{padding:30px 14px!important;min-height:170px}#app .card,#app .cash-panel{border-radius:14px!important}}
 </style>
+<style id="faragello-mini-floating-logo">
+/* Replace the large floating background ribbon with a tiny glowing Faragello-style mark */
+@keyframes faragelloMiniLogoFloat{
+  0%,100%{transform:translateY(0) rotate(-5deg);filter:drop-shadow(0 0 5px rgba(25,215,255,.7))}
+  50%{transform:translateY(-9px) rotate(3deg);filter:drop-shadow(0 0 11px rgba(71,119,255,.95))}
+}
+#app #home .cash-panel:after{
+ content:"F"!important;display:grid!important;place-items:center!important;
+ position:absolute!important;z-index:0!important;inset:22px 26px auto auto!important;
+ width:25px!important;height:31px!important;padding:0!important;
+ border:0!important;border-radius:8px 3px 8px 3px!important;
+ background:linear-gradient(145deg,#41f4ff 0%,#1597ff 48%,#7259ff 100%)!important;
+ color:#fff!important;font-family:Arial,sans-serif!important;font-size:22px!important;
+ font-weight:1000!important;font-style:italic!important;line-height:1!important;
+ text-shadow:0 0 8px rgba(255,255,255,.8)!important;
+ box-shadow:0 0 12px rgba(0,198,255,.55),0 0 25px rgba(65,102,255,.35)!important;
+ transform-origin:center!important;animation:faragelloMiniLogoFloat 3.2s ease-in-out infinite!important;
+ pointer-events:none!important;inset-inline-start:auto!important;
+}
+@media(max-width:700px){#app #home .cash-panel:after{inset:14px 14px auto auto!important;width:20px!important;height:25px!important;font-size:18px!important}}
+</style>
 </head>
 <body>
 <div id="login" class="login-screen">
