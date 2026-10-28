@@ -33,25 +33,36 @@ html,body{width:100%;min-height:100%;margin:0!important;padding:0!important;over
 #app .modal label,
 #app .modal h3{font-weight:700!important}
 
+/* Requested sidebar label colors — this file is loaded as the final style layer. */
+#app .side .nav[data-page="home"],
+#app .side .nav[data-page="fingerprint"],
+#app .side .nav[data-page="cashier"],
+#app .side .nav[data-page="sales"],
+#app .side .nav[data-page="reports"],
+#app .side .nav[data-page="purchaseInvoices"]{color:#168cff!important}
+#app .side .nav[data-page="transfers"],
+#app .side .nav[data-page="inventory"],
+#app .side .nav[data-page="stocktake"],
+#app .side .nav[data-page="settings"]{color:#ff334f!important}
+#app .side .nav[data-page="home"] *,
+#app .side .nav[data-page="fingerprint"] *,
+#app .side .nav[data-page="cashier"] *,
+#app .side .nav[data-page="sales"] *,
+#app .side .nav[data-page="reports"] *,
+#app .side .nav[data-page="purchaseInvoices"] *{color:#168cff!important}
+#app .side .nav[data-page="transfers"] *,
+#app .side .nav[data-page="inventory"] *,
+#app .side .nav[data-page="stocktake"] *,
+#app .side .nav[data-page="settings"] *{color:#ff334f!important}
+
 /* Login screen final colors */
 #login #clientLoginToggle{background:linear-gradient(100deg,#00c8ff,#0877ff)!important;border:1px solid #29dfff!important;color:#fff!important}
 #login .login-card > div:last-child{color:#8deaff!important}
 
 @media(max-width:700px){#app{background-attachment:scroll!important;background-position:center center!important}#login.login-screen{padding:12px!important;background-position:center center!important;background-size:cover!important}#app .layout{background:rgba(3,14,30,.38)!important}#app main{background:rgba(3,14,30,.30)!important}}
 
- 
 /* Use the same calculator drawing as the outer login screen */
-#app #home .cash-panel:before{
-  content:'' !important;
-  font-size:0 !important;
-  line-height:1 !important;
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='13' y='5' width='38' height='54' rx='6' fill='none' stroke='%23fff' stroke-width='4'/%3E%3Crect x='19' y='11' width='26' height='10' rx='2' fill='%23fff'/%3E%3Crect x='19' y='27' width='7' height='7' rx='1' fill='%23fff'/%3E%3Crect x='29' y='27' width='7' height='7' rx='1' fill='%23fff'/%3E%3Crect x='39' y='27' width='7' height='7' rx='1' fill='%23fff'/%3E%3Crect x='19' y='38' width='7' height='7' rx='1' fill='%23fff'/%3E%3Crect x='29' y='38' width='7' height='7' rx='1' fill='%23fff'/%3E%3Crect x='39' y='38' width='7' height='18' rx='1' fill='%23fff'/%3E%3Crect x='19' y='49' width='17' height='7' rx='1' fill='%23fff'/%3E%3C/svg%3E")
-      center / 78px 78px no-repeat,
-    linear-gradient(145deg,#00cfff,#064bb7) !important;
-}
-
-
+#app #home .cash-panel:before{content:'' !important;font-size:0 !important;line-height:1 !important;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='13' y='5' width='38' height='54' rx='6' fill='none' stroke='%23fff' stroke-width='4'/%3E%3Crect x='19' y='11' width='26' height='10' rx='2' fill='%23fff'/%3E%3Crect x='19' y='27' width='7' height='7' rx='1' fill='%23fff'/%3E%3Crect x='29' y='27' width='7' height='7' rx='1' fill='%23fff'/%3E%3Crect x='39' y='27' width='7' height='7' rx='1' fill='%23fff'/%3E%3Crect x='19' y='38' width='7' height='7' rx='1' fill='%23fff'/%3E%3Crect x='29' y='38' width='7' height='7' rx='1' fill='%23fff'/%3E%3Crect x='39' y='38' width='7' height='18' rx='1' fill='%23fff'/%3E%3Crect x='19' y='49' width='17' height='7' rx='1' fill='%23fff'/%3E%3C/svg%3E") center / 78px 78px no-repeat,linear-gradient(145deg,#00cfff,#064bb7) !important}
 
 /* FARAGELLO — unified sizing pass for every screen and page */
 :root{--fg-space:clamp(10px,1.25vw,20px)}
@@ -95,76 +106,13 @@ body{font-size:14px;line-height:1.5}
 #app .activity-strip{min-width:0}
 #app .activity-feed,#app .activity-message{min-width:0;overflow-wrap:anywhere}
 #app img,#app svg{max-width:100%}
-@media(max-width:1100px){
- #app .side{width:205px;flex-basis:205px}
- #app .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
- #app .cash-layout{grid-template-columns:minmax(0,1fr)}
- #app .userbox .clock{display:none}
-}
-@media(max-width:760px){
- #app .top{height:auto;min-height:64px;padding:8px 10px;flex-wrap:wrap}
- #app .brand{gap:8px}
- #app .brand h1{font-size:18px}
- #app .brand small{font-size:10px}
- #app .userbox{gap:6px}
- #app .user{font-size:12px;max-width:42vw;padding:6px 8px}
- #app .layout{flex-direction:column;min-height:calc(100vh - 64px)}
- #app .side{width:100%;flex:0 0 auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:9px;border-left:0;border-bottom:1px solid #0873b8}
- #app .side .nav{min-width:0;min-height:38px;padding:8px 7px;text-align:center;font-size:12px;line-height:1.35;border-radius:8px}
- #app .side .logout{margin-top:0;width:100%;text-align:center}
- #app main{width:100%;padding:12px;overflow-x:hidden}
- #app .title{align-items:flex-start}
- #app .title h2{font-size:22px}
- #app .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
- #app .card{padding:11px;border-radius:12px}
- #app .card .value{font-size:20px}
- #app .toolbar{align-items:stretch}
- #app .toolbar input{flex:1 1 100%;width:100%;min-width:0}
- #app .toolbar button,#app .toolbar select{flex:1 1 auto}
- #app .table{min-width:680px}
- #app .cash-layout{grid-template-columns:minmax(0,1fr)}
- #app .cash-panel{padding:10px}
- #app .scan{display:grid;grid-template-columns:minmax(0,1fr)}
- #app .scan input{width:100%}
- #app .activity-strip{grid-template-columns:minmax(0,1fr);padding:8px;gap:7px}
-}
-@media(max-width:420px){
- #app .brand h1{font-size:16px}
- #app .brand small{font-size:9px}
- #app .logo{width:38px;height:38px}
- #app .cards{grid-template-columns:minmax(0,1fr)}
- #app .side{grid-template-columns:repeat(2,minmax(0,1fr))}
- #app .side .nav{font-size:11px;padding:7px 5px}
- #app .title h2{font-size:20px}
- #app .user{max-width:38vw;font-size:11px}
-}
-@media print{
- #app .side,#app .top{display:none!important}
- #app main{width:100%!important;padding:0!important}
- #app .table-wrap{overflow:visible!important}
- #app .table{min-width:0!important}
-}
+@media(max-width:1100px){#app .side{width:205px;flex-basis:205px}#app .cards{grid-template-columns:repeat(2,minmax(0,1fr))}#app .cash-layout{grid-template-columns:minmax(0,1fr)}#app .userbox .clock{display:none}}
+@media(max-width:760px){#app .top{height:auto;min-height:64px;padding:8px 10px;flex-wrap:wrap}#app .brand{gap:8px}#app .brand h1{font-size:18px}#app .brand small{font-size:10px}#app .userbox{gap:6px}#app .user{font-size:12px;max-width:42vw;padding:6px 8px}#app .layout{flex-direction:column;min-height:calc(100vh - 64px)}#app .side{width:100%;flex:0 0 auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:9px;border-left:0;border-bottom:1px solid #0873b8}#app .side .nav{min-width:0;min-height:38px;padding:8px 7px;text-align:center;font-size:12px;line-height:1.35;border-radius:8px}#app .side .logout{margin-top:0;width:100%;text-align:center}#app main{width:100%;padding:12px;overflow-x:hidden}#app .title{align-items:flex-start}#app .title h2{font-size:22px}#app .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#app .card{padding:11px;border-radius:12px}#app .card .value{font-size:20px}#app .toolbar{align-items:stretch}#app .toolbar input{flex:1 1 100%;width:100%;min-width:0}#app .toolbar button,#app .toolbar select{flex:1 1 auto}#app .table{min-width:680px}#app .cash-layout{grid-template-columns:minmax(0,1fr)}#app .cash-panel{padding:10px}#app .scan{display:grid;grid-template-columns:minmax(0,1fr)}#app .scan input{width:100%}#app .activity-strip{grid-template-columns:minmax(0,1fr);padding:8px;gap:7px}}
+@media(max-width:420px){#app .brand h1{font-size:16px}#app .brand small{font-size:9px}#app .logo{width:38px;height:38px}#app .cards{grid-template-columns:minmax(0,1fr)}#app .side{grid-template-columns:repeat(2,minmax(0,1fr))}#app .side .nav{font-size:11px;padding:7px 5px}#app .title h2{font-size:20px}#app .user{max-width:38vw;font-size:11px}}
+@media print{#app .side,#app .top{display:none!important}#app main{width:100%!important;padding:0!important}#app .table-wrap{overflow:visible!important}#app .table{min-width:0!important}}
 
 /* Shift close: visually place the existing working control in the sidebar, directly above Daily Queries. */
-#app #homeCloseShiftBtn{
-  position:fixed!important;
-  top:238px!important;
-  right:14px!important;
-  z-index:10000!important;
-  width:calc(clamp(205px,18vw,250px) - 28px)!important;
-  min-width:177px!important;
-  margin:0!important;
-  min-height:42px!important;
-  padding:10px 12px!important;
-  border-radius:12px!important;
-  background:linear-gradient(90deg,#b52a43,#7d1f34)!important;
-  border:1px solid #e75b73!important;
-  box-shadow:0 8px 18px rgba(0,0,0,.28)!important;
-}
+#app #homeCloseShiftBtn{position:fixed!important;top:238px!important;right:14px!important;z-index:10000!important;width:calc(clamp(205px,18vw,250px) - 28px)!important;min-width:177px!important;margin:0!important;min-height:42px!important;padding:10px 12px!important;border-radius:12px!important;background:linear-gradient(90deg,#b52a43,#7d1f34)!important;border:1px solid #e75b73!important;box-shadow:0 8px 18px rgba(0,0,0,.28)!important}
 #app .top #homeCloseShiftBtn{transform:none!important}
-@media(max-width:1100px){
-  #app #homeCloseShiftBtn{right:10px!important;width:177px!important;top:238px!important}
-}
-@media(max-width:760px){
-  #app #homeCloseShiftBtn{position:fixed!important;top:148px!important;right:10px!important;width:calc(50vw - 15px)!important;min-width:0!important;z-index:10001!important}
-}
+@media(max-width:1100px){#app #homeCloseShiftBtn{right:10px!important;width:177px!important;top:238px!important}}
+@media(max-width:760px){#app #homeCloseShiftBtn{position:fixed!important;top:148px!important;right:10px!important;width:calc(50vw - 15px)!important;min-width:0!important;z-index:10001!important}}
