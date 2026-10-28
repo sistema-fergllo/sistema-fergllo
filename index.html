@@ -1185,5 +1185,35 @@ window.doLogin=doLogin;
 window.chooseLogin=chooseLogin;
 window.resetLoginChoice=resetLoginChoice;
 </script>
+<script>
+// Recovery bridge: keep inline login buttons callable if the main app script stops during startup.
+if(typeof window.doLogin!=='function'){
+  window.doLogin=async function(){
+    var err=document.getElementById('loginErr');
+    if(err)err.textContent='تعذر تهيئة تسجيل الدخول. حدّث الصفحة بـ Ctrl+F5، وإذا استمر الخطأ أرسل رسالة الخطأ السابقة الظاهرة في الشاشة.';
+    if(window.console)console.error('Faragello recovery: main doLogin handler was not initialized.');
+  };
+}
+if(typeof window.chooseLogin!=='function'){
+  window.chooseLogin=function(role){
+    var login=document.getElementById('login'),fields=document.getElementById('loginFields'),title=document.getElementById('loginText'),err=document.getElementById('loginErr');
+    if(login)login.dataset.role=role;
+    if(fields)fields.classList.remove('hidden');
+    if(title)title.textContent=role==='admin'?'دخول المشرف':'دخول العميل';
+    if(err)err.textContent='';
+  };
+}
+if(typeof window.resetLoginChoice!=='function'){
+  window.resetLoginChoice=function(){
+    var login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),title=document.getElementById('loginText'),err=document.getElementById('loginErr');
+    if(login)login.dataset.role='';
+    if(fields)fields.classList.add('hidden');
+    if(email)email.value='';
+    if(password)password.value='';
+    if(title)title.textContent='اختر نوع الدخول';
+    if(err)err.textContent='';
+  };
+}
+</script>
 </body>
 </html>
