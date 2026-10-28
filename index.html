@@ -1094,7 +1094,7 @@ window.doLogin=window.doLogin||(typeof doLogin==="function"?doLogin:function(){v
 window.chooseLogin=chooseLogin;
 window.resetLoginChoice=window.resetLoginChoice||(typeof resetLoginChoice==='function'?resetLoginChoice:function(){var login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),err=document.getElementById('loginErr'),title=document.getElementById('loginText');if(login)login.dataset.page='';if(fields)fields.classList.add('hidden');if(email){email.classList.remove('hidden');email.value='';email.placeholder='اسم المستخدم';email.autocomplete='username';}if(password){password.classList.remove('hidden');password.value='';password.type='password';password.autocomplete='current-password';}var admin=document.getElementById('adminLoginChoice'),client=document.getElementById('clientLoginToggle');if(admin)admin.classList.remove('hidden');if(client)client.classList.remove('hidden');if(title)title.textContent='سيستم محاسبي متكامل';if(err)err.textContent='';});
 
-/* App features previously misplaced inside the shift-print HTML template. */
+/* App features kept inside the main script; no nested script tags. */
 (function(){
 const $=id=>document.getElementById(id);
 const read=(k)=>{try{return JSON.parse(localStorage.getItem('frg_work_'+k)||'[]')}catch(e){return []}};
