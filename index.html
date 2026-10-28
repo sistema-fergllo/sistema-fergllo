@@ -198,7 +198,7 @@ html,body{min-height:100%;margin:0}
   <button class="nav" data-page="stocktake" onclick="showPage('stocktake')">تقارير الجرد</button>
   <button id="navCloseShift" class="nav" type="button" style="background:#ffdf45!important;color:#182235!important;border:2px solid #f0b900!important;box-shadow:0 3px 12px #ffdf4544!important;font-weight:900!important" onclick="closeCurrentShift()">تقفيل الشيفت</button>
   <button id="navDailyTransfers" class="nav" data-page="dailyTransfers" style="background:#ffdf45!important;color:#182235!important;border:2px solid #f0b900!important;box-shadow:0 3px 12px #ffdf4544!important;font-weight:900!important" onclick="showPage('dailyTransfers')">الإستعلامات اليومية</button>
-  <button id="navSettings" class="nav" data-page="settings" onclick="showPage('settings')"><span class="nav-icon">⚙</span>الإعدادات</button>
+  <button id="navSettings" class="nav" data-page="settings" style="background:#ef4444!important;color:#ffffff!important;border:2px solid #dc2626!important;box-shadow:0 3px 12px #ef444444!important;font-weight:900!important" onclick="showPage('settings')"><span class="nav-icon">⚙</span>الإعدادات</button>
   <button id="navClients" class="nav" data-page="clients" onclick="showPage('clients')"><span class="nav-icon">♙</span>العملاء</button>
   <button class="nav logout" onclick="supabaseClient.auth.signOut().finally(()=>location.reload())"><span class="nav-icon">↪</span>تسجيل الخروج</button>
 </aside><main>
