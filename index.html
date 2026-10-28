@@ -608,6 +608,7 @@ html,body{min-height:100%;margin:0}
   <button id="navCloseShift" class="nav" type="button" style="background:#ffdf45!important;color:#182235!important;border:2px solid #f0b900!important;box-shadow:0 3px 12px #ffdf4544!important;font-weight:900!important" onclick="closeCurrentShift()">تقفيل الشيفت</button>
   <button id="navDailyTransfers" class="nav" data-page="dailyTransfers" style="background:#ffdf45!important;color:#182235!important;border:2px solid #f0b900!important;box-shadow:0 3px 12px #ffdf4544!important;font-weight:900!important" onclick="showPage('dailyTransfers')">الإستعلامات اليومية</button>
   <button id="navSettings" class="nav" data-page="settings" style="background:linear-gradient(135deg,#ff5252 0%,#d50000 100%)!important;background-color:#d50000!important;border:2px solid #ff9b9b!important;box-shadow:0 3px 12px rgba(213,0,0,.32)!important;font-weight:900!important;color:#ffffff!important;" onclick="showPage('settings')">الإعدادات</button>
+  <button id="navRestartData" class="nav" type="button" style="background:linear-gradient(135deg,#b91c1c 0%,#7f1d1d 100%)!important;color:#ffffff!important;border:2px solid #f87171!important;font-weight:900!important" onclick="restartSalesData()">إعادة تشغيل</button>
   <button id="navClients" class="nav" data-page="clients" onclick="showPage('clients')">العملاء</button>
   <button class="nav logout" onclick="supabaseClient.auth.signOut().finally(()=>location.reload())">تسجيل الخروج</button>
 </aside><main>
@@ -942,6 +943,36 @@ async function enterSelectedBranch(){
 }
 function cancelBranchEntry(){document.getElementById('branchPinArea').classList.add('hidden');pendingBranchId=null}
 function signOutToLogin(){supabaseClient.auth.signOut().finally(()=>location.reload())}
+
+async function restartSalesData(){
+ if(!confirm('إعادة التشغيل ستحذف تقفيل الوردية وملخص الشيفتات والمبيعات اليومية وسجل المبيعات لهذا الحساب/الفرع. لا يمكن التراجع عن الحذف. هل تريد المتابعة؟'))return;
+ try{
+  if(cloudReady&&typeof supabaseClient!=='undefined'){
+   let result;
+   if(currentProfileRole==='client'&&activeClient&&activeClient.id){
+    if(activeClient.branchId){
+     result=await supabaseClient.from('client_branch_sales').delete().eq('client_id',activeClient.id).eq('branch_id',activeClient.branchId);
+    }else{
+     result=await supabaseClient.from('client_sales').delete().eq('client_id',activeClient.id);
+    }
+   }else if(currentProfileRole==='admin'){
+    result=await supabaseClient.from('shared_sales').delete().not('id','is',null);
+   }
+   if(result&&result.error)throw result.error;
+  }
+  sales=[];
+  localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify([]));
+  saveDailyArchive([]);
+  localStorage.setItem(workspaceKey('frg_shift_cutoff'),String(Date.now()));
+  renderDailyTransfers();
+  refreshAll();
+  if(typeof window.renderReports==='function')window.renderReports();
+  alert('تمت إعادة التشغيل وحذف تقفيل الوردية وملخص الشيفتات والمبيعات اليومية وسجل المبيعات.');
+ }catch(e){
+  console.error('Faragello restart failed:',e);
+  alert('لم تكتمل إعادة التشغيل: '+(e&&e.message?e.message:'حدث خطأ أثناء حذف السجلات'));
+ }
+}
 
 function getDailyArchive(){try{return JSON.parse(localStorage.getItem(workspaceKey('frg_daily_archive'))||'[]')}catch(e){return []}}
 function saveDailyArchive(rows){localStorage.setItem(workspaceKey('frg_daily_archive'),JSON.stringify(rows))}
