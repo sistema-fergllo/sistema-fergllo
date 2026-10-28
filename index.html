@@ -51,6 +51,22 @@ body.client-workspace-mode #clientWorkspaceBar {
 #app .activity-empty{display:flex;align-items:center;justify-content:center;min-height:54px;padding:8px;color:#9bb5ce;font-size:12px;text-align:center}
 @media(max-width:760px){#app .activity-strip{grid-template-columns:1fr;padding:8px 10px;gap:7px}#app .activity-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:8px 11px}#app .activity-heading small{display:none}#app .activity-heading strong{font-size:15px}#app .activity-feed{max-height:112px;min-height:56px}#app .activity-item{grid-template-columns:65px minmax(0,1fr);gap:7px}}
 
+
+/* Faragello sidebar: center every menu label inside its own button. */
+.side .nav{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+}
+.side .nav .nav-icon{
+  position:absolute!important;
+  right:12px!important;
+  margin:0!important;
+}
 </style>
 <style>
 /* FARAGELLO FINAL UI */
