@@ -763,68 +763,6 @@ function printDailyShift(button){
   `;
   printWindow.document.open();
   printWindow.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تقرير الوردية - سيستم فرجللو</title><style>${styles}</style></head><body>${printable.outerHTML}
-<script>
-(function(){
-const $=id=>document.getElementById(id);
-const read=(k)=>{try{return JSON.parse(localStorage.getItem('frg_work_'+k)||'[]')}catch(e){return []}};
-const save=(k,v)=>localStorage.setItem('frg_work_'+k,JSON.stringify(v));
-const esc=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-const money=n=>Number(n||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})+' ج.م';
-const now=()=>new Date().toLocaleString('sv-SE');
-const day=()=>new Date().toISOString().slice(0,10);
-function printRecords(title, summaryId, tableId){
- const summary=document.getElementById(summaryId), table=document.getElementById(tableId);
- if(!table||!table.innerHTML.trim()){alert('لا توجد بيانات للطباعة');return}
- const w=window.open('','_blank');
- if(!w){alert('اسمح بفتح النوافذ المنبثقة للطباعة');return}
- w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'+title+'</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #777;padding:8px;text-align:right}th{background:#eee}p{margin:8px 0}@media print{body{padding:0}}</style></head><body><h1>'+title+' - سيستم فرجللو</h1>'+(summary?summary.innerHTML:'')+table.innerHTML+'</body></html>');
- w.document.close();w.focus();w.print();
-}
-window.fpPrint=()=>printRecords('سجل البصمة والحضور والانصراف','fpSummary','fpTable');
-window.piPrint=()=>printRecords('فواتير المشتريات','piSummary','piTable');
-window.prPrint=()=>{printRecords('كشف المرتبات','prSummary','prTable');};
-let piDraft=[];
-window.fpRecord=function(type){const name=$('fpEmployee').value.trim();if(!name){alert('اكتب اسم الموظف أولاً');return}const rows=read('fingerprint');rows.unshift({id:Date.now(),name,type,time:now()});save('fingerprint',rows);$('fpEmployee').value='';fpRender();};
-window.fpRender=function(){const q=($('fpSearch')?.value||'').trim().toLowerCase(),all=read('fingerprint'),rows=all.filter(x=>x.name.toLowerCase().includes(q));$('fpSummary').innerHTML='<p>إجمالي الحركات: <b>'+all.length+'</b> — حركات اليوم: <b>'+all.filter(x=>x.time.slice(0,10)===day()).length+'</b></p>';$('fpTable').innerHTML='<div style="overflow:auto"><table class="table"><thead><tr><th>الموظف</th><th>الحركة</th><th>التاريخ والوقت</th><th>حذف</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+esc(x.type)+'</td><td>'+esc(x.time)+'</td><td><button class="btn red" onclick="fpDelete('+x.id+')">حذف</button></td></tr>').join('')+'</tbody></table></div>'};
-window.fpDelete=id=>{save('fingerprint',read('fingerprint').filter(x=>x.id!==id));fpRender()};
-
-window.piAddLine=function(){const name=$('piItem').value.trim(),qty=Number($('piQty').value),price=Number($('piPrice').value);if(!name||qty<=0||price<0||$('piQty').value===''||$('piPrice').value===''){alert('اكتب اسم الصنف والكمية والسعر بشكل صحيح');return}piDraft.push({name,qty,price,total:qty*price});$('piItem').value='';$('piQty').value='';$('piPrice').value='';piDraftRender()};
-function piDraftRender(){$('piDraft').innerHTML='<div style="overflow:auto"><table class="table"><thead><tr><th>الصنف</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th></th></tr></thead><tbody>'+piDraft.map((x,i)=>'<tr><td>'+esc(x.name)+'</td><td>'+x.qty+'</td><td>'+money(x.price)+'</td><td>'+money(x.total)+'</td><td><button class="btn red" onclick="piRemoveLine('+i+')">حذف</button></td></tr>').join('')+'</tbody></table></div><h3>إجمالي الفاتورة: '+money(piDraft.reduce((s,x)=>s+x.total,0))+'</h3>'}
-window.piRemoveLine=i=>{piDraft.splice(i,1);piDraftRender()};
-window.piSave=function(){const supplier=$('piSupplier').value.trim();if(!supplier||!piDraft.length){alert('اكتب اسم المورد وأضف صنفاً واحداً على الأقل');return}const rows=read('purchases');rows.unshift({id:Date.now(),supplier,number:$('piNumber').value.trim(),date:$('piDate').value||day(),notes:$('piNotes').value.trim(),items:piDraft,total:piDraft.reduce((s,x)=>s+x.total,0),created:now()});save('purchases',rows);piDraft=[];['piSupplier','piNumber','piItem','piQty','piPrice','piNotes'].forEach(id=>$(id).value='');piDraftRender();piRender();alert('تم حفظ فاتورة المشتريات')};
-window.piRender=function(){const q=($('piSearch')?.value||'').trim().toLowerCase(),all=read('purchases'),rows=all.filter(x=>(x.supplier+' '+x.number).toLowerCase().includes(q));$('piSummary').innerHTML='<p>عدد الفواتير: <b>'+all.length+'</b> — إجمالي المشتريات: <b>'+money(all.reduce((s,x)=>s+x.total,0))+'</b></p>';$('piTable').innerHTML='<div style="overflow:auto"><table class="table"><thead><tr><th>التاريخ</th><th>المورد</th><th>رقم الفاتورة</th><th>الأصناف</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+esc(x.date)+'</td><td>'+esc(x.supplier)+'</td><td>'+esc(x.number||'—')+'</td><td>'+x.items.map(y=>esc(y.name)+' ('+y.qty+')').join('، ')+'</td><td>'+money(x.total)+'</td><td><button class="btn red" onclick="piDelete('+x.id+')">حذف</button></td></tr>').join('')+'</tbody></table></div>'};
-window.piDelete=id=>{if(!confirm('حذف الفاتورة؟'))return;save('purchases',read('purchases').filter(x=>x.id!==id));piRender()};
-
-window.prAdd=function(){const name=$('prName').value.trim(),salary=Number($('prSalary').value);if(!name||$('prSalary').value===''||salary<0){alert('اكتب اسم الموظف والمرتب الشهري');return}const a=read('employees');a.push({id:Date.now(),name,role:$('prRole').value.trim(),salary});save('employees',a);['prName','prRole','prSalary'].forEach(id=>$(id).value='');prFill();prRender();alert('تم حفظ الموظف')};
-function prFill(){const el=$('prEmployee');if(!el)return;const a=read('employees');el.innerHTML=a.length?a.map(x=>'<option value="'+x.id+'">'+esc(x.name)+' — '+money(x.salary)+'</option>').join(''):'<option value="">أضف موظفاً أولاً</option>'}
-window.prPay=function(){const employee=read('employees').find(x=>x.id===Number($('prEmployee').value)),amount=Number($('prAmount').value);if(!employee||amount<=0){alert('اختر موظفاً واكتب مبلغاً صحيحاً');return}const a=read('payments');a.unshift({id:Date.now(),employeeId:employee.id,name:employee.name,amount,month:$('prMonth').value||new Date().toISOString().slice(0,7),note:$('prNote').value.trim(),time:now()});save('payments',a);$('prAmount').value='';$('prNote').value='';prRender();alert('تم تسجيل دفعة المرتب')};
-window.prRender=function(){prFill();const q=($('prSearch')?.value||'').trim().toLowerCase(),employees=read('employees'),payments=read('payments'),month=$('prMonth')?.value||new Date().toISOString().slice(0,7);const filtered=employees.filter(x=>(x.name+' '+x.role).toLowerCase().includes(q));const paid=payments.filter(x=>x.month===month).reduce((s,x)=>s+x.amount,0),due=employees.reduce((s,x)=>s+x.salary,0);$('prSummary').innerHTML='<p>إجمالي المرتبات الشهرية: <b>'+money(due)+'</b> — المدفوع في '+esc(month)+': <b>'+money(paid)+'</b></p>';$('prTable').innerHTML='<h3>الموظفون</h3><div style="overflow:auto"><table class="table"><thead><tr><th>الاسم</th><th>الوظيفة</th><th>المرتب الشهري</th><th>المدفوع هذا الشهر</th><th>المتبقي</th><th>حذف</th></tr></thead><tbody>'+filtered.map(x=>{const p=payments.filter(y=>y.employeeId===x.id&&y.month===month).reduce((s,y)=>s+y.amount,0);return '<tr><td>'+esc(x.name)+'</td><td>'+esc(x.role||'—')+'</td><td>'+money(x.salary)+'</td><td>'+money(p)+'</td><td>'+money(x.salary-p)+'</td><td><button class="btn red" onclick="prDelete('+x.id+')">حذف</button></td></tr>'}).join('')+'</tbody></table></div>';$('prPayments').innerHTML='<h3>سجل الدفعات</h3><div style="overflow:auto"><table class="table"><thead><tr><th>الشهر</th><th>الموظف</th><th>المبلغ</th><th>التاريخ</th><th>ملاحظات</th><th>حذف</th></tr></thead><tbody>'+payments.filter(x=>(x.name+' '+x.month).toLowerCase().includes(q)).map(x=>'<tr><td>'+esc(x.month)+'</td><td>'+esc(x.name)+'</td><td>'+money(x.amount)+'</td><td>'+esc(x.time)+'</td><td>'+esc(x.note||'—')+'</td><td><button class="btn red" onclick="prDeletePayment('+x.id+')">حذف</button></td></tr>').join('')+'</tbody></table></div>'};
-window.prDelete=id=>{if(!confirm('حذف الموظف وكل دفعاته؟'))return;save('employees',read('employees').filter(x=>x.id!==id));save('payments',read('payments').filter(x=>x.employeeId!==id));prRender()};
-window.prDeletePayment=id=>{if(!confirm('حذف الدفعة؟'))return;save('payments',read('payments').filter(x=>x.id!==id));prRender()};
-
-window.resetLoginChoice=window.resetLoginChoice||function(){
- const login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),err=document.getElementById('loginErr');
- if(login)login.dataset.page='';
- if(fields)fields.classList.add('hidden');
- if(email){email.value='';email.placeholder='اسم المستخدم';email.autocomplete='username'}
- if(password){password.value='';password.placeholder='كلمة المرور';password.type='password'}
- document.getElementById('adminLoginChoice')?.classList.remove('hidden');
- document.getElementById('clientLoginToggle')?.classList.remove('hidden');
- if(err)err.textContent='';
-};
-window.chooseLogin=window.chooseLogin||function(role){
- const fields=document.getElementById('loginFields'),title=document.getElementById('loginText'),err=document.getElementById('loginErr');
- if(fields)fields.classList.remove('hidden');
- document.getElementById('adminLoginChoice')?.classList.add('hidden');
- document.getElementById('clientLoginToggle')?.classList.add('hidden');
- if(title)title.textContent=role==='admin'?'دخول المشرف':'دخول العميل';
- if(err)err.textContent='';
-};
-
-const oldShow=window.showPage;
-window.showPage=function(id){if(typeof oldShow==='function')oldShow(id);if(id==='fingerprint')fpRender();if(id==='purchaseInvoices'){if($('piDate')&&!$('piDate').value)$('piDate').value=day();piRender();piDraftRender()}if(id==='payroll'){if($('prMonth')&&!$('prMonth').value)$('prMonth').value=new Date().toISOString().slice(0,7);prRender()}};
-})();
-<\/script>
 </body></html>`);
   printWindow.document.close();
   printWindow.onload=()=>setTimeout(()=>{try{printWindow.focus();printWindow.print()}catch(e){console.error('تعذر طباعة تقرير الوردية:',e)}},500);
@@ -1155,6 +1093,69 @@ document.head.appendChild(faragelloFinalLayoutStyle);
 window.doLogin=window.doLogin||(typeof doLogin==="function"?doLogin:function(){var e=document.getElementById("loginErr");if(e)e.textContent="تعذر تحميل تسجيل الدخول بالكامل. حدّث الصفحة بـ Ctrl+F5.";});
 window.chooseLogin=chooseLogin;
 window.resetLoginChoice=window.resetLoginChoice||(typeof resetLoginChoice==='function'?resetLoginChoice:function(){var login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),err=document.getElementById('loginErr'),title=document.getElementById('loginText');if(login)login.dataset.page='';if(fields)fields.classList.add('hidden');if(email){email.classList.remove('hidden');email.value='';email.placeholder='اسم المستخدم';email.autocomplete='username';}if(password){password.classList.remove('hidden');password.value='';password.type='password';password.autocomplete='current-password';}var admin=document.getElementById('adminLoginChoice'),client=document.getElementById('clientLoginToggle');if(admin)admin.classList.remove('hidden');if(client)client.classList.remove('hidden');if(title)title.textContent='سيستم محاسبي متكامل';if(err)err.textContent='';});
+
+/* App features previously misplaced inside the shift-print HTML template. */
+(function(){
+const $=id=>document.getElementById(id);
+const read=(k)=>{try{return JSON.parse(localStorage.getItem('frg_work_'+k)||'[]')}catch(e){return []}};
+const save=(k,v)=>localStorage.setItem('frg_work_'+k,JSON.stringify(v));
+const esc=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const money=n=>Number(n||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})+' ج.م';
+const now=()=>new Date().toLocaleString('sv-SE');
+const day=()=>new Date().toISOString().slice(0,10);
+function printRecords(title, summaryId, tableId){
+ const summary=document.getElementById(summaryId), table=document.getElementById(tableId);
+ if(!table||!table.innerHTML.trim()){alert('لا توجد بيانات للطباعة');return}
+ const w=window.open('','_blank');
+ if(!w){alert('اسمح بفتح النوافذ المنبثقة للطباعة');return}
+ w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'+title+'</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #777;padding:8px;text-align:right}th{background:#eee}p{margin:8px 0}@media print{body{padding:0}}</style></head><body><h1>'+title+' - سيستم فرجللو</h1>'+(summary?summary.innerHTML:'')+table.innerHTML+'</body></html>');
+ w.document.close();w.focus();w.print();
+}
+window.fpPrint=()=>printRecords('سجل البصمة والحضور والانصراف','fpSummary','fpTable');
+window.piPrint=()=>printRecords('فواتير المشتريات','piSummary','piTable');
+window.prPrint=()=>{printRecords('كشف المرتبات','prSummary','prTable');};
+let piDraft=[];
+window.fpRecord=function(type){const name=$('fpEmployee').value.trim();if(!name){alert('اكتب اسم الموظف أولاً');return}const rows=read('fingerprint');rows.unshift({id:Date.now(),name,type,time:now()});save('fingerprint',rows);$('fpEmployee').value='';fpRender();};
+window.fpRender=function(){const q=($('fpSearch')?.value||'').trim().toLowerCase(),all=read('fingerprint'),rows=all.filter(x=>x.name.toLowerCase().includes(q));$('fpSummary').innerHTML='<p>إجمالي الحركات: <b>'+all.length+'</b> — حركات اليوم: <b>'+all.filter(x=>x.time.slice(0,10)===day()).length+'</b></p>';$('fpTable').innerHTML='<div style="overflow:auto"><table class="table"><thead><tr><th>الموظف</th><th>الحركة</th><th>التاريخ والوقت</th><th>حذف</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+esc(x.type)+'</td><td>'+esc(x.time)+'</td><td><button class="btn red" onclick="fpDelete('+x.id+')">حذف</button></td></tr>').join('')+'</tbody></table></div>'};
+window.fpDelete=id=>{save('fingerprint',read('fingerprint').filter(x=>x.id!==id));fpRender()};
+
+window.piAddLine=function(){const name=$('piItem').value.trim(),qty=Number($('piQty').value),price=Number($('piPrice').value);if(!name||qty<=0||price<0||$('piQty').value===''||$('piPrice').value===''){alert('اكتب اسم الصنف والكمية والسعر بشكل صحيح');return}piDraft.push({name,qty,price,total:qty*price});$('piItem').value='';$('piQty').value='';$('piPrice').value='';piDraftRender()};
+function piDraftRender(){$('piDraft').innerHTML='<div style="overflow:auto"><table class="table"><thead><tr><th>الصنف</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th></th></tr></thead><tbody>'+piDraft.map((x,i)=>'<tr><td>'+esc(x.name)+'</td><td>'+x.qty+'</td><td>'+money(x.price)+'</td><td>'+money(x.total)+'</td><td><button class="btn red" onclick="piRemoveLine('+i+')">حذف</button></td></tr>').join('')+'</tbody></table></div><h3>إجمالي الفاتورة: '+money(piDraft.reduce((s,x)=>s+x.total,0))+'</h3>'}
+window.piRemoveLine=i=>{piDraft.splice(i,1);piDraftRender()};
+window.piSave=function(){const supplier=$('piSupplier').value.trim();if(!supplier||!piDraft.length){alert('اكتب اسم المورد وأضف صنفاً واحداً على الأقل');return}const rows=read('purchases');rows.unshift({id:Date.now(),supplier,number:$('piNumber').value.trim(),date:$('piDate').value||day(),notes:$('piNotes').value.trim(),items:piDraft,total:piDraft.reduce((s,x)=>s+x.total,0),created:now()});save('purchases',rows);piDraft=[];['piSupplier','piNumber','piItem','piQty','piPrice','piNotes'].forEach(id=>$(id).value='');piDraftRender();piRender();alert('تم حفظ فاتورة المشتريات')};
+window.piRender=function(){const q=($('piSearch')?.value||'').trim().toLowerCase(),all=read('purchases'),rows=all.filter(x=>(x.supplier+' '+x.number).toLowerCase().includes(q));$('piSummary').innerHTML='<p>عدد الفواتير: <b>'+all.length+'</b> — إجمالي المشتريات: <b>'+money(all.reduce((s,x)=>s+x.total,0))+'</b></p>';$('piTable').innerHTML='<div style="overflow:auto"><table class="table"><thead><tr><th>التاريخ</th><th>المورد</th><th>رقم الفاتورة</th><th>الأصناف</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+esc(x.date)+'</td><td>'+esc(x.supplier)+'</td><td>'+esc(x.number||'—')+'</td><td>'+x.items.map(y=>esc(y.name)+' ('+y.qty+')').join('، ')+'</td><td>'+money(x.total)+'</td><td><button class="btn red" onclick="piDelete('+x.id+')">حذف</button></td></tr>').join('')+'</tbody></table></div>'};
+window.piDelete=id=>{if(!confirm('حذف الفاتورة؟'))return;save('purchases',read('purchases').filter(x=>x.id!==id));piRender()};
+
+window.prAdd=function(){const name=$('prName').value.trim(),salary=Number($('prSalary').value);if(!name||$('prSalary').value===''||salary<0){alert('اكتب اسم الموظف والمرتب الشهري');return}const a=read('employees');a.push({id:Date.now(),name,role:$('prRole').value.trim(),salary});save('employees',a);['prName','prRole','prSalary'].forEach(id=>$(id).value='');prFill();prRender();alert('تم حفظ الموظف')};
+function prFill(){const el=$('prEmployee');if(!el)return;const a=read('employees');el.innerHTML=a.length?a.map(x=>'<option value="'+x.id+'">'+esc(x.name)+' — '+money(x.salary)+'</option>').join(''):'<option value="">أضف موظفاً أولاً</option>'}
+window.prPay=function(){const employee=read('employees').find(x=>x.id===Number($('prEmployee').value)),amount=Number($('prAmount').value);if(!employee||amount<=0){alert('اختر موظفاً واكتب مبلغاً صحيحاً');return}const a=read('payments');a.unshift({id:Date.now(),employeeId:employee.id,name:employee.name,amount,month:$('prMonth').value||new Date().toISOString().slice(0,7),note:$('prNote').value.trim(),time:now()});save('payments',a);$('prAmount').value='';$('prNote').value='';prRender();alert('تم تسجيل دفعة المرتب')};
+window.prRender=function(){prFill();const q=($('prSearch')?.value||'').trim().toLowerCase(),employees=read('employees'),payments=read('payments'),month=$('prMonth')?.value||new Date().toISOString().slice(0,7);const filtered=employees.filter(x=>(x.name+' '+x.role).toLowerCase().includes(q));const paid=payments.filter(x=>x.month===month).reduce((s,x)=>s+x.amount,0),due=employees.reduce((s,x)=>s+x.salary,0);$('prSummary').innerHTML='<p>إجمالي المرتبات الشهرية: <b>'+money(due)+'</b> — المدفوع في '+esc(month)+': <b>'+money(paid)+'</b></p>';$('prTable').innerHTML='<h3>الموظفون</h3><div style="overflow:auto"><table class="table"><thead><tr><th>الاسم</th><th>الوظيفة</th><th>المرتب الشهري</th><th>المدفوع هذا الشهر</th><th>المتبقي</th><th>حذف</th></tr></thead><tbody>'+filtered.map(x=>{const p=payments.filter(y=>y.employeeId===x.id&&y.month===month).reduce((s,y)=>s+y.amount,0);return '<tr><td>'+esc(x.name)+'</td><td>'+esc(x.role||'—')+'</td><td>'+money(x.salary)+'</td><td>'+money(p)+'</td><td>'+money(x.salary-p)+'</td><td><button class="btn red" onclick="prDelete('+x.id+')">حذف</button></td></tr>'}).join('')+'</tbody></table></div>';$('prPayments').innerHTML='<h3>سجل الدفعات</h3><div style="overflow:auto"><table class="table"><thead><tr><th>الشهر</th><th>الموظف</th><th>المبلغ</th><th>التاريخ</th><th>ملاحظات</th><th>حذف</th></tr></thead><tbody>'+payments.filter(x=>(x.name+' '+x.month).toLowerCase().includes(q)).map(x=>'<tr><td>'+esc(x.month)+'</td><td>'+esc(x.name)+'</td><td>'+money(x.amount)+'</td><td>'+esc(x.time)+'</td><td>'+esc(x.note||'—')+'</td><td><button class="btn red" onclick="prDeletePayment('+x.id+')">حذف</button></td></tr>').join('')+'</tbody></table></div>'};
+window.prDelete=id=>{if(!confirm('حذف الموظف وكل دفعاته؟'))return;save('employees',read('employees').filter(x=>x.id!==id));save('payments',read('payments').filter(x=>x.employeeId!==id));prRender()};
+window.prDeletePayment=id=>{if(!confirm('حذف الدفعة؟'))return;save('payments',read('payments').filter(x=>x.id!==id));prRender()};
+
+window.resetLoginChoice=window.resetLoginChoice||function(){
+ const login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),err=document.getElementById('loginErr');
+ if(login)login.dataset.page='';
+ if(fields)fields.classList.add('hidden');
+ if(email){email.value='';email.placeholder='اسم المستخدم';email.autocomplete='username'}
+ if(password){password.value='';password.placeholder='كلمة المرور';password.type='password'}
+ document.getElementById('adminLoginChoice')?.classList.remove('hidden');
+ document.getElementById('clientLoginToggle')?.classList.remove('hidden');
+ if(err)err.textContent='';
+};
+window.chooseLogin=window.chooseLogin||function(role){
+ const fields=document.getElementById('loginFields'),title=document.getElementById('loginText'),err=document.getElementById('loginErr');
+ if(fields)fields.classList.remove('hidden');
+ document.getElementById('adminLoginChoice')?.classList.add('hidden');
+ document.getElementById('clientLoginToggle')?.classList.add('hidden');
+ if(title)title.textContent=role==='admin'?'دخول المشرف':'دخول العميل';
+ if(err)err.textContent='';
+};
+
+const oldShow=window.showPage;
+window.showPage=function(id){if(typeof oldShow==='function')oldShow(id);if(id==='fingerprint')fpRender();if(id==='purchaseInvoices'){if($('piDate')&&!$('piDate').value)$('piDate').value=day();piRender();piDraftRender()}if(id==='payroll'){if($('prMonth')&&!$('prMonth').value)$('prMonth').value=new Date().toISOString().slice(0,7);prRender()}};
+})();
+
 </script>
 </body>
 </html>
