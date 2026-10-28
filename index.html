@@ -1310,5 +1310,30 @@ window.showPage=function(id){if(typeof oldShow==='function')oldShow(id);if(id===
 })();
 
 </script>
+
+<style id="faragello-bottom-corner-notch-fix">
+#app .side .nav .faragello-bottom-notch{
+  position:absolute!important;bottom:0!important;width:15px!important;height:15px!important;
+  background:#a855f7!important;box-shadow:0 0 9px #a855f799!important;
+  pointer-events:none!important;z-index:2!important;display:block!important;
+}
+#app .side .nav .faragello-bottom-notch.left{left:0!important;clip-path:polygon(0 0,0 100%,100% 100%)!important}
+#app .side .nav .faragello-bottom-notch.right{right:0!important;clip-path:polygon(100% 0,0 100%,100% 100%)!important}
+</style>
+<script id="faragello-bottom-corner-notch-fix-script">
+(function(){
+ function addBottomNotches(){
+   document.querySelectorAll('#app .side .nav').forEach(function(btn){
+     if(!btn.querySelector('.faragello-bottom-notch.left')){
+       var left=document.createElement('span');left.className='faragello-bottom-notch left';left.setAttribute('aria-hidden','true');btn.appendChild(left);
+     }
+     if(!btn.querySelector('.faragello-bottom-notch.right')){
+       var right=document.createElement('span');right.className='faragello-bottom-notch right';right.setAttribute('aria-hidden','true');btn.appendChild(right);
+     }
+   });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addBottomNotches);else addBottomNotches();
+})();
+</script>
 </body>
 </html>
