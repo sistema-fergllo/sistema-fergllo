@@ -298,24 +298,7 @@ html,body{min-height:100%;margin:0}
 }
 @media(max-width:700px){#app #home .cash-panel:after{inset:14px 14px auto auto!important;width:20px!important;height:25px!important;font-size:18px!important}}
 </style>
-<style id="faragello-expenses-floating-logo">
-/* Match the floating Faragello F mark from the home dashboard on the expenses page */
-#app #expenses .cash-panel{position:relative!important;overflow:hidden}
-#app #expenses .cash-panel:after{
- content:"F"!important;display:grid!important;place-items:center!important;
- position:absolute!important;z-index:2!important;top:14px!important;right:17px!important;left:auto!important;
- width:25px!important;height:31px!important;padding:0!important;margin:0!important;
- border:0!important;border-radius:8px 3px 8px 3px!important;
- background:linear-gradient(145deg,#41f4ff 0%,#1597ff 48%,#7259ff 100%)!important;
- color:#fff!important;font-family:Arial,sans-serif!important;font-size:22px!important;
- font-weight:1000!important;font-style:italic!important;line-height:1!important;
- text-shadow:0 0 8px rgba(255,255,255,.8)!important;
- box-shadow:0 0 12px rgba(0,198,255,.55),0 0 25px rgba(65,102,255,.35)!important;
- transform-origin:center!important;animation:faragelloPublicMiniFloat 3.2s ease-in-out infinite!important;
- pointer-events:none!important
-}
-@media(max-width:700px){#app #expenses .cash-panel:after{top:10px!important;right:11px!important;width:20px!important;height:25px!important;font-size:18px!important}}
-</style>
+
 <style id="faragello-public-floating-logo">
 @keyframes faragelloPublicMiniFloat{
   0%,100%{transform:translateY(0) rotate(-5deg);filter:drop-shadow(0 0 5px rgba(25,215,255,.7))}
