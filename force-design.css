@@ -11,3 +11,12 @@
 #app #navCloseShift,
 #app #navDailyTransfers{display:none!important}
 #app #homeCloseShiftBtn{display:none!important}
+
+/* اجعل أسماء الصفحات المطلوبة باللون الأزرق في القائمة الجانبية فقط. */
+#app .side .nav[data-page="inventory"],
+#app .side .nav[data-page="stocktake"],
+#app .side .nav[data-page="settings"],
+#app .side .nav[data-page="transfers"],
+#app .side .nav[data-page="coding"]{
+  color:#168cff!important;
+}
