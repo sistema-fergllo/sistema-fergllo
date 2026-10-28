@@ -398,6 +398,80 @@ html,body{min-height:100%;margin:0}
   pointer-events:none!important;
   z-index:2!important;
 }
+#app .side .nav[data-page="home"]::before,
+#app .side .nav[data-page="fingerprint"]::before,
+#app .side .nav[data-page="coding"]::before,
+#app .side .nav[data-page="cashier"]::before,
+#app .side .nav[data-page="transfers"]::before,
+#app .side .nav[data-page="sales"]::before,
+#app .side .nav[data-page="reports"]::before,
+#app .side .nav[data-page="purchaseInvoices"]::before,
+#app .side .nav[data-page="inventory"]::before,
+#app .side .nav[data-page="stocktake"]::before,
+#app .side .nav[data-page="payroll"]::before,
+#app .side #navCloseShift::before,
+#app .side #navDailyTransfers::before,
+#app .side #navSettings::before,
+#app .side .nav.logout::before{
+  content:""!important;
+  position:absolute!important;
+  top:0!important;
+  right:0!important;
+  width:15px!important;
+  height:15px!important;
+  background:#a855f7!important;
+  clip-path:polygon(0 0,100% 0,100% 100%)!important;
+  box-shadow:0 0 9px #a855f799!important;
+  pointer-events:none!important;
+  z-index:2!important;
+}
+
+/* Lower corner notches complete the four-corner purple frame. */
+#app .side .nav[data-page="home"],
+#app .side .nav[data-page="fingerprint"],
+#app .side .nav[data-page="coding"],
+#app .side .nav[data-page="cashier"],
+#app .side .nav[data-page="transfers"],
+#app .side .nav[data-page="sales"],
+#app .side .nav[data-page="reports"],
+#app .side .nav[data-page="purchaseInvoices"],
+#app .side .nav[data-page="inventory"],
+#app .side .nav[data-page="stocktake"],
+#app .side .nav[data-page="payroll"],
+#app .side #navCloseShift,
+#app .side #navDailyTransfers,
+#app .side #navSettings,
+#app .side .nav.logout{isolation:isolate!important}
+#app .side .nav[data-page="home"] .nav-icon,
+#app .side .nav[data-page="fingerprint"] .nav-icon,
+#app .side .nav[data-page="coding"] .nav-icon,
+#app .side .nav[data-page="cashier"] .nav-icon,
+#app .side .nav[data-page="transfers"] .nav-icon,
+#app .side .nav[data-page="sales"] .nav-icon,
+#app .side .nav[data-page="reports"] .nav-icon,
+#app .side .nav[data-page="purchaseInvoices"] .nav-icon,
+#app .side .nav[data-page="inventory"] .nav-icon,
+#app .side .nav[data-page="stocktake"] .nav-icon,
+#app .side .nav[data-page="payroll"] .nav-icon,
+#app .side #navCloseShift .nav-icon,
+#app .side #navDailyTransfers .nav-icon,
+#app .side #navSettings .nav-icon,
+#app .side .nav.logout .nav-icon{z-index:1!important}
+#app .side .nav[data-page="home"]::marker,
+#app .side .nav[data-page="fingerprint"]::marker,
+#app .side .nav[data-page="coding"]::marker,
+#app .side .nav[data-page="cashier"]::marker,
+#app .side .nav[data-page="transfers"]::marker,
+#app .side .nav[data-page="sales"]::marker,
+#app .side .nav[data-page="reports"]::marker,
+#app .side .nav[data-page="purchaseInvoices"]::marker,
+#app .side .nav[data-page="inventory"]::marker,
+#app .side .nav[data-page="stocktake"]::marker,
+#app .side .nav[data-page="payroll"]::marker,
+#app .side #navCloseShift::marker,
+#app .side #navDailyTransfers::marker,
+#app .side #navSettings::marker,
+#app .side .nav.logout::marker{color:#a855f7!important}
 </style>
 
 </head>
