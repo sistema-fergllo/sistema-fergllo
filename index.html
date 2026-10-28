@@ -178,6 +178,72 @@ html,body{min-height:100%;margin:0}
 </style>
 
 
+
+<style id="faragello-fresh-login-design">
+/* Fresh Faragello login panel — visual-only styling */
+#login.login-screen{
+  background:
+    radial-gradient(ellipse at 15% 18%,rgba(42,220,190,.22),transparent 34%),
+    radial-gradient(ellipse at 85% 82%,rgba(104,92,255,.22),transparent 36%),
+    linear-gradient(135deg,#07172f 0%,#0b2b4a 48%,#102344 100%)!important;
+  padding:24px!important;
+}
+#login .login-card{
+  width:min(460px,95vw)!important;
+  padding:34px 30px!important;
+  border:1px solid rgba(126,242,230,.55)!important;
+  border-radius:28px!important;
+  background:linear-gradient(150deg,rgba(17,48,77,.97),rgba(8,24,48,.98))!important;
+  box-shadow:0 24px 70px rgba(0,0,0,.38),0 0 0 6px rgba(87,225,210,.055),0 0 42px rgba(35,211,193,.12)!important;
+  color:#f3fbff!important;
+  backdrop-filter:blur(16px);
+}
+#login .login-card .logo{
+  width:76px!important;height:76px!important;border-radius:24px!important;
+  background:linear-gradient(145deg,#35e0c4,#168de4)!important;
+  color:#062943!important;border:1px solid rgba(255,255,255,.48)!important;
+  box-shadow:0 10px 28px rgba(28,208,196,.28)!important;
+}
+#login .login-card h1{color:#fff!important;letter-spacing:.2px;text-shadow:0 3px 18px rgba(52,218,204,.15)}
+#login #loginText{color:#a9cce0!important;margin:8px 0 23px!important}
+#login #adminLoginChoice,#login #clientLoginToggle{
+  min-height:56px!important;border:1px solid rgba(255,255,255,.22)!important;
+  border-radius:15px!important;font-size:17px!important;font-weight:800!important;
+  letter-spacing:.1px!important;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease!important;
+}
+#login #adminLoginChoice{
+  background:linear-gradient(110deg,#26cdb6,#168de4)!important;color:#06253e!important;
+  box-shadow:0 9px 22px rgba(27,188,196,.2)!important;
+}
+#login #clientLoginToggle{
+  background:linear-gradient(110deg,#8b7bff,#5868e8)!important;color:#fff!important;
+  box-shadow:0 9px 22px rgba(102,104,232,.2)!important;
+}
+#login #adminLoginChoice:hover,#login #clientLoginToggle:hover{
+  transform:translateY(-2px)!important;filter:brightness(1.08)!important;
+}
+#login #loginFields input{
+  background:rgba(3,15,31,.72)!important;color:#f4fbff!important;
+  border:1px solid #326782!important;border-radius:12px!important;
+  min-height:48px!important;padding:12px 14px!important;
+}
+#login #loginFields input:focus{
+  border-color:#42ddc9!important;box-shadow:0 0 0 3px rgba(66,221,201,.13)!important;outline:none!important;
+}
+#login #loginSubmit{
+  min-height:51px!important;border:0!important;border-radius:13px!important;
+  background:linear-gradient(110deg,#28cdb6,#168de4)!important;color:#06253e!important;
+  font-weight:900!important;box-shadow:0 8px 20px rgba(27,188,196,.2)!important;
+}
+#login #loginFields button.btn.gray{
+  border:1px solid rgba(255,255,255,.15)!important;border-radius:11px!important;
+  background:#263e60!important;color:#edf8ff!important;
+}
+#login #loginErr{color:#ff9eae!important}
+@media(max-width:480px){#login .login-card{padding:27px 20px!important;border-radius:23px!important}#login .login-card h1{font-size:32px!important}}
+@media(prefers-reduced-motion:reduce){#login #adminLoginChoice,#login #clientLoginToggle{transition:none!important}}
+</style>
+
 </head>
 <body>
 <div id="login" class="login-screen">
