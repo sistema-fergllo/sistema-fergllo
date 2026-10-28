@@ -345,20 +345,20 @@ html,body{min-height:100%;margin:0}
 </div>
 <div class="layout"><aside class="side">
   <div id="activeBranchLabel" style="display:none!important;visibility:visible!important;opacity:1!important;margin:0 0 10px;padding:10px 8px;background:#fff;color:#0b2a5b;border:2px solid #168cff;border-radius:9px;font-size:14px;font-weight:900;line-height:1.5;width:100%;box-sizing:border-box;text-align:center;overflow-wrap:anywhere"></div>
-  <button class="nav active" data-page="home" onclick="showPage('home')"><span class="nav-icon">⌂</span>الصفحة الرئيسية</button>
-  <button class="nav" data-page="attendance" onclick="showPage('attendance')"><span class="nav-icon">◷</span>البصمة</button>
-  <button class="nav" data-page="coding" onclick="showPage('coding')"><span class="nav-icon">▥</span>تكويد الأصناف</button>
-  <button class="nav" data-page="cashier" onclick="requestPage('cashier')"><span class="nav-icon">▣</span>بيت الكاشير</button>
-  <button class="nav" data-page="transfers" onclick="showPage('transfers')"><span class="nav-icon">⇄</span>إذن صادر تحويل</button>
-  <button class="nav" data-page="sales" onclick="showPage('sales')"><span class="nav-icon">▤</span>المبيعات اليومية</button>
-  <button class="nav" data-page="reports" onclick="showPage('reports')"><span class="nav-icon">▥</span>التقارير اليومية</button>
-  <button class="nav" data-page="purchaseInvoices" onclick="showPage('purchaseInvoices')"><span class="nav-icon">🧾</span>فواتير المشتريات</button>
-  <button id="navInventory" class="nav" data-page="inventory" onclick="requestPage('inventory')"><span class="nav-icon">▦</span>تفاصيل المخزون</button>
-  <button class="nav" data-page="stocktake" onclick="showPage('stocktake')">تقارير الجرد</button>
-  <button id="navCloseShift" class="nav" type="button" onclick="closeCurrentShift()">تقفيل الشيفت</button>
-  <button id="navDailyTransfers" class="nav" data-page="dailyTransfers" onclick="showPage('dailyTransfers')">الإستعلامات اليومية</button>
-  <button class="nav" data-page="payroll" onclick="showPage('payroll')"><span class="nav-icon">💰</span>المرتبات</button>
-  <button id="navSettings" class="nav" data-page="settings" onclick="showPage('settings')"><span class="nav-icon">⚙</span>الإعدادات</button>
+  <button class="nav nav-g1 active" data-page="home" onclick="showPage('home')"><span class="nav-icon">🏠</span>الصفحة الرئيسية</button>
+  <button class="nav nav-g1" data-page="attendance" onclick="showPage('attendance')"><span class="nav-icon">🕒</span>البصمة</button>
+  <button class="nav nav-g2" data-page="coding" onclick="showPage('coding')"><span class="nav-icon">🏷️</span>تكويد الأصناف</button>
+  <button class="nav nav-g2" data-page="cashier" onclick="requestPage('cashier')"><span class="nav-icon">🧾</span>بيت الكاشير</button>
+  <button class="nav nav-g2" data-page="transfers" onclick="showPage('transfers')"><span class="nav-icon">🔁</span>إذن صادر تحويل</button>
+  <button class="nav nav-g3" data-page="sales" onclick="showPage('sales')"><span class="nav-icon">💵</span>المبيعات اليومية</button>
+  <button class="nav nav-g3" data-page="reports" onclick="showPage('reports')"><span class="nav-icon">📊</span>التقارير اليومية</button>
+  <button class="nav nav-g3" data-page="purchaseInvoices" onclick="showPage('purchaseInvoices')"><span class="nav-icon">🛒</span>فواتير المشتريات</button>
+  <button id="navInventory" class="nav nav-g4" data-page="inventory" onclick="requestPage('inventory')"><span class="nav-icon">📦</span>تفاصيل المخزون</button>
+  <button class="nav nav-g4" data-page="stocktake" onclick="showPage('stocktake')"><span class="nav-icon">📋</span>تقارير الجرد</button>
+  <button id="navCloseShift" class="nav nav-g5" type="button" onclick="closeCurrentShift()"><span class="nav-icon">🔒</span>تقفيل الشيفت</button>
+  <button id="navDailyTransfers" class="nav nav-g5" data-page="dailyTransfers" onclick="showPage('dailyTransfers')"><span class="nav-icon">🔎</span>الإستعلامات اليومية</button>
+  <button class="nav nav-g5" data-page="payroll" onclick="showPage('payroll')"><span class="nav-icon">💰</span>المرتبات</button>
+  <button id="navSettings" class="nav nav-settings" data-page="settings" onclick="showPage('settings')"><span class="nav-icon">⚙️</span>الإعدادات</button>
   <button id="navClients" class="nav" data-page="clients" onclick="showPage('clients')"><span class="nav-icon">♙</span>العملاء</button>
   <button class="nav logout" onclick="supabaseClient.auth.signOut().finally(()=>location.reload())"><span class="nav-icon">↪</span>تسجيل الخروج</button>
 </aside><main>
@@ -1120,7 +1120,19 @@ function printAttendanceRecords(){
  const w=window.open('','_blank','width=900,height=700');
  if(!w)return;
  w.document.open();
- w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>سجل البصمات - سيستم فرجللو</title><style>body{font-family:Tahoma,Arial,sans-serif;padding:24px;color:#111}h2{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #777;padding:10px;text-align:center}th{background:#eee}.meta{text-align:center;color:#555}@media print{body{padding:0}}</style></head><body><h2>سيستم فرجللو — سجل البصمات</h2><div class="meta">تاريخ الطباعة: '+new Date().toLocaleString('ar-EG')+'</div><table><thead><tr><th>اسم الموظف</th><th>التاريخ</th><th>وقت بدء العمل</th></tr></thead><tbody>'+body+'</tbody></table></body></html>');
+ w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>سجل البصمات - سيستم فرجللو</title><style>body{font-family:Tahoma,Arial,sans-serif;padding:24px;color:#111}h2{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #777;padding:10px;text-align:center}th{background:#eee}.meta{text-align:center;color:#555}@media print{body{padding:0}}
+/* Faragello sidebar color groups and descriptive emoji icons */
+.side .nav{display:flex;align-items:center;gap:9px;transition:background .18s,border-color .18s,transform .18s;min-height:48px}
+.side .nav .nav-icon{flex:0 0 27px;margin:0;width:27px;height:27px;font-size:21px;line-height:1}
+.side .nav-g1{background:linear-gradient(100deg,#153e72,#102747);border-color:#2b70bb;color:#dceeff}
+.side .nav-g2{background:linear-gradient(100deg,#07564f,#103b3d);border-color:#1e9b8d;color:#d9fff6}
+.side .nav-g3{background:linear-gradient(100deg,#563b12,#342b1b);border-color:#b8872e;color:#fff0c9}
+.side .nav-g4{background:linear-gradient(100deg,#443071,#2a2147);border-color:#8f6bd4;color:#f0e5ff}
+.side .nav-g5{background:linear-gradient(100deg,#6a263a,#3d2038);border-color:#c45c79;color:#ffe5ed}
+.side .nav-settings{background:linear-gradient(100deg,#344354,#1c2d40);border-color:#73899f;color:#eef5ff}
+.side .nav:not(.logout):hover,.side .nav:not(.logout).active{filter:brightness(1.22);transform:translateX(-2px);box-shadow:0 0 14px #24bfff33;border-color:#b9e9ff}
+
+</style></head><body><h2>سيستم فرجللو — سجل البصمات</h2><div class="meta">تاريخ الطباعة: '+new Date().toLocaleString('ar-EG')+'</div><table><thead><tr><th>اسم الموظف</th><th>التاريخ</th><th>وقت بدء العمل</th></tr></thead><tbody>'+body+'</tbody></table></body></html>');
  w.document.close();w.focus();w.print();
 }
 function renderAttendanceRecords(){
