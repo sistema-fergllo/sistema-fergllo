@@ -156,10 +156,10 @@ main{padding:28px;background:radial-gradient(circle at 0 0,#e8f4ff 0,#f7fbff 35%
 #app main{background:rgba(3,14,30,.38) !important;}
 
 </style>
-<link rel="stylesheet" href="force-design.css?v=20261026-shift-menu-fix2">
+<link rel="stylesheet" href="force-design.css?v=20261028-red-sidebar-1">
 
 
-<link id="faragello-final-css" rel="stylesheet" href="force-design.css?v=20261024-4">
+<link id="faragello-final-css" rel="stylesheet" href="force-design.css?v=20261028-red-sidebar-1">
 
 <style id="faragello-hd-backgrounds-final">
 html,body{min-height:100%;margin:0}
@@ -977,6 +977,21 @@ function printDailyShift(button){
   `;
   printWindow.document.open();
   printWindow.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تقرير الوردية - سيستم فرجللو</title><style>${styles}</style></head><body>${printable.outerHTML}
+
+<style id="faragello-red-sidebar-tiles-final">
+/* Final override: red backgrounds for the four requested sidebar tiles. */
+#app .side .nav[data-page="inventory"],
+#app .side .nav[data-page="stocktake"],
+#app .side #navSettings,
+#app .side .nav[data-page="transfers"] {
+  background: linear-gradient(135deg,#ff5252 0%,#d50000 100%) !important;
+  background-color: #d50000 !important;
+  border: 1px solid #ff9b9b !important;
+  border-radius: 10px !important;
+  box-shadow: 0 3px 12px rgba(213,0,0,.32) !important;
+}
+</style>
+
 </body></html>`);
   printWindow.document.close();
   printWindow.onload=()=>setTimeout(()=>{try{printWindow.focus();printWindow.print()}catch(e){console.error('تعذر طباعة تقرير الوردية:',e)}},500);
