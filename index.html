@@ -945,16 +945,14 @@ function cancelBranchEntry(){document.getElementById('branchPinArea').classList.
 function signOutToLogin(){supabaseClient.auth.signOut().finally(()=>location.reload())}
 
 async function restartSalesData(){
- if(!confirm('إعادة التشغيل ستحذف تقفيل الوردية وملخص الشيفتات والمبيعات اليومية وسجل المبيعات لهذا الحساب/الفرع. لا يمكن التراجع عن الحذف. هل تريد المتابعة؟'))return;
+ if(!confirm('إعادة التشغيل ستحذف تقفيل الوردية وأرشيف الورديات وملخص الشيفتات والمبيعات اليومية وسجل المبيعات لهذا الحساب/الفرع. لا يمكن التراجع عن الحذف. هل تريد المتابعة؟'))return;
  try{
   if(cloudReady&&typeof supabaseClient!=='undefined'){
    let result;
    if(currentProfileRole==='client'&&activeClient&&activeClient.id){
-    if(activeClient.branchId){
-     result=await supabaseClient.from('client_branch_sales').delete().eq('client_id',activeClient.id).eq('branch_id',activeClient.branchId);
-    }else{
-     result=await supabaseClient.from('client_sales').delete().eq('client_id',activeClient.id);
-    }
+    result=activeClient.branchId
+     ?await supabaseClient.from('client_branch_sales').delete().eq('client_id',activeClient.id).eq('branch_id',activeClient.branchId)
+     :await supabaseClient.from('client_sales').delete().eq('client_id',activeClient.id);
    }else if(currentProfileRole==='admin'){
     result=await supabaseClient.from('shared_sales').delete().not('id','is',null);
    }
@@ -962,18 +960,23 @@ async function restartSalesData(){
   }
   sales=[];
   localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify([]));
-  saveDailyArchive([]);
+  localStorage.setItem(workspaceKey('frg_daily_archive'),JSON.stringify([]));
+  localStorage.removeItem(workspaceKey('frg_shift_summary'));
   localStorage.setItem(workspaceKey('frg_shift_cutoff'),String(Date.now()));
+  localStorage.removeItem(workspaceKey('frg_active_shift'));
+  const shiftField=document.getElementById('shift');
+  if(shiftField){shiftField.value='';shiftField.type='password';shiftField.readOnly=false;shiftField.dataset.verified='false';shiftField.placeholder='اكتب الرقم السري للشيفت ثم Enter';}
+  ['repFrom','repTo','repShift'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
   renderDailyTransfers();
   refreshAll();
   if(typeof window.renderReports==='function')window.renderReports();
-  alert('تمت إعادة التشغيل وحذف تقفيل الوردية وملخص الشيفتات والمبيعات اليومية وسجل المبيعات.');
+  if(typeof renderExpenses==='function')renderExpenses();
+  alert('تمت إعادة التشغيل: تم مسح تقفيل الوردية وأرشيف الورديات وملخص الشيفتات والمبيعات اليومية وسجل المبيعات.');
  }catch(e){
   console.error('Faragello restart failed:',e);
   alert('لم تكتمل إعادة التشغيل: '+(e&&e.message?e.message:'حدث خطأ أثناء حذف السجلات'));
  }
 }
-
 function getDailyArchive(){try{return JSON.parse(localStorage.getItem(workspaceKey('frg_daily_archive'))||'[]')}catch(e){return []}}
 function saveDailyArchive(rows){localStorage.setItem(workspaceKey('frg_daily_archive'),JSON.stringify(rows))}
 function deleteDailyShift(index){
