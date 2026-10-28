@@ -1,3 +1,13 @@
 /* Faragello System — final overrides */
-#app .side .nav[data-page="fingerprint"],#app .side .nav[data-page="salaries"],#app .side .nav[data-page="payroll"],#app .side .nav[data-page="closeShift"],#app .side .nav[data-page="shiftClose"],#app .side .nav[data-page="dailyQueries"],#app .side .nav[data-page="dailyInquiries"],#app .side .nav[data-page="dailyReportsQueries"]{display:none!important}
+/* إخفاء العناصر المطلوبة من القائمة الجانبية فقط، مع بقاء صفحاتها ووظائفها كما هي. */
+#app .side .nav[data-page="fingerprint"],
+#app .side .nav[data-page="salaries"],
+#app .side .nav[data-page="payroll"],
+#app .side .nav[data-page="closeShift"],
+#app .side .nav[data-page="shiftClose"],
+#app .side .nav[data-page="dailyQueries"],
+#app .side .nav[data-page="dailyInquiries"],
+#app .side .nav[data-page="dailyReportsQueries"],
+#app #navCloseShift,
+#app #navDailyTransfers{display:none!important}
 #app #homeCloseShiftBtn{display:none!important}
