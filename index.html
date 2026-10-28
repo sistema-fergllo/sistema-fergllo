@@ -762,7 +762,7 @@ function printDailyShift(button){
     @media print{html,body{width:100%!important;overflow:visible!important}.daily-archive-card{break-inside:auto;page-break-inside:auto}}
   `;
   printWindow.document.open();
-  printWindow.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تقرير الوردية - سيستم فرجللو</title><style>'+styles+'</style></head><body>'+printable.outerHTML+'
+  printWindow.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تقرير الوردية - سيستم فرجللو</title><style>${styles}</style></head><body>${printable.outerHTML}
 <script>
 (function(){
 const $=id=>document.getElementById(id);
@@ -814,8 +814,8 @@ window.chooseLogin=window.chooseLogin||function(role){
 const oldShow=window.showPage;
 window.showPage=function(id){if(typeof oldShow==='function')oldShow(id);if(id==='fingerprint')fpRender();if(id==='purchaseInvoices'){if($('piDate')&&!$('piDate').value)$('piDate').value=day();piRender();piDraftRender()}if(id==='payroll'){if($('prMonth')&&!$('prMonth').value)$('prMonth').value=new Date().toISOString().slice(0,7);prRender()}};
 })();
-</script>
-</body></html>');
+<\/script>
+</body></html>`);
   printWindow.document.close();
   printWindow.onload=()=>setTimeout(()=>{try{printWindow.focus();printWindow.print()}catch(e){console.error('تعذر طباعة تقرير الوردية:',e)}},500);
 }
