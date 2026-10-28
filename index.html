@@ -945,7 +945,7 @@ function cancelBranchEntry(){document.getElementById('branchPinArea').classList.
 function signOutToLogin(){supabaseClient.auth.signOut().finally(()=>location.reload())}
 
 async function restartSalesData(){
- if(!confirm('إعادة التشغيل ستحذف تقفيل الوردية وأرشيف الورديات وملخص الشيفتات والمبيعات اليومية وسجل المبيعات لهذا الحساب/الفرع. لا يمكن التراجع عن الحذف. هل تريد المتابعة؟'))return;
+ if(!confirm('إعادة التشغيل ستحذف كل البيانات الظاهرة داخل مربع ملخص الشيفتات، بما فيها المبيعات والمصروفات، لهذا الحساب/الفرع. لا يمكن التراجع عن الحذف. هل تريد المتابعة؟'))return;
  try{
   if(cloudReady&&typeof supabaseClient!=='undefined'){
    let result;
@@ -961,6 +961,7 @@ async function restartSalesData(){
   sales=[];
   localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify([]));
   localStorage.setItem(workspaceKey('frg_daily_archive'),JSON.stringify([]));
+  localStorage.setItem(workspaceKey('frg_expenses'),JSON.stringify([]));
   localStorage.removeItem(workspaceKey('frg_shift_summary'));
   localStorage.setItem(workspaceKey('frg_shift_cutoff'),String(Date.now()));
   localStorage.removeItem(workspaceKey('frg_active_shift'));
@@ -971,7 +972,7 @@ async function restartSalesData(){
   refreshAll();
   if(typeof window.renderReports==='function')window.renderReports();
   if(typeof renderExpenses==='function')renderExpenses();
-  alert('تمت إعادة التشغيل: تم مسح تقفيل الوردية وأرشيف الورديات وملخص الشيفتات والمبيعات اليومية وسجل المبيعات.');
+  alert('تمت إعادة التشغيل ومسح جميع البيانات داخل مربع ملخص الشيفتات، بما فيها المبيعات والمصروفات.');
  }catch(e){
   console.error('Faragello restart failed:',e);
   alert('لم تكتمل إعادة التشغيل: '+(e&&e.message?e.message:'حدث خطأ أثناء حذف السجلات'));
