@@ -970,8 +970,6 @@ async function restartSalesData(){
   renderDailyTransfers();
   refreshAll();
   if(typeof window.renderReports==='function')window.renderReports();
-  const shiftSummaryPanel=document.getElementById('shiftSummaryPanel');
-  if(shiftSummaryPanel)shiftSummaryPanel.style.display='none';
   if(typeof renderExpenses==='function')renderExpenses();
   alert('تمت إعادة التشغيل: تم مسح تقفيل الوردية وأرشيف الورديات وملخص الشيفتات والمبيعات اليومية وسجل المبيعات.');
  }catch(e){
