@@ -777,6 +777,25 @@ window.prRender=function(){prFill();const q=($('prSearch')?.value||'').trim().to
 window.prDelete=id=>{if(!confirm('حذف الموظف وكل دفعاته؟'))return;save('employees',read('employees').filter(x=>x.id!==id));save('payments',read('payments').filter(x=>x.employeeId!==id));prRender()};
 window.prDeletePayment=id=>{if(!confirm('حذف الدفعة؟'))return;save('payments',read('payments').filter(x=>x.id!==id));prRender()};
 window.prExport=()=>csv([['الموظف','الوظيفة','المرتب الشهري'],...read('employees').map(x=>[x.name,x.role,x.salary])],'كشف-المرتبات');
+window.resetLoginChoice=window.resetLoginChoice||function(){
+ const login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),err=document.getElementById('loginErr');
+ if(login)login.dataset.page='';
+ if(fields)fields.classList.add('hidden');
+ if(email){email.value='';email.placeholder='اسم المستخدم';email.autocomplete='username'}
+ if(password){password.value='';password.placeholder='كلمة المرور';password.type='password'}
+ document.getElementById('adminLoginChoice')?.classList.remove('hidden');
+ document.getElementById('clientLoginToggle')?.classList.remove('hidden');
+ if(err)err.textContent='';
+};
+window.chooseLogin=window.chooseLogin||function(role){
+ const fields=document.getElementById('loginFields'),title=document.getElementById('loginText'),err=document.getElementById('loginErr');
+ if(fields)fields.classList.remove('hidden');
+ document.getElementById('adminLoginChoice')?.classList.add('hidden');
+ document.getElementById('clientLoginToggle')?.classList.add('hidden');
+ if(title)title.textContent=role==='admin'?'دخول المشرف':'دخول العميل';
+ if(err)err.textContent='';
+};
+
 const oldShow=window.showPage;
 window.showPage=function(id){if(typeof oldShow==='function')oldShow(id);if(id==='fingerprint')fpRender();if(id==='purchaseInvoices'){if($('piDate')&&!$('piDate').value)$('piDate').value=day();piRender();piDraftRender()}if(id==='payroll'){if($('prMonth')&&!$('prMonth').value)$('prMonth').value=new Date().toISOString().slice(0,7);prRender()}};
 })();
