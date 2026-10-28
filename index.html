@@ -193,6 +193,33 @@ html,body{min-height:100%;margin:0}
 #login #faragello-public-phone a{color:#fff!important;text-shadow:0 0 14px rgba(70,221,255,.4)}
 #login .login-card>div:last-child{color:#b9d8f5!important}
 </style>
+<style id="faragello-fresh-branch-picker">
+/* Fresh branch selection modal and branch cards */
+#branchPickerModal .modal,#branchesModal .modal{
+ background:linear-gradient(145deg,#0a2148 0%,#103c70 55%,#075b76 100%)!important;
+ color:#f5fbff!important;border:1px solid rgba(99,224,255,.72)!important;border-radius:24px!important;
+ box-shadow:0 24px 70px rgba(0,8,30,.5),0 0 30px rgba(37,177,255,.17)!important;
+}
+#branchPickerModal .modal h3,#branchesModal .modal h3{color:#fff!important;font-size:25px!important}
+#branchPickerModal .modal .sub,#branchesModal .modal .sub{color:#b9e8ff!important}
+#branchPickerCards .card{
+ background:linear-gradient(145deg,#e3f8ff,#b9e0ff 58%,#d8d2ff)!important;
+ color:#102d61!important;border:2px solid #6dd8ff!important;border-radius:19px!important;
+ box-shadow:0 10px 24px rgba(0,8,35,.2),inset 0 1px 0 rgba(255,255,255,.9)!important;
+ transition:transform .18s ease,filter .18s ease,box-shadow .18s ease!important;
+}
+#branchPickerCards .card:hover{transform:translateY(-4px)!important;filter:saturate(1.13)!important;box-shadow:0 16px 30px rgba(0,8,35,.28)!important}
+#branchPickerCards .card div{display:grid;place-items:center;width:58px;height:58px;margin:0 auto 8px;border-radius:17px;background:linear-gradient(140deg,#19c8e8,#347bff 65%,#7655ed);color:#fff;box-shadow:0 7px 16px rgba(44,111,235,.3)}
+#branchPickerCards .card strong{color:#102d61!important}
+#branchPickerCards .card span{color:#315b8d!important}
+#branchPinArea{margin-top:18px;padding:16px;border:1px solid rgba(108,223,255,.45);border-radius:16px;background:rgba(1,17,43,.42)}
+#branchPinTitle{color:#d9f7ff!important}
+#branchPickerModal input,#branchesModal input,#branchesModal select{
+ background:rgba(2,17,42,.85)!important;color:#fff!important;border:1px solid #4abce9!important;border-radius:11px!important
+}
+#branchPickerModal .modal-actions .btn.green,#branchesModal .modal-actions .btn.green{background:linear-gradient(105deg,#1bd2c0,#1389ee)!important;border:1px solid #91f4ff!important;color:#fff!important}
+#branchPickerModal .modal-actions .btn.gray,#branchesModal .modal-actions .btn.gray{background:linear-gradient(105deg,#405a80,#273a60)!important;color:#fff!important;border:1px solid #668ab6!important}
+</style>
 </head>
 <body>
 <div id="login" class="login-screen">
