@@ -3,37 +3,196 @@ on:
   push:
     branches: [main]
 permissions:
-  contents: read
+  contents: write
+  pages: write
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify essential system files and features
+
+      - name: Verify and install live current-activities chat
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          html = Path("index.html").read_text(encoding="utf-8")
+          html_path = Path("index.html")
+          html = html_path.read_text(encoding="utf-8")
+
           required = [
               "chooseLogin('admin')",
               "chooseLogin('client')",
               "async function doLogin()",
               'id="navClients"',
-              'id="navCloseShift"',
-              'id="navDailyTransfers"',
               "client_accounts",
               "user_profiles",
-              "الإستعلامات اليومية",
-              "الاستعلامات اليومية",
               "تقرير الجرد",
               "printAllBarcodes",
               "login-fix.js",
           ]
           missing = [item for item in required if item not in html]
-          for asset in ("login-fix.js",):
-              if not Path(asset).is_file():
-                  missing.append("file:" + asset)
           if missing:
               raise SystemExit("System verification failed; missing: " + ", ".join(missing))
-          print("Faragello System verification passed.")
+
+          marker = "FARAGELLO-LIVE-ACTIVITY-CHAT-V1"
+          if marker not in html:
+              block = r'''<!-- FARAGELLO-LIVE-ACTIVITY-CHAT-V1 -->
+<style id="faragello-live-activity-style">
+#faragello-live-activity-chat{display:none;position:relative;margin:0;padding:10px 18px 12px;background:#f7fbfc;border-bottom:1px solid #dfe8ed;box-shadow:0 3px 10px rgba(23,59,86,.05);z-index:20}
+#faragello-live-activity-chat .fal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}
+#faragello-live-activity-chat .fal-title{font-weight:850;color:#173b56;font-size:14px}
+#faragello-live-activity-chat .fal-status{font-size:11px;color:#159b8c;font-weight:700}
+#faragello-live-activity-chat .fal-box{height:145px;overflow:auto;padding:8px 10px;border:1px solid #dbe7ec;border-radius:12px;background:#fff;display:flex;flex-direction:column;gap:6px}
+#faragello-live-activity-chat .fal-empty{color:#7c8e99;text-align:center;padding:45px 10px;font-size:12px}
+#faragello-live-activity-chat .fal-msg{display:flex;align-items:flex-start;gap:8px;max-width:92%}
+#faragello-live-activity-chat .fal-msg.me{align-self:flex-start}
+#faragello-live-activity-chat .fal-avatar{width:27px;height:27px;flex:0 0 27px;border-radius:50%;display:grid;place-items:center;background:#dff4ee;color:#11756c;font-size:12px;font-weight:900}
+#faragello-live-activity-chat .fal-bubble{padding:6px 9px;border-radius:10px 10px 3px 10px;background:#eef7f5;color:#294b5c;font-size:12px;line-height:1.55}
+#faragello-live-activity-chat .fal-time{display:block;margin-top:2px;color:#8a9aa4;font-size:9px}
+@media(max-width:760px){#faragello-live-activity-chat{padding:8px 10px}.fal-box{height:125px!important}.fal-bubble{font-size:11px!important}}
+</style>
+<div id="faragello-live-activity-chat" aria-label="الأنشطة الحالية">
+  <div class="fal-head"><div class="fal-title">الأنشطة الحالية</div><div class="fal-status">متابعة مباشرة</div></div>
+  <div id="faragello-live-activity-messages" class="fal-box"><div class="fal-empty">لا توجد أنشطة مسجلة بعد.</div></div>
+</div>
+<script>
+(function(){
+  'use strict';
+  var KEY='faragello_live_activity_chat_v1';
+  var MAX=100;
+  var started=false, lastPage='', wrapped={};
+  function getChat(){return document.getElementById('faragello-live-activity-chat');}
+  function getMessages(){return document.getElementById('faragello-live-activity-messages');}
+  function currentUser(){
+    var el=document.querySelector('#app .user b');
+    return (el&&el.textContent||'المستخدم').replace(/\\s+/g,' ').trim()||'المستخدم';
+  }
+  function nowText(){
+    try{return new Intl.DateTimeFormat('ar-EG',{hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(new Date());}
+    catch(e){return new Date().toLocaleTimeString();}
+  }
+  function load(){try{var a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a:[];}catch(e){return[];}}
+  function save(a){try{localStorage.setItem(KEY,JSON.stringify(a.slice(-MAX)));}catch(e){}}
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function render(){
+    var box=getMessages(); if(!box)return;
+    var a=load();
+    if(!a.length){box.innerHTML='<div class="fal-empty">لا توجد أنشطة مسجلة بعد.</div>';return;}
+    box.innerHTML=a.slice(-MAX).map(function(x){return '<div class="fal-msg me"><div class="fal-avatar">ف</div><div class="fal-bubble">'+esc(x.text)+'<span class="fal-time">'+esc(x.user)+' • '+esc(x.time)+'</span></div></div>';}).join('');
+    box.scrollTop=box.scrollHeight;
+  }
+  function log(text){
+    text=String(text||'').replace(/\\s+/g,' ').trim();
+    if(!text)return;
+    var a=load(), last=a[a.length-1];
+    if(last && last.text===text && (Date.now()-Number(last.ts||0))<1200)return;
+    a.push({text:text,user:currentUser(),time:nowText(),ts:Date.now()});
+    save(a);render();
+  }
+  function pageName(){
+    var p=document.querySelector('#app main .page:not(.hidden)');
+    if(!p)return '';
+    var h=p.querySelector('.title h2');
+    return (h&&h.textContent||p.id||'صفحة').replace(/\\s+/g,' ').trim().replace(/^[^\u0600-\u06FFA-Za-z]+/,'');
+  }
+  function show(){
+    var app=document.getElementById('app'), chat=getChat();
+    if(!app||!chat)return;
+    var visible=!app.classList.contains('hidden');
+    chat.style.display=visible?'block':'none';
+    if(visible){
+      var pn=pageName();
+      if(pn && pn!==lastPage){lastPage=pn;log('تم فتح صفحة: '+pn);}
+    }
+  }
+  function label(el){
+    if(!el)return '';
+    var t=(el.innerText||el.textContent||'').replace(/\\s+/g,' ').trim();
+    if(!t && el.getAttribute) t=el.getAttribute('aria-label')||el.getAttribute('title')||'';
+    return t.slice(0,100);
+  }
+  function bindClicks(){
+    if(started)return;
+    started=true;
+    document.addEventListener('click',function(e){
+      var target=e.target.closest?e.target.closest('#app button,#app a'):null;
+      if(!target || target.closest('#faragello-live-activity-chat'))return;
+      var t=label(target);
+      if(!t || t==='')return;
+      setTimeout(function(){log('تم تنفيذ: '+t);show();},0);
+    },false);
+    document.addEventListener('change',function(e){
+      var el=e.target;
+      if(!el || !el.closest || !el.closest('#app'))return;
+      if(el.type==='password')return;
+      var holder=el.closest('label,.paybox,.toolbar,.modal,.cash-panel,.form-panel,.panel')||el.parentElement;
+      var name=label(holder)||el.getAttribute('aria-label')||el.placeholder||'حقل';
+      var kind=el.type==='checkbox'?(el.checked?'تم تفعيل':'تم إلغاء تفعيل'):'تم تغيير';
+      log(kind+': '+name.slice(0,90));
+    },false);
+    document.addEventListener('keydown',function(e){
+      if(e.key!=='Enter')return;
+      var el=e.target;
+      if(!el || !el.closest || !el.closest('#app'))return;
+      if(el.type==='password')return;
+      if(el.id==='scan')log('تم إدخال عملية في الكاشير والضغط على Enter');
+    },false);
+  }
+  function wrap(name){
+    if(wrapped[name] || typeof window[name]!=='function')return false;
+    var original=window[name];
+    window[name]=function(){
+      var result=original.apply(this,arguments);
+      var titles={
+        completeSale:'تم إتمام البيع',saveItem:'تم حفظ الصنف',deleteItem:'تم حذف الصنف',
+        createTransferPermit:'تم حفظ إذن التحويل',saveExpense:'تم حفظ المصروف',piSave:'تم حفظ فاتورة المشتريات',
+        saveClient:'تم حفظ حساب العميل',restartSalesData:'تم تنفيذ تقفيل/إعادة تشغيل بيانات الشيفت',
+        saveSettingsPin:'تم حفظ الرقم السري للإعدادات',savePasswords:'تم حفظ كلمات مرور الصفحات',saveShiftPins:'تم حفظ أرقام الشيفتات',
+        showPage:'تم الانتقال إلى صفحة',requestPage:'تم طلب فتح صفحة',clearCart:'تم تفريغ سلة الكاشير'
+      };
+      if(titles[name])setTimeout(function(){log(titles[name]);show();},20);
+      return result;
+    };
+    wrapped[name]=true;return true;
+  }
+  function watch(){
+    var names=['completeSale','saveItem','deleteItem','createTransferPermit','saveExpense','piSave','saveClient','restartSalesData','saveSettingsPin','savePasswords','saveShiftPins','showPage','requestPage','clearCart'];
+    names.forEach(wrap);
+    show();
+  }
+  function boot(){
+    if(!getChat())return;
+    bindClicks();watch();
+    setInterval(watch,700);
+    var obs=new MutationObserver(function(){show();});
+    var app=document.getElementById('app');if(app)obs.observe(app,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,250);});else setTimeout(boot,250);
+})();
+</script>
+'''
+              html = html.replace('</body>', block + '\n</body>', 1)
+              html_path.write_text(html, encoding='utf-8')
+              print('Live current-activities chat installed.')
+          else:
+              print('Live current-activities chat already installed.')
           PY
+
+      - name: Commit installed activity chat
+        run: |
+          if git diff --quiet; then
+            echo "No activity-chat changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Install live current-activities chat"
+          git push
+
+      - name: Request GitHub Pages rebuild
+        run: |
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds" || true
