@@ -337,7 +337,7 @@ function loadShiftPinsToSettings(){const ids=['shiftPinMorning','shiftPinEvening
 function saveShiftPins(){const ids=['shiftPinMorning','shiftPinEvening','shiftPinLate'],values=ids.map(id=>{const el=document.getElementById(id);return el?el.value.trim():''});if(values.some(p=>!/^[0-9]{4,12}$/.test(p))){alert('اكتب رقمًا سريًا من 4 إلى 12 رقمًا لكل شيفت، من 4 إلى 12 رقمًا');return}try{localStorage.setItem(workspaceKey('frg_shift_pins'),JSON.stringify({صباحي:values[0],مسائي:values[1],السهرة:values[2]}));loadShiftPinsToSettings();logActivity('تم تحديث الأرقام السرية للشيفتات','settings');alert('تم حفظ الأرقام السرية للشيفتات لهذا الحساب والفرع على هذا الجهاز بنجاح')}catch(e){alert('تعذر حفظ الأرقام السرية: '+(e&&e.message?e.message:'مساحة التخزين غير متاحة'))}}
 function authorizeShiftOpen(){const field=document.getElementById('shift');if(!field)return false;const active=localStorage.getItem(workspaceKey('frg_active_shift'));if(active&&field.dataset.verified==='true'&&field.value===active)return true;const entered=field.value.trim();if(!entered){alert('اكتب الرقم السري للشيفت أولًا');field.type='password';field.focus();return false}const pins=getShiftPins();const shift=Object.keys(pins).find(name=>String(pins[name])===entered);if(!shift){alert('الرقم السري غير صحيح. اكتب الرقم السري الخاص بشيفتك');field.value='';field.type='password';field.placeholder='اكتب الرقم السري للشيفت ثم Enter';field.dataset.verified='false';field.focus();return false}localStorage.setItem(workspaceKey('frg_active_shift'),shift);field.value=shift;field.type='text';field.readOnly=true;field.dataset.verified='true';field.placeholder='الشيفت المفتوح';logActivity('تم فتح الشيفت '+shift,'shift');return true}
 function saveSettingsPin(){const p=document.getElementById('newSettingsPin').value.trim();if(!/^\d{4,12}$/.test(p)){alert('اكتب رقمًا سريًا من 4 إلى 12 رقمًا');return}localStorage.setItem('frg_settings_pin',p);document.getElementById('newSettingsPin').value='';logActivity('تم تغيير الرقم السري للإعدادات','settings');alert('تم تغيير الرقم السري للإعدادات')}
-const CLIENTS_KEY='frg_clients';let clients=JSON.parse(localStorage.getItem(CLIENTS_KEY)||'[]');let clientEditIndex=-1;let activeClient=JSON.parse(localStorage.getItem('frg_active_client')||'null');function workspaceKey(base){return activeClient?base+'_'+activeClient.id:base}function saveClients(){localStorage.setItem(CLIENTS_KEY,JSON.stringify(clients))}
+const CLIENTS_KEY='frg_clients';let clients=JSON.parse(localStorage.getItem(CLIENTS_KEY)||'[]');let clientEditIndex=-1;let activeClient=JSON.parse(localStorage.getItem('frg_active_client')||'null');if(activeClient){delete activeClient.branchId;delete activeClient.branchName;localStorage.setItem('frg_active_client',JSON.stringify(activeClient))}function workspaceKey(base){return activeClient?base+'_'+activeClient.id:base}function saveClients(){localStorage.setItem(CLIENTS_KEY,JSON.stringify(clients))}
 function openClientModal(index=-1){
   clientEditIndex=index;
   const c=index>=0?clients[index]:{name:'',username:'',project:'',email:'',status:'نشط'};
@@ -425,14 +425,12 @@ function renderClients(){
 
 // Multi-branch management removed: each client now uses one workspace.
 async function restartSalesData(){
- if(!confirm('إعادة التشغيل ستحذف كل البيانات الظاهرة داخل مربع ملخص الشيفتات، بما فيها المبيعات والمصروفات، لهذا الحساب/الفرع. لا يمكن التراجع عن الحذف. هل تريد المتابعة؟'))return;
+ if(!confirm('إعادة التشغيل ستحذف كل البيانات الظاهرة داخل مربع ملخص الشيفتات، بما فيها المبيعات والمصروفات، لهذا الحساب. لا يمكن التراجع عن الحذف. هل تريد المتابعة؟'))return;
  try{
   if(cloudReady&&typeof supabaseClient!=='undefined'){
    let result;
    if(activeClient&&activeClient.id){
-    result=activeClient.branchId
-     ?await supabaseClient.from('client_branch_sales').delete().eq('client_id',activeClient.id).eq('branch_id',activeClient.branchId)
-     :await supabaseClient.from('client_sales').delete().eq('client_id',activeClient.id);
+    result=await supabaseClient.from('client_sales').delete().eq('client_id',activeClient.id);
    }else if(currentProfileRole==='admin'){
     result=await supabaseClient.from('shared_sales').delete().not('id','is',null);
    }
@@ -578,7 +576,7 @@ async function saveStockAdjustment(){
  if(!Number.isInteger(qty)||qty<=0){alert('اكتب كمية صحيحة أكبر من صفر');return}
  if(type==='wastage'&&qty>Number(item.qty||0)){alert('كمية الهالك أكبر من رصيد المخزون الحالي ('+Number(item.qty||0)+')');return}
  const value=qty*Number(item.price||0),before={...item},salesBefore=[...(sales||[])],adjustmentsBefore=getStockAdjustments(),now=new Date().toISOString();
- const adjustment={id:'ADJ-'+Date.now(),created_at:now,type,code:String(item.code),name:item.name,qty,value,reason,unit_price:Number(item.price||0),client_id:activeClient?.id||null,branch_id:activeClient?.branchId||null};
+ const adjustment={id:'ADJ-'+Date.now(),created_at:now,type,code:String(item.code),name:item.name,qty,value,reason,unit_price:Number(item.price||0),client_id:activeClient?.id||null};
  if(button){button.disabled=true;button.textContent='جاري الحفظ...'}
  try{
    item.qty=Number(item.qty||0)+(type==='return'?qty:-qty);
@@ -719,7 +717,7 @@ async function completeSale(){
     let saleId, savedToCloud=false;
     if(cloudReady){
       const rpcResult=isCustomer
-        ?(activeClient?.branchId?await supabaseClient.rpc('complete_client_branch_sale',{p_shift:shiftValue,p_pay:payValue,p_items:payload}):await supabaseClient.rpc('complete_client_sale',{p_shift:shiftValue,p_pay:payValue,p_items:payload}))
+        ?await supabaseClient.rpc('complete_client_sale',{p_shift:shiftValue,p_pay:payValue,p_items:payload})
         :await supabaseClient.rpc('complete_admin_shared_sale',{p_shift:shiftValue,p_pay:payValue,p_items:payload});
       if(rpcResult.error)throw rpcResult.error;
       const returned=rpcResult.data;
