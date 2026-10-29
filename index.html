@@ -493,7 +493,7 @@ async function toggleBranchStatus(branchId,status){
  try{const {error}=await supabaseClient.from('client_branches').update({status}).eq('id',branchId);if(error)throw error;await loadManagedBranches()}
  catch(e){alert('تعذر تغيير حالة الفرع: '+(e?.message||e))}
 }
-async async function showClientBranchPicker(client){
+async function showClientBranchPicker(client){
  const panel=document.getElementById('branchPickerPanel');
  const {data,error}=await supabaseClient.from('client_branches').select('id,name,status').eq('client_id',client.id).eq('status','نشط').order('created_at');
  if(error)throw error;
