@@ -207,6 +207,20 @@ window.resetLoginChoice=window.resetLoginChoice||function(){
 <script>
 /* Keep the login button callable even if the main application script fails to initialize. */
 window.__frgLoginHandler = window.__frgLoginHandler || null;
+/* Install diagnostics in this small, separate script so it can catch syntax errors in the large app script below. */
+window.addEventListener('error', function(event) {
+  var detail = event.message || 'خطأ JavaScript غير معروف';
+  if (event.filename) detail += ' (' + event.filename.split('/').pop() + ':' + event.lineno + ':' + event.colno + ')';
+  window.__frgLastRuntimeError = detail;
+  var box = document.getElementById('loginErr');
+  if (box) box.textContent = 'خطأ تشغيل يمنع تسجيل الدخول: ' + detail;
+});
+window.addEventListener('unhandledrejection', function(event) {
+  var reason = event.reason && event.reason.message ? event.reason.message : String(event.reason || 'رفض غير معروف');
+  window.__frgLastRuntimeError = reason;
+  var box = document.getElementById('loginErr');
+  if (box) box.textContent = 'خطأ اتصال يمنع تسجيل الدخول: ' + reason;
+});
 window.doLogin = function () {
   if (typeof window.__frgLoginHandler === 'function') return window.__frgLoginHandler();
   var e = document.getElementById('loginErr');
