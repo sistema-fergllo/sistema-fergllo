@@ -484,25 +484,7 @@ function printDailyShift(button){
 
 
 
-<script id="remove-header-literal-newlines">
-(function(){
-  function cleanHeaderNewlineText(){
-    const header=document.querySelector('#app header.top');
-    if(!header)return;
-    const walker=document.createTreeWalker(header,NodeFilter.SHOW_TEXT);
-    let node;
-    while((node=walker.nextNode())){
-      if(node.nodeValue && node.nodeValue.includes('\\n\\n')){
-        node.nodeValue=node.nodeValue.replace(/\\n\\n/g,'');
-      }
-    }
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',cleanHeaderNewlineText);
-  else cleanHeaderNewlineText();
-  const app=document.getElementById('app');
-  if(app)new MutationObserver(cleanHeaderNewlineText).observe(app,{subtree:true,childList:true,characterData:true});
-})();
-</script>
+
 
 
 </body></html>`);
