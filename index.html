@@ -141,7 +141,7 @@ window.resetLoginChoice=window.resetLoginChoice||function(){
 <header class="top"><div class="brand"><div class="logo"><span aria-label="مصباح أصفر" role="img">💡</span></div><div><h1>سيستم فرجللو</h1><small>Farag El-Sayed • مشرف النظام</small><div></div></div></div><div class="userbox"><div class="clock"><b id="date"></b><br><span id="time"></span></div><div class="user">👤 <b>admin</b><br><small>مدير النظام</small></div></div></header>
 <div id="activityStrip" class="activity-strip" role="region" aria-label="الأنشطة الحالية">
   <div class="activity-heading">
-    <strong id="workspaceIdentity">بسم الله الرحمن الرحيم</strong>
+    <strong id="workspaceIdentity"></strong>
   </div>
   <div id="activityFeed" class="activity-feed" aria-label="شعار فرجللو المتحرك"><div class="activity-orbit-scene" aria-hidden="true"><span class="activity-spark one"></span><span class="activity-spark two"></span><div class="activity-globe">F</div></div></div>
 </div>
@@ -510,7 +510,7 @@ async function showClientBranchPicker(client){
  return true;
 }
 function selectBranchForPin(id){const branch=availableClientBranches.find(b=>b.id===id);if(!branch)return;pendingBranchId=id;document.getElementById('branchPinTitle').textContent='الرقم السري لفرع '+branch.name;document.getElementById('branchPinArea').classList.remove('hidden');document.getElementById('branchPinInput').value='';document.getElementById('branchPinError').textContent='';document.getElementById('branchPinInput').focus()}
-function renderActiveBranchLabel(){const el=document.getElementById('activeBranchLabel');const identity=document.getElementById('workspaceIdentity');if(identity)identity.textContent='بسم الله الرحمن الرحيم';if(el){el.textContent='';el.style.display='none';}const brandSmall=document.querySelector('.brand small');if(brandSmall)brandSmall.textContent='Farag El-Sayed • مشرف النظام';const userSmall=document.querySelector('.user small');if(userSmall)userSmall.textContent='مدير النظام';}
+function renderActiveBranchLabel(){const el=document.getElementById('activeBranchLabel');const identity=document.getElementById('workspaceIdentity');if(identity)identity.textContent='';if(el){el.textContent='';el.style.display='none';}const brandSmall=document.querySelector('.brand small');if(brandSmall)brandSmall.textContent='Farag El-Sayed • مشرف النظام';const userSmall=document.querySelector('.user small');if(userSmall)userSmall.textContent='مدير النظام';}
 async function enterSelectedBranch(){
  const pin=document.getElementById('branchPinInput').value.trim(),err=document.getElementById('branchPinError');
  err.textContent='';
