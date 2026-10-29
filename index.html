@@ -61,6 +61,23 @@ body.client-workspace-mode #clientWorkspaceBar {
 #app .activity-feed{min-width:0;height:116px;max-height:116px;min-height:116px;overflow:hidden!important;overscroll-behavior:none;border:1px solid rgba(36,215,255,.3);border-radius:12px;background:rgba(1,9,20,.64);padding:5px 10px;display:flex;flex-direction:column;gap:2px}
 #app .activity-feed::-webkit-scrollbar,#app .activity-feed::-webkit-scrollbar-button{display:none!important;width:0!important;height:0!important}
 #app .activity-feed{scrollbar-width:none!important}
+#app .activity-status{display:none!important}
+#app .activity-heading{justify-content:center}
+#app .activity-heading small{display:none}
+#app .activity-feed{position:relative;display:grid;place-items:center;height:116px;min-height:116px;max-height:116px;padding:0;overflow:hidden!important;background:radial-gradient(ellipse at center,rgba(0,105,255,.19),rgba(1,9,20,.9) 66%)}
+#app .activity-feed .activity-empty{display:none!important}
+#app .activity-orbit-scene{position:relative;width:100%;height:100%;display:grid;place-items:center;isolation:isolate;overflow:hidden}
+#app .activity-orbit-scene:before{content:"";position:absolute;width:104px;height:104px;border:1px solid rgba(24,153,255,.55);border-radius:50%;box-shadow:0 0 16px rgba(0,132,255,.35),inset 0 0 18px rgba(0,132,255,.18);animation:frgGlobePulse 3.4s ease-in-out infinite}
+#app .activity-orbit-scene:after{content:"";position:absolute;width:152px;height:48px;border:2px solid rgba(255,190,45,.8);border-left-color:rgba(0,155,255,.85);border-right-color:rgba(0,155,255,.85);border-radius:50%;transform:rotate(-22deg);filter:drop-shadow(0 0 5px rgba(255,188,44,.55));animation:frgOrbitSpin 7s linear infinite}
+#app .activity-globe{position:relative;z-index:1;display:grid;place-items:center;width:78px;height:78px;border-radius:50%;font-size:54px;font-weight:1000;font-family:Arial,sans-serif;font-style:italic;color:#ffcf45;text-shadow:0 0 8px #ffcb38,0 0 22px rgba(255,194,45,.7);background:radial-gradient(circle at 32% 25%,rgba(16,109,255,.62),rgba(0,20,58,.96) 65%);border:2px solid #168cff;box-shadow:0 0 15px rgba(0,145,255,.75),inset 0 0 17px rgba(0,145,255,.38);animation:frgLogoFloat 3s ease-in-out infinite}
+#app .activity-spark{position:absolute;width:5px;height:5px;border-radius:50%;background:#62dfff;box-shadow:0 0 10px #159dff;animation:frgSpark 2.8s ease-in-out infinite}
+#app .activity-spark.one{left:24%;top:26%}
+#app .activity-spark.two{right:25%;top:67%;animation-delay:-1.3s;background:#ffce45;box-shadow:0 0 10px #ffce45}
+@keyframes frgOrbitSpin{from{transform:rotate(-22deg)}to{transform:rotate(338deg)}}
+@keyframes frgLogoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.035)}}
+@keyframes frgGlobePulse{0%,100%{opacity:.65;transform:scale(.96)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes frgSpark{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1.5)}}
+@media(prefers-reduced-motion:reduce){#app .activity-orbit-scene:before,#app .activity-orbit-scene:after,#app .activity-globe,#app .activity-spark{animation:none!important}}
 #app .activity-item{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:start;padding:6px 3px;border-bottom:1px solid rgba(146,181,211,.12);font-size:12px;line-height:1.6}
 #app .activity-item:last-child{border-bottom:0}
 #app .activity-time{color:#83dfff;font-size:11px;white-space:nowrap;direction:rtl}
@@ -589,9 +606,7 @@ html,body{min-height:100%;margin:0}
     <small>آخر ما يحدث في سيستم فرجللو</small>
     <span id="activityStatus" class="activity-status" data-mode="local">جارٍ تجهيز السجل</span>
   </div>
-  <div id="activityFeed" class="activity-feed" aria-live="polite">
-    <div class="activity-empty">لسه مفيش أنشطة مسجلة. أي بيع أو تعديل أو تقرير هيظهر هنا.</div>
-  </div>
+  <div id="activityFeed" class="activity-feed" aria-label="شعار فرجللو المتحرك"><div class="activity-orbit-scene" aria-hidden="true"><span class="activity-spark one"></span><span class="activity-spark two"></span><div class="activity-globe">F</div></div></div>
 </div>
 <div class="layout"><aside class="side">
   <div id="activeBranchLabel" style="display:none!important;visibility:visible!important;opacity:1!important;margin:0 0 10px;padding:10px 8px;background:#fff;color:#0b2a5b;border:2px solid #168cff;border-radius:9px;font-size:14px;font-weight:900;line-height:1.5;width:100%;box-sizing:border-box;text-align:center;overflow-wrap:anywhere"></div>
@@ -666,15 +681,8 @@ function escapeActivityText(value){return String(value==null?'':value).replace(/
 function isUsefulActivity(entry){if(!entry)return false;const type=String(entry.event_type||'').toLowerCase();const message=String(entry.message||'').trim();if(['login','workspace'].includes(type))return false;if(/تم تسجيل دخول (العميل|المشرف)|فتح المشرف مساحة عمل العميل|دخل إلى مساحة العمل|دخول العميل إلى مساحة العمل/i.test(message))return false;return !!message}function getLocalActivityRows(){try{const rows=JSON.parse(localStorage.getItem(activityStorageKey())||'[]');return Array.isArray(rows)?rows.filter(isUsefulActivity).slice(0,ACTIVITY_LOCAL_LIMIT):[]}catch(e){return []}}
 function activityTime(value){const d=new Date(value||Date.now());return Number.isFinite(d.getTime())?d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}):'الآن'}
 function renderActivityFeed(rows,mode){
-  const feed=document.getElementById('activityFeed'),status=document.getElementById('activityStatus');
+  const status=document.getElementById('activityStatus');
   if(status){status.dataset.mode=mode==='cloud'?'cloud':'local';status.textContent=mode==='cloud'?'متزامن بين الأجهزة':'محلي على هذا الجهاز'}
-  if(!feed)return;
-  const entries=(Array.isArray(rows)?rows:[]).slice(0,ACTIVITY_LOCAL_LIMIT);
-  if(!entries.length){feed.innerHTML='<div class="activity-empty">لسه مفيش أنشطة مسجلة. أي بيع أو تعديل أو تقرير هيظهر هنا.</div>';return}
-  feed.innerHTML=entries.map(function(entry){
-    const time=activityTime(entry.created_at);
-    return '<div class="activity-item"><time class="activity-time" title="'+escapeActivityText(entry.created_at||'')+'">'+escapeActivityText(time)+'</time><span class="activity-message">'+escapeActivityText(entry.message||'نشاط في النظام')+'</span></div>'
-  }).join('');
 }
 
 let activityViewVersion=0;
