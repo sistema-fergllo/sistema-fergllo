@@ -58,15 +58,15 @@ body.client-workspace-mode #clientWorkspaceBar {
 #app .activity-heading small{font-size:12px;color:#9ec8e9}
 #app .activity-status{align-self:flex-start;display:inline-block;padding:3px 9px;border-radius:20px;background:rgba(132,158,185,.16);border:1px solid rgba(150,190,220,.28);font-size:11px;color:#c8d9e8;white-space:nowrap}
 #app .activity-status[data-mode="cloud"]{color:#a6ffd0;background:rgba(20,163,89,.14);border-color:rgba(63,221,139,.45)}
-#app .activity-feed{min-width:0;max-height:116px;min-height:66px;overflow-y:auto;overscroll-behavior:contain;border:1px solid rgba(36,215,255,.3);border-radius:12px;background:rgba(1,9,20,.64);padding:5px 10px;display:flex;flex-direction:column;gap:2px}
-#app .activity-feed::-webkit-scrollbar-button{display:none!important;width:0!important;height:0!important}
-#app .activity-feed{scrollbar-width:thin;scrollbar-color:#168cff rgba(1,9,20,.4)}
+#app .activity-feed{min-width:0;height:116px;max-height:116px;min-height:116px;overflow:hidden!important;overscroll-behavior:none;border:1px solid rgba(36,215,255,.3);border-radius:12px;background:rgba(1,9,20,.64);padding:5px 10px;display:flex;flex-direction:column;gap:2px}
+#app .activity-feed::-webkit-scrollbar,#app .activity-feed::-webkit-scrollbar-button{display:none!important;width:0!important;height:0!important}
+#app .activity-feed{scrollbar-width:none!important}
 #app .activity-item{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:start;padding:6px 3px;border-bottom:1px solid rgba(146,181,211,.12);font-size:12px;line-height:1.6}
 #app .activity-item:last-child{border-bottom:0}
 #app .activity-time{color:#83dfff;font-size:11px;white-space:nowrap;direction:rtl}
 #app .activity-message{color:#eaf4ff;overflow-wrap:anywhere}
 #app .activity-empty{display:flex;align-items:center;justify-content:center;min-height:54px;padding:8px;color:#9bb5ce;font-size:12px;text-align:center}
-@media(max-width:760px){#app .activity-strip{grid-template-columns:1fr;padding:8px 10px;gap:7px}#app .activity-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:8px 11px}#app .activity-heading small{display:none}#app .activity-heading strong{font-size:15px}#app .activity-feed{max-height:112px;min-height:56px}#app .activity-item{grid-template-columns:65px minmax(0,1fr);gap:7px}}
+@media(max-width:760px){#app .activity-strip{grid-template-columns:1fr;padding:8px 10px;gap:7px}#app .activity-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:8px 11px}#app .activity-heading small{display:none}#app .activity-heading strong{font-size:15px}#app .activity-feed{height:112px;max-height:112px;min-height:112px}#app .activity-item{grid-template-columns:65px minmax(0,1fr);gap:7px}}
 
 
 /* Faragello sidebar: center every menu label inside its own button. */
