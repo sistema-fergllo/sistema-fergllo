@@ -1164,7 +1164,7 @@ async function saveStockAdjustment(){
  if(!item){alert('اختار الصنف الأول');return}
  if(!Number.isInteger(qty)||qty<=0){alert('اكتب كمية صحيحة أكبر من صفر');return}
  if(type==='wastage'&&qty>Number(item.qty||0)){alert('كمية الهالك أكبر من رصيد المخزون الحالي ('+Number(item.qty||0)+')');return}
- const value=qty*Number(item.price||0),before={...item},now=new Date().toISOString();
+ const value=qty*Number(item.price||0),before={...item},salesBefore=[...(sales||[])],adjustmentsBefore=getStockAdjustments(),now=new Date().toISOString();
  const adjustment={id:'ADJ-'+Date.now(),created_at:now,type,code:String(item.code),name:item.name,qty,value,reason,unit_price:Number(item.price||0),client_id:activeClient?.id||null,branch_id:activeClient?.branchId||null};
  if(button){button.disabled=true;button.textContent='جاري الحفظ...'}
  try{
@@ -1182,8 +1182,8 @@ async function saveStockAdjustment(){
    logActivity('تم تسجيل '+(type==='return'?'مرتجع':'هالك')+' للصنف '+item.name+' — كمية '+qty+' — قيمة '+money(value),'inventory');
    alert('تم تسجيل '+(type==='return'?'المرتجع':'الهالك')+' وتحديث المخزون بنجاح.'+(type==='return'?' قيمة المرتجع خُصمت من صافي المبيعات.':''));
  }catch(e){
-   Object.assign(item,before);localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));localStorage.setItem(KEYS.inv,JSON.stringify(inventory));refreshAll();
-   alert('تعذر حفظ الحركة ومزامنة المخزون: '+(e.message||e));
+   Object.assign(item,before);sales=salesBefore;saveStockAdjustments(adjustmentsBefore);localStorage.setItem(workspaceKey(KEYS.sales),JSON.stringify(sales));localStorage.setItem(KEYS.sales,JSON.stringify(sales));localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));localStorage.setItem(KEYS.inv,JSON.stringify(inventory));refreshAll();renderStockAdjustments();
+   alert('تعذر حفظ الحركة ومزامنة المخزون؛ تم إلغاء التعديل المحلي: '+(e.message||e));
  }finally{if(button){button.disabled=false;button.textContent='حفظ الحركة وتحديث المخزون'}}
 }
 
