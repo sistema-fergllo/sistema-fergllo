@@ -935,10 +935,7 @@ function printTransferPermit(id){
   setTimeout(()=>{try{w.focus();w.print()}catch(e){console.error(e)}}, 800);
 }
 
-var faragelloFinalLayoutStyle=document.createElement('style');
-faragelloFinalLayoutStyle.id='faragello-final-layout-fix';
-faragelloFinalLayoutStyle.textContent='html,body{width:100%;max-width:100%;overflow-x:hidden!important}.layout{width:100%!important;max-width:100%!important;display:grid!important;grid-template-columns:220px minmax(0,1fr)!important;overflow:hidden!important}.layout>.side{width:220px!important;min-width:220px!important;max-width:220px!important;margin:0!important}.layout>main{width:auto!important;min-width:0!important;max-width:none!important;margin:0!important;overflow-x:hidden!important}';
-document.head.appendChild(faragelloFinalLayoutStyle);
+/* Legacy layout-injection removed: the new responsive dashboard stylesheet controls layout. */
 window.doLogin=window.doLogin||(typeof doLogin==="function"?doLogin:function(){var e=document.getElementById("loginErr");if(e)e.textContent="تعذر تحميل تسجيل الدخول بالكامل. حدّث الصفحة بـ Ctrl+F5.";});
 window.chooseLogin=chooseLogin;
 window.resetLoginChoice=window.resetLoginChoice||(typeof resetLoginChoice==='function'?resetLoginChoice:function(){var login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),err=document.getElementById('loginErr'),title=document.getElementById('loginText');if(login)login.dataset.page='';if(fields)fields.classList.add('hidden');if(email){email.classList.remove('hidden');email.value='';email.placeholder='اسم المستخدم';email.autocomplete='username';}if(password){password.classList.remove('hidden');password.value='';password.type='password';password.autocomplete='current-password';}var admin=document.getElementById('adminLoginChoice'),client=document.getElementById('clientLoginToggle');if(admin)admin.classList.remove('hidden');if(client)client.classList.remove('hidden');if(title)title.textContent='سيستم محاسبي متكامل';if(err)err.textContent='';});
