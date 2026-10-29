@@ -102,582 +102,136 @@ body.client-workspace-mode #clientWorkspaceBar {
   margin:0!important;
 }
 </style>
-<style>
-/* FARAGELLO FINAL UI */
-:root{--bg:#f4f8ff;--panel:#ffffff;--panel2:#eef6ff;--blue:#168cff;--cyan:#24b8ff;--green:#18b86a;--red:#ef4b61;--gold:#e3a51b;--text:#0b2a5b;--muted:#6d86a7;--line:#d7e6f6}
-body{background:#f5f9ff;color:var(--text)}
-.top{height:84px;background:linear-gradient(90deg,#0a2145,#123d72,#0a2145);border-bottom:0;padding:0 28px;box-shadow:0 3px 18px #12345b22}
-.brand{gap:14px}.logo{width:58px;height:58px;border:0;border-radius:14px;background:linear-gradient(145deg,#168cff,#0d4ea3);color:#fff;box-shadow:0 7px 18px #168cff44}
-.brand h1{font-size:27px}.brand small{color:#5bd8ff}.user{background:#0a2145;border:1px solid #3976ac}.clock{color:#e9f4ff}
-.layout{min-height:calc(100vh - 84px)}.side{width:250px;background:linear-gradient(180deg,#061c3d,#07152c);border-left:0;padding:22px 14px;gap:8px;box-shadow:4px 0 18px #0a2a5220}
-.nav{padding:14px 16px;border-radius:12px;color:#e9f4ff;font-size:16px}.nav:hover,.nav.active{background:linear-gradient(90deg,#168cff,#1165c0);border-color:#43baff;box-shadow:0 8px 18px #168cff33}.nav-icon{width:30px;height:30px}.nav-icon svg{width:24px;height:24px}.logout{background:#3a1725;border-color:#6e263a}
-main{padding:28px;background:radial-gradient(circle at 0 0,#e8f4ff 0,#f7fbff 35%,#fff 75%)}.page{max-width:1450px}.title h2{color:#0b2a5b}.sub{color:#7289a8}.cards{gap:18px}.card{background:#fff;border:1px solid #d9e8f7;border-radius:16px;box-shadow:0 8px 24px #1c4d7d10}.card .label{color:#6682a5}.table-wrap,.cash-panel,.toolbar{background:#fff;border:1px solid #d9e8f7;box-shadow:0 8px 24px #1c4d7d0d}.table th{background:#edf6ff;color:#174779;border-bottom:1px solid #d5e6f5}.table td{color:#1b3b62;border-bottom:1px solid #e3edf7}.table tr:hover td{background:#f5faff}.toolbar input,.toolbar select,.modal input,.cash-search,.scan input,.paybox select,.paybox input{background:#fff;color:#173b64;border-color:#c9dced}.btn{box-shadow:0 5px 12px #168cff22}
-#home .cash-panel{background:transparent;border:0;box-shadow:none;text-align:center;padding:45px 20px 20px;position:relative;overflow:hidden}
-#home .cash-panel h3{font-size:34px;color:#0b2a5b;margin:20px 0 10px}
-#home .cash-panel .sub{font-size:18px}
-#home .cash-panel:before{content:'⌗';display:grid;place-items:center;margin:0 auto;width:135px;height:135px;border-radius:26px;background:linear-gradient(145deg,#168cff,#123e8d);color:#fff;font-size:75px;font-weight:bold;box-shadow:0 18px 35px #168cff33}
-#app #home .cash-panel:after{content:none!important;display:none!important}
-@media(max-width:900px){.side{width:76px}.nav{font-size:0}.nav-icon{margin:0}.top{padding:0 12px}.brand h1{font-size:20px}}
 
-</style>
-<style>
-/* FARAGELLO REFERENCE REDESIGN - layout/theme only; preserve all app functions */
-#login.login-screen{
- min-height:100vh;display:grid;place-items:center;padding:28px;
- background:
- radial-gradient(ellipse at 17% 82%,rgba(255,167,53,.85),transparent 26%),
- radial-gradient(ellipse at 23% 60%,rgba(255,99,68,.72),transparent 30%),
- radial-gradient(ellipse at 33% 18%,rgba(67,112,190,.9),transparent 42%),
- linear-gradient(120deg,#13284c 0%,#ff9b51 38%,#172b4b 55%,#031226 100%);
- position:relative;overflow:hidden
-}
-#login.login-screen:before{content:"";position:absolute;inset:0;background:
- linear-gradient(180deg,transparent 55%,rgba(4,12,27,.55)),
- repeating-linear-gradient(90deg,transparent 0 95px,rgba(255,255,255,.035) 96px 98px);
- pointer-events:none}
-#login .login-card{position:relative;z-index:1;width:min(410px,94vw);margin-inline:auto;
- background:linear-gradient(145deg,rgba(2,24,55,.97),rgba(0,9,27,.98));
- border:1px solid #0ca9ff;border-radius:18px;padding:25px 28px;
- box-shadow:0 20px 60px #00152c99,0 0 25px #008dff44;color:#fff}
-#login .login-card h1{color:#fff;font-size:30px}
-#login .login-card p{color:#8deaff}
-#login .login-card input{background:#05254a;color:#fff;border:1px solid #087ee4;border-radius:9px;padding:13px}
-#login .login-card .btn{background:linear-gradient(100deg,#00c8ff,#0877ff);border:1px solid #29dfff;color:#fff;border-radius:9px}
-#login .login-card .btn.gray{background:#102d50;border-color:#24527e}
-#login .login-card .logo{background:linear-gradient(140deg,#00d9ff,#075be0);color:#fff}
-#app{background:#06162b;color:#f5f9ff;min-height:100vh}
-#app .top{background:linear-gradient(90deg,#031126,#0b2d58,#031126);border-bottom:1px solid #087cc2}
-#app .layout{background:linear-gradient(120deg,#071a31,#061226)}
-#app .side{background:linear-gradient(180deg,#03132a,#020b19);border-left:1px solid #0873b8}
-#app main{background:
- radial-gradient(ellipse at 50% 0%,rgba(8,57,103,.45),transparent 58%),
- linear-gradient(135deg,#071a31,#030d1d);color:#f5f9ff}
-#app .title h2,#app #home .cash-panel h3{color:#f4faff}
-#app .sub,#app .card .label{color:#9cc8ef}
-#app .card,#app .table-wrap,#app .cash-panel,#app .toolbar{background:linear-gradient(145deg,#08264a,#041329);border:1px solid #0877bd;box-shadow:0 10px 28px #0004}
-#app .table th{background:#0a315b;color:#e9f8ff;border-color:#135b8c}
-#app .table td{color:#edf7ff;border-color:#0d3153}
-#app .table tr:hover td{background:#0a2b4c}
-#app .toolbar input,#app .toolbar select,#app .modal input,#app .cash-search,#app .scan input,#app .paybox select,#app .paybox input{background:#031226;color:#f5f9ff;border-color:#1269a5}
-#app .nav:hover,#app .nav.active{background:linear-gradient(100deg,#00a9ff,#0755b8);border-color:#27d9ff}
-#app #home .cash-panel{background:transparent;border:0;box-shadow:none}
-#app #home .cash-panel:before{background:linear-gradient(145deg,#00cfff,#064bb7);box-shadow:0 15px 35px #008cff55}
-#app #home .cash-panel:after{color:#1dcfff}
-@media(max-width:700px){#login.login-screen{padding:14px}#login .login-card{padding:22px}}
-</style>
 
-<style id="faragello-new-image-design">
-/* NEW DESIGN: only the two approved reference images */
-#login.login-screen{background-image:url('./38cd6a6435c0fd5a838186d0047ad2a8.jpg?v=20261029') !important;background-size:cover !important;background-position:center !important;background-repeat:no-repeat !important;}
-#login.login-screen:before{background:rgba(0,0,0,.12) !important;}
-#app{background-image:url('./1d0bbcf5f4bae25b116af1eab2930701.jpg?v=20261029') !important;background-size:cover !important;background-position:center !important;background-attachment:fixed !important;}
-#app .layout{background:rgba(3,14,30,.42) !important;}
-#app main{background:rgba(3,14,30,.38) !important;}
 
-</style>
+
 <link rel="stylesheet" href="force-design.css?v=20261028-red-sidebar-1">
 
 
 <link id="faragello-final-css" rel="stylesheet" href="force-design.css?v=20261028-red-sidebar-1">
 
-<style id="faragello-hd-backgrounds-final">
-html,body{min-height:100%;margin:0}
-#login.login-screen{
- position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;min-height:100vh!important;
- background-color:#080604!important;
- background-image:url('./38cd6a6435c0fd5a838186d0047ad2a8.jpg?v=20261029')!important;
- background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important;
-}
-#login.login-screen:before{background:rgba(0,0,0,.12)!important}
-#app{
- min-height:100vh!important;
- background-color:#080604!important;
- background-image:url('./1d0bbcf5f4bae25b116af1eab2930701.jpg?v=20261029')!important;
- background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important;background-attachment:fixed!important;
-}
-#app .layout{background:rgba(3,10,10,.32)!important}
-#app main{background:rgba(3,10,10,.24)!important}
-@media(max-width:700px){
- #login.login-screen{background-attachment:scroll!important;background-position:center center!important;background-size:cover!important}
- #app{background-attachment:scroll!important;background-position:center center!important;background-size:cover!important}
- #app .layout{background:rgba(3,10,10,.42)!important}
- #app main{background:rgba(3,10,10,.32)!important}
-}
-</style>
-
-
-<style id="faragello-hide-home-summary-cards">
-/* Hide only the four dashboard summary cards under the welcome banner; keep sidebar navigation untouched. */
-#home > .cards{display:none!important}
-</style>
-
-
-<style id="faragello-fresh-public-login">
-/* Fresh colorful redesign for the public login card */
-#login .login-card{
- background:linear-gradient(145deg,rgba(11,31,73,.97) 0%,rgba(26,45,105,.96) 48%,rgba(16,94,135,.96) 100%)!important;
- border:1px solid rgba(112,231,255,.85)!important;border-radius:26px!important;
- box-shadow:0 24px 70px rgba(0,9,40,.55),0 0 0 5px rgba(95,208,255,.13),0 0 35px rgba(38,190,255,.28)!important;
- color:#f7fcff!important;backdrop-filter:blur(16px);
-}
-#login .login-card .logo{
- background:linear-gradient(135deg,#48e1ff,#2387ff 52%,#7857ff)!important;
- border:1px solid rgba(255,255,255,.42)!important;border-radius:18px!important;
- box-shadow:0 10px 28px rgba(35,153,255,.42)!important;
-}
-#login .login-card h1{color:#fff!important;text-shadow:0 3px 18px rgba(48,190,255,.28)}
-#login .login-card p{color:#a8efff!important}
-#login #adminLoginChoice,#login #loginSubmit{
- background:linear-gradient(105deg,#20d7e8,#218bff 58%,#655bff)!important;
- border:1px solid rgba(180,248,255,.7)!important;border-radius:13px!important;
- color:#fff!important;font-weight:800!important;box-shadow:0 8px 22px rgba(23,157,255,.28)!important;
-}
-#login #clientLoginToggle,#login .login-card .btn.gray{
- background:linear-gradient(105deg,rgba(255,255,255,.15),rgba(115,159,255,.2))!important;
- border:1px solid rgba(171,218,255,.5)!important;border-radius:13px!important;color:#f5fbff!important;
-}
-#login .login-card button{transition:transform .18s ease,filter .18s ease}
-#login .login-card button:hover{filter:brightness(1.12);transform:translateY(-1px)}
-#login .login-card input{background:rgba(3,18,49,.8)!important;border:1px solid #4bafe8!important;border-radius:11px!important;color:#fff!important}
-#login #faragello-public-phone{background:linear-gradient(110deg,rgba(16,193,209,.17),rgba(44,108,255,.18))!important;border:1px solid rgba(102,230,255,.62)!important;border-radius:15px!important}
-#login #faragello-public-phone a{color:#fff!important;text-shadow:0 0 14px rgba(70,221,255,.4)}
-#login .login-card>div:last-child{color:#b9d8f5!important}
-</style>
-<style id="faragello-dashboard-neon-redesign">
-/* Color refresh for the internal dashboard; behavior and data remain unchanged */
-#app .top{
- background:linear-gradient(105deg,rgba(3,17,42,.97),rgba(7,49,99,.97),rgba(25,31,91,.96))!important;
- border-bottom:1px solid rgba(40,202,255,.5)!important;box-shadow:0 8px 28px rgba(0,0,0,.2)!important
-}
-#app .layout{background:linear-gradient(135deg,rgba(0,28,62,.42),rgba(17,31,79,.38))!important}
-#app main{background:radial-gradient(ellipse at 10% 0%,rgba(0,169,255,.17),transparent 42%),radial-gradient(ellipse at 95% 85%,rgba(113,72,255,.13),transparent 38%),rgba(2,14,34,.28)!important}
-#app .title h2{color:#f2fbff!important;text-shadow:0 2px 15px rgba(38,180,255,.14)}
-#app .sub{color:#a9d8f3!important}
-#app .card,#app .table-wrap,#app .cash-panel,#app .toolbar{
- background:linear-gradient(145deg,rgba(8,42,81,.94),rgba(4,22,49,.96))!important;
- border:1px solid rgba(39,174,235,.58)!important;border-radius:17px!important;
- box-shadow:0 12px 28px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.035)!important
-}
-#app .card{position:relative;overflow:hidden}
-#app .card:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#16d7ed,#348aff,#8b5cf6);opacity:.85}
-#app .card .label{color:#b8dcf7!important}
-#app .card .value{color:#f5fbff!important;text-shadow:0 0 15px rgba(41,183,255,.15)}
-#app .card .value.cyan{color:#3de2ff!important}
-#app .card .value.green{color:#4ce6b0!important}
-#app .card .value.gold{color:#ffd36a!important}
-#app .table th{background:linear-gradient(90deg,#0b4070,#173e75)!important;color:#e9faff!important;border-color:#17618e!important}
-#app .table td{color:#e3f2ff!important;border-color:rgba(66,137,188,.25)!important}
-#app .table tr:hover td{background:rgba(17,114,177,.18)!important}
-#app .toolbar input,#app .toolbar select,#app .modal input,#app .cash-search,#app .scan input,#app .paybox select,#app .paybox input{
- background:rgba(2,17,41,.86)!important;color:#f2faff!important;border:1px solid rgba(59,175,229,.62)!important;border-radius:10px!important
-}
-#app .btn{border-radius:11px!important;box-shadow:0 6px 16px rgba(0,0,0,.16);transition:filter .18s,transform .18s}
-#app .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
-#app #home .title{padding:16px 20px;border:1px solid rgba(48,191,255,.42);border-radius:17px;background:linear-gradient(110deg,rgba(0,154,222,.2),rgba(61,78,180,.2),rgba(0,38,76,.25));box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
-#app #home .cash-panel{
- position:relative;isolation:isolate;overflow:hidden;min-height:210px;margin-top:18px;padding:44px 24px!important;
- border:1px solid rgba(47,208,255,.78)!important;border-radius:24px!important;
- background:linear-gradient(115deg,rgba(3,24,56,.98),rgba(7,57,111,.97) 48%,rgba(31,34,112,.96))!important;
- box-shadow:0 20px 45px rgba(0,0,0,.23),0 0 28px rgba(0,160,255,.12),inset 0 1px 0 rgba(255,255,255,.1)!important;text-align:center
-}
-#app #home .cash-panel:after{
- content:"";position:absolute;z-index:-1;inset:-40% -8% -65% 48%;transform:rotate(-18deg);
- background:linear-gradient(120deg,transparent 18%,rgba(0,218,255,.04) 30%,rgba(16,139,255,.3) 43%,rgba(102,73,255,.25) 50%,transparent 67%);
- pointer-events:none
-}
-#app #home .cash-panel:before{
- width:92px!important;height:92px!important;border-radius:25px!important;
- background:linear-gradient(140deg,#1ee4f4,#1687ff 58%,#7658ff)!important;
- box-shadow:0 12px 32px rgba(0,153,255,.38),inset 0 1px 0 rgba(255,255,255,.4)!important;
- font-size:48px!important
-}
-#app #home .cash-panel h3{color:#fff!important;font-size:clamp(25px,3vw,36px)!important;text-shadow:0 0 22px rgba(43,196,255,.25)}
-#app #home .cash-panel .sub{color:#a8edff!important;font-size:18px!important}
-#app #clientWorkspaceBar{background:linear-gradient(100deg,rgba(0,151,164,.25),rgba(16,83,144,.4))!important;border-color:#30e2c4!important}
-@media(max-width:700px){#app #home .cash-panel{padding:30px 14px!important;min-height:170px}#app .card,#app .cash-panel{border-radius:14px!important}}
-</style>
-<style id="faragello-mini-floating-logo">
-/* Replace the large floating background ribbon with a tiny glowing Faragello-style mark */
-@keyframes faragelloMiniLogoFloat{
-  0%,100%{transform:translateY(0) rotate(-5deg);filter:drop-shadow(0 0 5px rgba(25,215,255,.7))}
-  50%{transform:translateY(-9px) rotate(3deg);filter:drop-shadow(0 0 11px rgba(71,119,255,.95))}
-}
-#app #home .cash-panel:after{
- content:"F"!important;display:grid!important;place-items:center!important;
- position:absolute!important;z-index:0!important;inset:22px 26px auto auto!important;
- width:25px!important;height:31px!important;padding:0!important;
- border:0!important;border-radius:8px 3px 8px 3px!important;
- background:linear-gradient(145deg,#41f4ff 0%,#1597ff 48%,#7259ff 100%)!important;
- color:#fff!important;font-family:Arial,sans-serif!important;font-size:22px!important;
- font-weight:1000!important;font-style:italic!important;line-height:1!important;
- text-shadow:0 0 8px rgba(255,255,255,.8)!important;
- box-shadow:0 0 12px rgba(0,198,255,.55),0 0 25px rgba(65,102,255,.35)!important;
- transform-origin:center!important;animation:faragelloMiniLogoFloat 3.2s ease-in-out infinite!important;
- pointer-events:none!important;inset-inline-start:auto!important;
-}
-@media(max-width:700px){#app #home .cash-panel:after{inset:14px 14px auto auto!important;width:20px!important;height:25px!important;font-size:18px!important}}
-</style>
-
-<style id="faragello-public-floating-logo">
-@keyframes faragelloPublicMiniFloat{
-  0%,100%{transform:translateY(0) rotate(-5deg);filter:drop-shadow(0 0 5px rgba(25,215,255,.7))}
-  50%{transform:translateY(-7px) rotate(3deg);filter:drop-shadow(0 0 11px rgba(71,119,255,.95))}
-}
-#login .login-card{position:relative!important;overflow:hidden}
-#login .login-card:after{
- content:"F"!important;display:grid!important;place-items:center!important;
- position:absolute!important;z-index:3!important;top:15px!important;right:17px!important;left:auto!important;
- width:25px!important;height:31px!important;padding:0!important;margin:0!important;
- border:0!important;border-radius:8px 3px 8px 3px!important;
- background:linear-gradient(145deg,#41f4ff 0%,#1597ff 48%,#7259ff 100%)!important;
- color:#fff!important;font-family:Arial,sans-serif!important;font-size:22px!important;
- font-weight:1000!important;font-style:italic!important;line-height:1!important;
- text-shadow:0 0 8px rgba(255,255,255,.8)!important;
- box-shadow:0 0 12px rgba(0,198,255,.55),0 0 25px rgba(65,102,255,.35)!important;
- transform-origin:center!important;animation:faragelloPublicMiniFloat 3.2s ease-in-out infinite!important;
- pointer-events:none!important
-}
-@media(max-width:700px){#login .login-card:after{top:10px!important;right:11px!important;width:20px!important;height:25px!important;font-size:18px!important}}
-</style>
-<style id="faragello-dashboard-real-bulb">
-#app #home .cash-panel:before{content:none!important;display:none!important}
-#app #home .dashboard-bulb{display:grid;place-items:center;width:92px;height:92px;margin:0 auto 18px;border-radius:25px;background:linear-gradient(140deg,#1ee4f4,#1687ff 58%,#7658ff);font-size:52px;line-height:1;color:#ffdf35;text-shadow:0 0 12px #ffdf35,0 0 26px #ffc928;box-shadow:0 12px 32px rgba(0,153,255,.38),inset 0 1px 0 rgba(255,255,255,.4)}
-</style>
-<style id="faragello-fresh-branch-picker">
-/* Fresh branch selection modal and branch cards */
-#branchPickerModal .modal,#branchesModal .modal{
- background:linear-gradient(145deg,#0a2148 0%,#103c70 55%,#075b76 100%)!important;
- color:#f5fbff!important;border:1px solid rgba(99,224,255,.72)!important;border-radius:24px!important;
- box-shadow:0 24px 70px rgba(0,8,30,.5),0 0 30px rgba(37,177,255,.17)!important;
-}
-#branchPickerModal .modal h3,#branchesModal .modal h3{color:#fff!important;font-size:25px!important}
-#branchPickerModal .modal .sub,#branchesModal .modal .sub{color:#b9e8ff!important}
-#branchPickerCards .card{
- background:linear-gradient(145deg,#e3f8ff,#b9e0ff 58%,#d8d2ff)!important;
- color:#102d61!important;border:2px solid #6dd8ff!important;border-radius:19px!important;
- box-shadow:0 10px 24px rgba(0,8,35,.2),inset 0 1px 0 rgba(255,255,255,.9)!important;
- transition:transform .18s ease,filter .18s ease,box-shadow .18s ease!important;
-}
-#branchPickerCards .card:hover{transform:translateY(-4px)!important;filter:saturate(1.13)!important;box-shadow:0 16px 30px rgba(0,8,35,.28)!important}
-#branchPickerCards .card div{display:grid;place-items:center;width:58px;height:58px;margin:0 auto 8px;border-radius:17px;background:linear-gradient(140deg,#19c8e8,#347bff 65%,#7655ed);color:#fff;box-shadow:0 7px 16px rgba(44,111,235,.3)}
-#branchPickerCards .card strong{color:#102d61!important}
-#branchPickerCards .card span{color:#315b8d!important}
-#branchPinArea{margin-top:18px;padding:16px;border:1px solid rgba(108,223,255,.45);border-radius:16px;background:rgba(1,17,43,.42)}
-#branchPinTitle{color:#d9f7ff!important}
-#branchPickerModal input,#branchesModal input,#branchesModal select{
- background:rgba(2,17,42,.85)!important;color:#fff!important;border:1px solid #4abce9!important;border-radius:11px!important
-}
-#branchPickerModal .modal-actions .btn.green,#branchesModal .modal-actions .btn.green{background:linear-gradient(105deg,#1bd2c0,#1389ee)!important;border:1px solid #91f4ff!important;color:#fff!important}
-#branchPickerModal .modal-actions .btn.gray,#branchesModal .modal-actions .btn.gray{background:linear-gradient(105deg,#405a80,#273a60)!important;color:#fff!important;border:1px solid #668ab6!important}
-</style>
-
-<style id="faragello-purple-menu-notch">
-/* Gold corner notch on the requested sidebar tiles; preserve each tile's existing colors. */
-#app .side .nav[data-page="home"],
-#app .side .nav[data-page="fingerprint"],
-#app .side .nav[data-page="coding"],
-#app .side .nav[data-page="cashier"],
-#app .side .nav[data-page="sales"],
-#app .side .nav[data-page="reports"],
-#app .side .nav[data-page="purchaseInvoices"],
-#app .side .nav[data-page="transfers"],
-#app .side .nav[data-page="expenses"],
-#app .side .nav[data-page="inventory"],
-#app .side .nav[data-page="stocktake"],
-#app .side .nav[data-page="payroll"],
-#app .side #navCloseShift,
-#app .side #navDailyTransfers,
-#app .side #navSettings,
-#app .side .nav.logout{
-  position:relative!important;
-  overflow:hidden!important;
-}
-#app .side .nav[data-page="home"]::after,
-#app .side .nav[data-page="fingerprint"]::after,
-#app .side .nav[data-page="coding"]::after,
-#app .side .nav[data-page="cashier"]::after,
-#app .side .nav[data-page="transfers"]::after,
-#app .side .nav[data-page="sales"]::after,
-#app .side .nav[data-page="reports"]::after,
-#app .side .nav[data-page="purchaseInvoices"]::after,
-#app .side .nav[data-page="inventory"]::after,
-#app .side .nav[data-page="stocktake"]::after,
-#app .side .nav[data-page="payroll"]::after,
-#app .side #navCloseShift::after,
-#app .side #navDailyTransfers::after,
-#app .side #navSettings::after,
-#app .side .nav.logout::after{
-  content:""!important;
-  position:absolute!important;
-  top:0!important;
-  left:0!important;
-  width:15px!important;
-  height:15px!important;
-  background:#d4af37!important;
-  clip-path:polygon(0 0,100% 0,0 100%)!important;
-  box-shadow:0 0 9px #d4af3799!important;
-  pointer-events:none!important;
-  z-index:2!important;
-}
-#app .side .nav[data-page="home"]::before,
-#app .side .nav[data-page="fingerprint"]::before,
-#app .side .nav[data-page="coding"]::before,
-#app .side .nav[data-page="cashier"]::before,
-#app .side .nav[data-page="transfers"]::before,
-#app .side .nav[data-page="sales"]::before,
-#app .side .nav[data-page="reports"]::before,
-#app .side .nav[data-page="purchaseInvoices"]::before,
-#app .side .nav[data-page="inventory"]::before,
-#app .side .nav[data-page="stocktake"]::before,
-#app .side .nav[data-page="payroll"]::before,
-#app .side #navCloseShift::before,
-#app .side #navDailyTransfers::before,
-#app .side #navSettings::before,
-#app .side .nav.logout::before{
-  content:""!important;
-  position:absolute!important;
-  top:0!important;
-  right:0!important;
-  width:15px!important;
-  height:15px!important;
-  background:#d4af37!important;
-  clip-path:polygon(0 0,100% 0,100% 100%)!important;
-  box-shadow:0 0 9px #d4af3799!important;
-  pointer-events:none!important;
-  z-index:2!important;
-}
-
-/* Lower corner notches complete the four-corner gold frame. */
-#app .side .nav[data-page="home"],
-#app .side .nav[data-page="fingerprint"],
-#app .side .nav[data-page="coding"],
-#app .side .nav[data-page="cashier"],
-#app .side .nav[data-page="transfers"],
-#app .side .nav[data-page="sales"],
-#app .side .nav[data-page="reports"],
-#app .side .nav[data-page="purchaseInvoices"],
-#app .side .nav[data-page="expenses"],
-#app .side .nav[data-page="inventory"],
-#app .side .nav[data-page="stocktake"],
-#app .side .nav[data-page="payroll"],
-#app .side #navCloseShift,
-#app .side #navDailyTransfers,
-#app .side #navSettings,
-#app .side .nav.logout{isolation:isolate!important}
-#app .side .nav[data-page="home"] .nav-icon,
-#app .side .nav[data-page="fingerprint"] .nav-icon,
-#app .side .nav[data-page="coding"] .nav-icon,
-#app .side .nav[data-page="cashier"] .nav-icon,
-#app .side .nav[data-page="transfers"] .nav-icon,
-#app .side .nav[data-page="sales"] .nav-icon,
-#app .side .nav[data-page="reports"] .nav-icon,
-#app .side .nav[data-page="purchaseInvoices"] .nav-icon,
-#app .side .nav[data-page="inventory"] .nav-icon,
-#app .side .nav[data-page="stocktake"] .nav-icon,
-#app .side .nav[data-page="payroll"] .nav-icon,
-#app .side #navCloseShift .nav-icon,
-#app .side #navDailyTransfers .nav-icon,
-#app .side #navSettings .nav-icon,
-#app .side .nav.logout .nav-icon{z-index:1!important}
-#app .side .nav[data-page="home"]::marker,
-#app .side .nav[data-page="fingerprint"]::marker,
-#app .side .nav[data-page="coding"]::marker,
-#app .side .nav[data-page="cashier"]::marker,
-#app .side .nav[data-page="transfers"]::marker,
-#app .side .nav[data-page="sales"]::marker,
-#app .side .nav[data-page="reports"]::marker,
-#app .side .nav[data-page="purchaseInvoices"]::marker,
-#app .side .nav[data-page="inventory"]::marker,
-#app .side .nav[data-page="stocktake"]::marker,
-#app .side .nav[data-page="payroll"]::marker,
-#app .side #navCloseShift::marker,
-#app .side #navDailyTransfers::marker,
-#app .side #navSettings::marker,
-#app .side .nav.logout::marker{color:#d4af37!important}
-</style>
 
 
 
 
 
-<style id="faragello-sidebar-white-labels">
-/* White text for every requested sidebar menu button. */
-#app .side .nav[data-page="home"],
-#app .side .nav[data-page="fingerprint"],
-#app .side .nav[data-page="coding"],
-#app .side .nav[data-page="cashier"],
-#app .side .nav[data-page="transfers"],
-#app .side .nav[data-page="sales"],
-#app .side .nav[data-page="reports"],
-#app .side .nav[data-page="purchaseInvoices"],
-#app .side .nav[data-page="inventory"],
-#app .side .nav[data-page="stocktake"],
-#app .side .nav[data-page="payroll"],
-#app .side #navCloseShift,
-#app .side #navDailyTransfers,
-#app .side #navSettings {
-  color:#fff!important;
-  -webkit-text-fill-color:#fff!important;
-}
-#app .side .nav[data-page="home"] *,
-#app .side .nav[data-page="fingerprint"] *,
-#app .side .nav[data-page="coding"] *,
-#app .side .nav[data-page="cashier"] *,
-#app .side .nav[data-page="transfers"] *,
-#app .side .nav[data-page="sales"] *,
-#app .side .nav[data-page="reports"] *,
-#app .side .nav[data-page="purchaseInvoices"] *,
-#app .side .nav[data-page="inventory"] *,
-#app .side .nav[data-page="stocktake"] *,
-#app .side .nav[data-page="payroll"] *,
-#app .side #navCloseShift *,
-#app .side #navDailyTransfers *,
-#app .side #navSettings * {
-  color:#fff!important;
-  -webkit-text-fill-color:#fff!important;
-}
-</style>
-
-<style id="faragello-admin-clients-gold-box">
-#navClients {
-  background: linear-gradient(135deg, #f7d774 0%, #d4a017 48%, #b8860b 100%) !important;
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
-  border: 1px solid #ffe7a0 !important;
-  border-radius: 10px !important;
-  box-shadow: 0 3px 12px rgba(212,160,23,.28) !important;
-}
-#navClients * {
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
-}
-</style>
-
-
-<style id="faragello-login-labels-white-final">
-/* توحيد لون نصوص أزرار الدخول والتثبيت ومنع تعارض التنسيقات القديمة */
-#pinUserBtn, #pinPassBtn, #pinUserBtn *, #pinPassBtn *,
-#adminLoginChoice, #adminLoginChoice *,
-#clientLoginToggle, #clientLoginToggle *,
-#loginSubmit, #loginSubmit *,
-#loginFields > button[onclick*="resetLoginChoice"],
-#loginFields > button[onclick*="resetLoginChoice"] * {
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
-}
-</style>
 
 
 
-<style id="faragello-sidebar-label-colors-final">
-/* Requested sidebar label colors */
-#app .side .nav[data-page="home"],
-#app .side .nav[data-page="fingerprint"],
-#app .side .nav[data-page="cashier"],
-#app .side .nav[data-page="sales"],
-#app .side .nav[data-page="reports"],
-#app .side .nav[data-page="purchaseInvoices"] {
-  color: #168cff !important;
-}
-#app .side .nav[data-page="transfers"],
-#app .side .nav[data-page="inventory"],
-#app .side .nav[data-page="stocktake"],
-#app .side .nav[data-page="settings"] {
-  color: #ff334f !important;
-}
-</style>
-
-<style id="faragello-dual-background-design">
-/* Unified premium navy/blue/gold visual system: external login + internal workspace */
-body{background:#020a18!important;background-image:radial-gradient(ellipse at 14% 18%,rgba(0,112,255,.22),transparent 34%),radial-gradient(ellipse at 88% 82%,rgba(245,174,32,.10),transparent 28%),linear-gradient(135deg,#020817 0%,#061a38 48%,#020817 100%)!important}
-body:before{opacity:.45}
-body:after{opacity:.75}
-#login.login-screen{position:relative;isolation:isolate;overflow:hidden;min-height:100vh;padding:clamp(16px,4vw,48px);background:radial-gradient(ellipse at 22% 68%,rgba(0,122,255,.25),transparent 38%),radial-gradient(ellipse at 82% 18%,rgba(14,92,194,.22),transparent 34%),linear-gradient(125deg,#020817 0%,#061b3d 52%,#020b1b 100%)!important}
-#login.login-screen:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:repeating-linear-gradient(132deg,transparent 0 115px,rgba(0,126,255,.12) 117px,transparent 124px 220px),linear-gradient(115deg,transparent 0 42%,rgba(0,143,255,.08) 43%,transparent 56%,rgba(255,184,40,.07) 57%,transparent 67%);mask-image:linear-gradient(to bottom,#000,transparent 95%)}
-#login .login-card{position:relative;width:min(460px,95vw);padding:clamp(24px,4vw,38px);border:1px solid rgba(0,166,255,.95);border-radius:25px;background:linear-gradient(150deg,rgba(4,27,63,.97),rgba(2,11,30,.98) 68%,rgba(4,24,52,.97));box-shadow:0 0 0 1px rgba(0,95,255,.16),0 20px 65px rgba(0,0,0,.5),0 0 48px rgba(0,123,255,.2);backdrop-filter:blur(12px);text-align:center}
-#login .login-card:before{content:"";position:absolute;top:0;left:12%;right:12%;height:2px;background:linear-gradient(90deg,transparent,#08d8ff,#ffbd32,transparent);box-shadow:0 0 18px #078fff}
-#login .login-card h1{color:#f4f8ff;text-shadow:0 2px 22px rgba(0,139,255,.25);font-weight:900}
-#login .login-card p{color:#a9d8ff}
-#login .login-card input{background:rgba(1,13,33,.9)!important;color:#f5faff!important;border:1px solid #167bc2!important;border-radius:12px!important;padding:14px!important;box-shadow:inset 0 1px 8px #0005}
-#login .login-card input:focus{outline:none;border-color:#19d8ff!important;box-shadow:0 0 0 3px rgba(0,178,255,.16),0 0 20px rgba(0,136,255,.15)}
-#login .login-card button{border-radius:12px!important;transition:transform .18s ease,filter .18s ease}
-#login .login-card button:hover{filter:brightness(1.12);transform:translateY(-1px)}
-#login #adminLoginChoice,#login #clientLoginToggle,#login #loginSubmit{background:linear-gradient(115deg,#087cff,#0648c7)!important;border:1px solid #35bfff!important;box-shadow:0 8px 24px rgba(0,91,255,.25),inset 0 1px 0 #ffffff2b!important}
-#login #clientLoginToggle{background:linear-gradient(115deg,#124b83,#092a57)!important}
-#app{position:relative;isolation:isolate;background:linear-gradient(130deg,#020b1c,#061a37 48%,#020a18)!important;min-height:100vh}
-#app:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 68% 15%,rgba(0,111,255,.15),transparent 35%),radial-gradient(ellipse at 12% 88%,rgba(0,190,255,.08),transparent 30%),repeating-linear-gradient(132deg,transparent 0 180px,rgba(0,130,255,.035) 182px,transparent 190px 300px)}
-#app .top{background:linear-gradient(100deg,#020b1b 0%,#08254a 48%,#020b1b 100%)!important;border-bottom:1px solid #087cc2!important;box-shadow:0 8px 28px rgba(0,0,0,.22)}
-#app .layout{background:transparent!important}
-#app .side{background:linear-gradient(180deg,rgba(2,17,39,.98),rgba(2,9,22,.99))!important;border-left:1px solid rgba(0,126,210,.55)!important;box-shadow:8px 0 28px rgba(0,0,0,.18)}
-#app main{background:radial-gradient(ellipse at 48% 0%,rgba(8,67,127,.28),transparent 56%),linear-gradient(135deg,rgba(4,20,42,.84),rgba(2,10,24,.92))!important}
-#app .card,#app .table-wrap,#app .cash-panel,#app .toolbar{border-color:rgba(14,132,211,.7)!important;box-shadow:0 12px 30px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.025)!important}
-#app .title h2{ text-shadow:0 0 22px rgba(0,132,255,.16)}
-@media(max-width:700px){#login.login-screen{padding:14px}#login .login-card{padding:24px 18px;border-radius:20px}#app:before{background:radial-gradient(ellipse at 50% 0%,rgba(0,111,255,.12),transparent 45%)}}
-@media(prefers-reduced-motion:reduce){#login .login-card button{transition:none}}
-</style>
 
 
-<style id="faragello-simple-arabic-dual-ui-v2">
-/* Simple Arabic public login + internal dashboard redesign. Visual-only overrides; preserve existing app logic. */
-:root{--bg:#f4f7fb;--panel:#fff;--panel2:#edf3fa;--blue:#174a82;--cyan:#3182ce;--green:#16845b;--red:#c93d4b;--gold:#d5a43a;--text:#172b43;--muted:#687b91;--line:#dce5ef}
-html,body{background:#f3f6fa!important;color:#172b43!important}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style id="faragello-complete-arabic-redesign">
+/* Complete unified Arabic UI: external login and internal workspace. Existing application logic and data remain intact. */
+:root{--fg-bg:#f3f6fa;--fg-surface:#fff;--fg-surface-soft:#f7f9fc;--fg-navy:#163d67;--fg-navy-deep:#102f50;--fg-blue:#3478b8;--fg-blue-soft:#eaf2fa;--fg-text:#203247;--fg-muted:#6b7d91;--fg-border:#dfe6ee;--fg-green:#18835e;--fg-red:#c74650;--fg-shadow:0 5px 18px rgba(25,51,79,.06)}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Tahoma,Arial,sans-serif;background:var(--fg-bg)!important;color:var(--fg-text)!important}
 body:before,body:after{display:none!important;animation:none!important}
-#login.login-screen{min-height:100vh!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:24px!important;background:linear-gradient(135deg,#f5f8fc 0%,#e9f0f8 100%)!important;isolation:isolate;overflow:auto!important}
-#login.login-screen:before,#login.login-screen:after{display:none!important}
-#login .login-card{width:min(100%,430px)!important;padding:34px 30px!important;background:#fff!important;color:#172b43!important;border:1px solid #dce5ef!important;border-radius:22px!important;box-shadow:0 18px 50px rgba(24,54,88,.12)!important;backdrop-filter:none!important}
-#login .login-card .logo{width:76px!important;height:76px!important;margin:0 auto 18px!important;display:grid!important;place-items:center!important;border-radius:20px!important;background:#123b68!important;color:#fff!important;border:0!important;box-shadow:0 8px 20px rgba(18,59,104,.18)!important;font-size:0!important;text-shadow:none!important}
-#login .login-card .logo:after{content:"ف";font-size:48px!important;font-weight:900!important;line-height:1!important;color:#fff!important;text-shadow:none!important}
-#login .login-card h1{color:#123b68!important;font-size:clamp(27px,4vw,34px)!important;font-weight:800!important;margin:0 0 8px!important}
-#login .login-card p,#login #loginText{color:#687b91!important}
-#login .login-card input,#login .login-card select{width:100%!important;min-height:48px!important;background:#f8fafc!important;color:#172b43!important;border:1px solid #d6e0eb!important;border-radius:11px!important;box-shadow:none!important}
-#login .login-card input:focus{outline:2px solid #b8d7f7!important;border-color:#3182ce!important}
-#login .login-card .btn{min-height:48px!important;border-radius:11px!important;box-shadow:none!important}
-#login .login-card button#adminLoginChoice,#login .login-card button#clientLoginToggle{background:#123b68!important;color:#fff!important;border:1px solid #123b68!important;box-shadow:none!important}
-#login .login-card button#clientLoginToggle{background:#eef4fa!important;color:#123b68!important;border-color:#d6e0eb!important}
-#login .login-card #loginErr{color:#b42332!important}
-#app{min-height:100vh!important;background:#f3f6fa!important;color:#172b43!important;background-image:none!important}
-#app:before,#app:after{display:none!important}
-#app .top{height:76px!important;background:#123b68!important;border:0!important;padding:0 24px!important;box-shadow:0 3px 14px rgba(18,59,104,.12)!important}
-#app .brand{gap:12px!important}
-#app .brand .logo{width:48px!important;height:48px!important;border:0!important;border-radius:13px!important;background:#fff!important;color:#123b68!important;box-shadow:none!important;font-size:0!important}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+#login.login-screen{position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;min-height:100vh!important;width:100%!important;padding:24px!important;overflow:auto!important;background:linear-gradient(145deg,#edf3f9 0%,#f8fafc 55%,#e8eff7 100%)!important}
+#login.login-screen:before,#login.login-screen:after{display:none!important;content:none!important}
+#login .login-card{position:relative!important;width:min(100%,430px)!important;margin:auto!important;padding:34px 30px!important;text-align:center!important;background:#fff!important;color:var(--fg-text)!important;border:1px solid var(--fg-border)!important;border-radius:18px!important;box-shadow:0 18px 48px rgba(22,61,103,.12)!important;backdrop-filter:none!important}
+#login .login-card:before{content:none!important;display:none!important}
+#login .login-card .logo{display:grid!important;place-items:center!important;width:76px!important;height:76px!important;margin:0 auto 17px!important;border:0!important;border-radius:19px!important;background:var(--fg-navy)!important;color:#fff!important;box-shadow:0 8px 20px rgba(22,61,103,.16)!important;font-size:0!important;text-shadow:none!important}
+#login .login-card .logo:after{content:"ف";font-family:Tahoma,Arial,sans-serif;font-size:46px!important;font-weight:900!important;line-height:1!important;color:#fff!important;text-shadow:none!important}
+#login .login-card h1{margin:0 0 8px!important;color:var(--fg-navy)!important;font-size:clamp(27px,4vw,34px)!important;font-weight:800!important;text-shadow:none!important}
+#login .login-card p,#login #loginText{color:var(--fg-muted)!important;font-size:15px!important}
+#login .login-card input,#login .login-card select,#login .login-card textarea{width:100%!important;min-height:47px!important;padding:12px 13px!important;background:#f8fafc!important;color:var(--fg-text)!important;border:1px solid #d7e0e9!important;border-radius:10px!important;box-shadow:none!important;text-align:right!important}
+#login .login-card input:focus{outline:2px solid #c8dff5!important;border-color:var(--fg-blue)!important}
+#login .login-card button,#login .login-card .btn{min-height:45px!important;border-radius:10px!important;box-shadow:none!important;font-weight:700!important;transition:background .15s ease,border-color .15s ease}
+#login .login-card button#adminLoginChoice,#login .login-card button#loginSubmit{background:var(--fg-navy)!important;color:#fff!important;border:1px solid var(--fg-navy)!important}
+#login .login-card button#clientLoginToggle,#login .login-card .btn.gray{background:#f0f4f8!important;color:var(--fg-navy)!important;border:1px solid #dce5ee!important}
+#login .login-card button:hover{filter:brightness(.97)}
+#login .login-card #loginErr{color:var(--fg-red)!important}
+#login #faragello-public-phone{background:#f5f8fb!important;border:1px solid var(--fg-border)!important;border-radius:12px!important;color:var(--fg-text)!important}
+#login #faragello-public-phone a{color:var(--fg-navy)!important;text-shadow:none!important}
+#app{min-height:100vh!important;background:var(--fg-bg)!important;background-image:none!important;color:var(--fg-text)!important}
+#app:before,#app:after{display:none!important;content:none!important}
+#app .top{height:72px!important;min-height:72px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;padding:0 22px!important;background:var(--fg-navy)!important;border:0!important;box-shadow:0 3px 12px rgba(16,47,80,.12)!important}
+#app .brand{display:flex!important;align-items:center!important;gap:11px!important}
+#app .brand .logo{width:45px!important;height:45px!important;display:grid!important;place-items:center!important;flex:0 0 45px!important;border:0!important;border-radius:12px!important;background:#fff!important;color:var(--fg-navy)!important;box-shadow:none!important;font-size:0!important}
 #app .brand .logo span{display:none!important}
-#app .brand .logo:after{content:"ف";font-size:34px!important;font-weight:900!important;line-height:1!important;color:#123b68!important}
-#app .brand h1{font-size:22px!important;color:#fff!important}
-#app .brand small{color:#d7e8fa!important}
-#app .userbox{gap:12px!important}
-#app .clock{color:#eaf2fb!important}
-#app .user{background:#204c79!important;border:1px solid #3d6893!important;color:#fff!important;border-radius:10px!important}
-#app .layout{min-height:calc(100vh - 76px)!important;background:#f3f6fa!important}
-#app .side{width:232px!important;flex:0 0 232px!important;background:#fff!important;border-left:1px solid #dce5ef!important;padding:14px 12px!important;gap:5px!important;box-shadow:2px 0 12px rgba(20,45,75,.04)!important}
-#app .side .nav{position:relative!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;min-height:43px!important;padding:10px 12px!important;margin:0!important;background:transparent!important;color:#334b65!important;border:1px solid transparent!important;border-radius:10px!important;text-align:right!important;box-shadow:none!important;font-size:14px!important;font-weight:600!important}
-#app .side .nav:hover{background:#f0f5fb!important;color:#123b68!important;border-color:#e1eaf4!important;box-shadow:none!important}
-#app .side .nav.active{background:#eaf2fb!important;color:#123b68!important;border-color:#d5e5f6!important;box-shadow:inset -3px 0 #2d70b7!important}
-#app .side .nav .nav-icon{position:static!important;right:auto!important;flex:0 0 22px!important;margin:0!important}
-#app main{min-width:0!important;background:#f3f6fa!important;padding:24px!important}
-#app main h2,#app main h3{color:#173c65!important}
-#app .card,#app .panel,#app .box,#app .table-wrap,#app .section-card{background:#fff!important;border:1px solid #e0e7ef!important;border-radius:14px!important;box-shadow:0 4px 14px rgba(27,53,81,.045)!important}
-#app .cards,#home>.cards{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(155px,1fr))!important;gap:12px!important}
-#app .cards>*{background:#fff!important;border:1px solid #e0e7ef!important;border-radius:14px!important;box-shadow:0 4px 14px rgba(27,53,81,.045)!important;color:#173c65!important}
-#app input,#app select,#app textarea{background:#fff!important;color:#172b43!important;border:1px solid #d6e0eb!important;border-radius:9px!important;box-shadow:none!important}
-#app input:focus,#app select:focus,#app textarea:focus{outline:2px solid #c5ddf7!important;border-color:#6ca5df!important}
-#app button{border-radius:9px!important}
-#app .activity-strip{background:#fff!important;border:1px solid #e0e7ef!important;border-radius:12px!important;box-shadow:none!important;color:#173c65!important}
-#app .activity-heading strong{color:#173c65!important}
-@media(max-width:760px){
- #app .top{height:auto!important;min-height:68px!important;padding:10px 12px!important;gap:8px!important;flex-wrap:wrap!important}
- #app .brand .logo{width:40px!important;height:40px!important}
+#app .brand .logo:after{content:"ف";font-size:33px!important;line-height:1!important;font-weight:900!important;color:var(--fg-navy)!important}
+#app .brand h1{margin:0!important;color:#fff!important;font-size:22px!important;font-weight:800!important}
+#app .brand small{display:block!important;margin-top:3px!important;color:#d7e6f5!important;font-size:11px!important}
+#app .userbox{display:flex!important;align-items:center!important;gap:12px!important}
+#app .clock{color:#f1f6fb!important;font-size:12px!important}
+#app .user{background:rgba(255,255,255,.09)!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:9px!important;padding:7px 11px!important;color:#fff!important}
+#app .layout{display:flex!important;min-height:calc(100vh - 72px)!important;background:var(--fg-bg)!important}
+#app .side{width:230px!important;flex:0 0 230px!important;display:flex!important;flex-direction:column!important;gap:4px!important;padding:13px 11px!important;background:#fff!important;border-left:1px solid var(--fg-border)!important;box-shadow:2px 0 12px rgba(25,51,79,.035)!important}
+#app .side .nav{position:relative!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:9px!important;width:100%!important;min-height:42px!important;padding:9px 11px!important;margin:0!important;border:1px solid transparent!important;border-radius:9px!important;background:transparent!important;color:#344a61!important;text-align:right!important;font-size:13px!important;font-weight:600!important;box-shadow:none!important}
+#app .side .nav .nav-icon{position:static!important;right:auto!important;display:grid!important;place-items:center!important;flex:0 0 22px!important;width:22px!important;height:22px!important;margin:0!important;color:inherit!important}
+#app .side .nav:hover{background:#f4f7fa!important;border-color:#e7edf3!important;color:var(--fg-navy)!important;box-shadow:none!important}
+#app .side .nav.active{background:var(--fg-blue-soft)!important;border-color:#d9e7f5!important;color:var(--fg-navy)!important;box-shadow:inset -3px 0 var(--fg-blue)!important}
+#app main{flex:1 1 auto!important;min-width:0!important;padding:23px!important;background:var(--fg-bg)!important;color:var(--fg-text)!important}
+#app .page{max-width:1500px!important;margin:0 auto!important}
+#app .title h2,#app main h2,#app main h3{color:var(--fg-navy)!important;text-shadow:none!important}
+#app .sub,#app .card .label{color:var(--fg-muted)!important}
+#app .cards{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))!important;gap:12px!important}
+#app .card,#app .table-wrap,#app .cash-panel,#app .toolbar,#app .panel,#app .section-card{background:var(--fg-surface)!important;color:var(--fg-text)!important;border:1px solid var(--fg-border)!important;border-radius:12px!important;box-shadow:var(--fg-shadow)!important}
+#app .card{position:relative!important;overflow:hidden!important}
+#app .card:before{display:none!important;content:none!important}
+#app .card .label{color:var(--fg-muted)!important}
+#app .card .value{color:var(--fg-navy)!important;text-shadow:none!important}
+#app .table{border-color:var(--fg-border)!important}
+#app .table th{background:#eef3f8!important;color:var(--fg-navy)!important;border-color:var(--fg-border)!important}
+#app .table td{color:var(--fg-text)!important;border-color:#e8edf3!important}
+#app .table tr:hover td{background:#f7f9fc!important}
+#app input,#app select,#app textarea,#app .toolbar input,#app .toolbar select,#app .modal input,#app .cash-search,#app .scan input,#app .paybox select,#app .paybox input{background:#fff!important;color:var(--fg-text)!important;border:1px solid #d5dfe9!important;border-radius:8px!important;box-shadow:none!important}
+#app input:focus,#app select:focus,#app textarea:focus{outline:2px solid #d0e2f4!important;border-color:var(--fg-blue)!important}
+#app button,#app .btn{border-radius:8px!important}
+#app .activity-strip{background:#fff!important;border:1px solid var(--fg-border)!important;border-radius:10px!important;box-shadow:none!important;color:var(--fg-text)!important}
+#app .activity-heading strong{color:var(--fg-navy)!important}
+#app .modal{background:#fff!important;color:var(--fg-text)!important;border:1px solid var(--fg-border)!important;border-radius:14px!important;box-shadow:0 20px 60px rgba(16,47,80,.18)!important}
+#app .modal h2,#app .modal h3{color:var(--fg-navy)!important}
+@media(max-width:800px){
+ #app .top{height:auto!important;min-height:66px!important;padding:9px 12px!important;flex-wrap:wrap!important}
+ #app .brand .logo{width:39px!important;height:39px!important;flex-basis:39px!important}
+ #app .brand .logo:after{font-size:28px!important}
  #app .brand h1{font-size:18px!important}
- #app .brand small{font-size:11px!important}
+ #app .brand small{font-size:10px!important}
  #app .userbox{gap:6px!important}
- #app .clock{font-size:11px!important}
- #app .user{padding:6px 8px!important;font-size:11px!important}
- #app .layout{min-height:calc(100vh - 68px)!important}
- #app .side{width:100%!important;flex:0 0 100%!important;border-left:0!important;border-bottom:1px solid #dce5ef!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;padding:8px!important;gap:5px!important}
- #app .side .nav{min-height:40px!important;padding:8px!important;font-size:12px!important;justify-content:center!important;text-align:center!important}
+ #app .clock{font-size:10px!important}
+ #app .user{padding:5px 7px!important;font-size:10px!important}
+ #app .layout{display:flex!important;flex-direction:column!important;min-height:calc(100vh - 66px)!important}
+ #app .side{width:100%!important;flex:0 0 auto!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4px!important;padding:8px!important;border-left:0!important;border-bottom:1px solid var(--fg-border)!important}
+ #app .side .nav{min-height:38px!important;justify-content:center!important;padding:7px 5px!important;font-size:12px!important;text-align:center!important}
  #app .side .nav .nav-icon{display:none!important}
  #app main{padding:12px!important}
+ #app .cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
  #login .login-card{padding:26px 18px!important}
 }
+@media(max-width:420px){#app .brand small{display:none!important}#app .cards{grid-template-columns:1fr 1fr!important}#app .side .nav{font-size:11px!important}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 
 </head>
@@ -1141,19 +695,7 @@ function printDailyShift(button){
   printWindow.document.open();
   printWindow.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تقرير الوردية - سيستم فرجللو</title><style>${styles}</style></head><body>${printable.outerHTML}
 
-<style id="faragello-red-sidebar-tiles-final">
-/* Final override: red backgrounds for the four requested sidebar tiles. */
-#app .side .nav[data-page="inventory"],
-#app .side .nav[data-page="stocktake"],
-#app .side #navSettings,
-#app .side .nav[data-page="transfers"] {
-  background: linear-gradient(135deg,#ff5252 0%,#d50000 100%) !important;
-  background-color: #d50000 !important;
-  border: 1px solid #ff9b9b !important;
-  border-radius: 10px !important;
-  box-shadow: 0 3px 12px rgba(213,0,0,.32) !important;
-}
-</style>
+
 
 </body></html>`);
   printWindow.document.close();
