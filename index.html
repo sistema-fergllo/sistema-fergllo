@@ -62,6 +62,9 @@ window.resetLoginChoice=window.resetLoginChoice||function(){
  if(admin)admin.classList.remove('hidden');if(client)client.classList.remove('hidden');
  if(title)title.textContent='سيستم محاسبي متكامل';if(err)err.textContent='';
 };
+
+/* Safety fallback: prevents stale cached login markup from throwing a missing-handler error. */
+window.togglePinnedLogin=window.togglePinnedLogin||function(){return false;};
 </script>
 
 
