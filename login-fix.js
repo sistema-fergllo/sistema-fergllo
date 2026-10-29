@@ -473,8 +473,7 @@
       addActivity('تم إرسال النموذج: ' + label, 'submit');
     }, true);
     var observer = new MutationObserver(function () {
-      buildPanel();
-      updateCount();
+      if (!document.getElementById(panelId)) buildPanel();
     });
     var app = document.getElementById('app');
     if (app) observer.observe(app, { childList: true, subtree: true });
