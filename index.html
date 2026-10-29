@@ -602,9 +602,7 @@ html,body{min-height:100%;margin:0}
 <header class="top"><div class="brand"><div class="logo"><span aria-label="مصباح أصفر" role="img" style="display:grid;place-items:center;width:38px;height:38px;font-size:29px;line-height:1;color:#ffdf35;text-shadow:0 0 12px #ffdf35,0 0 25px #ffc928">💡</span></div><div><h1>سيستم فرجللو</h1><small>Farag El-Sayed • مشرف النظام</small><div style="margin-top:6px"></div></div></div><div class="userbox"><div class="clock"><b id="date"></b><br><span id="time"></span></div><div class="user">👤 <b>admin</b><br><small>مدير النظام</small></div></div></header>
 <div id="activityStrip" class="activity-strip" role="region" aria-label="الأنشطة الحالية">
   <div class="activity-heading">
-    <strong>الأنشطة الحالية</strong>
-    <small>آخر ما يحدث في سيستم فرجللو</small>
-    <span id="activityStatus" class="activity-status" data-mode="local">جارٍ تجهيز السجل</span>
+    <strong id="workspaceIdentity">اسم العميل والفرع</strong>
   </div>
   <div id="activityFeed" class="activity-feed" aria-label="شعار فرجللو المتحرك"><div class="activity-orbit-scene" aria-hidden="true"><span class="activity-spark one"></span><span class="activity-spark two"></span><div class="activity-globe">F</div></div></div>
 </div>
@@ -929,7 +927,7 @@ async function showClientBranchPicker(client){
  return true;
 }
 function selectBranchForPin(id){const branch=availableClientBranches.find(b=>b.id===id);if(!branch)return;pendingBranchId=id;document.getElementById('branchPinTitle').textContent='الرقم السري لفرع '+branch.name;document.getElementById('branchPinArea').classList.remove('hidden');document.getElementById('branchPinInput').value='';document.getElementById('branchPinError').textContent='';document.getElementById('branchPinInput').focus()}
-function renderActiveBranchLabel(){try{const raw=localStorage.getItem('frg_active_client');const client=activeClient||JSON.parse(raw||'null');const el=document.getElementById('activeBranchLabel');if(!el)return;const name=client&&client.branchName?String(client.branchName).trim():'';if(name){el.textContent='🏬 الفرع الحالي: '+name;el.style.setProperty('display','block','important');el.style.setProperty('visibility','visible','important');el.style.setProperty('opacity','1','important');const brandSmall=document.querySelector('.brand small');if(brandSmall)brandSmall.textContent=(client.name||'العميل')+' • '+name;const userSmall=document.querySelector('.user small');if(userSmall)userSmall.textContent='الفرع الحالي: '+name;}else{el.style.setProperty('display','none','important');}}catch(e){console.error('تعذر عرض اسم الفرع',e)}}
+function renderActiveBranchLabel(){try{const raw=localStorage.getItem('frg_active_client');const client=activeClient||JSON.parse(raw||'null');const el=document.getElementById('activeBranchLabel');const identity=document.getElementById('workspaceIdentity');const clientName=client&&client.name?String(client.name).trim():'';const branchName=client&&client.branchName?String(client.branchName).trim():'';if(identity)identity.textContent='اسم العميل: '+(clientName||'—')+'  |  الفرع: '+(branchName||'—');if(!el)return;if(branchName){el.textContent='🏬 الفرع الحالي: '+branchName;el.style.setProperty('display','block','important');el.style.setProperty('visibility','visible','important');el.style.setProperty('opacity','1','important');const brandSmall=document.querySelector('.brand small');if(brandSmall)brandSmall.textContent=(clientName||'العميل')+' • '+branchName;const userSmall=document.querySelector('.user small');if(userSmall)userSmall.textContent='الفرع الحالي: '+branchName;}else{el.style.setProperty('display','none','important');}}catch(e){console.error('تعذر عرض اسم الفرع',e)}}
 async function enterSelectedBranch(){
  const pin=document.getElementById('branchPinInput').value.trim(),err=document.getElementById('branchPinError');
  err.textContent='';
