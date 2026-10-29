@@ -9,6 +9,11 @@ create table if not exists public.client_branches (
   created_at timestamptz not null default now()
 );
 
+-- Upgrade an existing client_branches table created before PIN support.
+-- Existing rows will have a NULL PIN hash and should be deleted/re-added from the admin screen.
+alter table public.client_branches
+  add column if not exists pin_hash text;
+
 create index if not exists client_branches_client_id_idx
   on public.client_branches(client_id);
 
