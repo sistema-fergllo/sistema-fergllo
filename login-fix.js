@@ -398,7 +398,7 @@
     panel.innerHTML = '<button type="button" id="faragello-activity-toggle" aria-expanded="true">الأنشطة الحالية <span id="faragello-activity-count">0</span> <b>−</b></button>' +
       '<div id="faragello-activity-content"><div id="faragello-activity-list"></div>' +
       '<form id="faragello-activity-form"><input id="faragello-activity-note" maxlength="180" placeholder="اكتب ملاحظة للنشاط..." autocomplete="off"><button type="submit">إرسال</button></form></div>';
-    app.appendChild(panel);
+    document.body.appendChild(panel);
     var style = document.createElement('style');
     style.id = 'faragello-activity-chat-style';
     style.textContent = `
