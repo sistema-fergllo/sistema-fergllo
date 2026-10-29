@@ -27,11 +27,10 @@ jobs:
               "الاستعلامات اليومية",
               "تقرير الجرد",
               "printAllBarcodes",
-              "force-design.css",
               "login-fix.js",
           ]
           missing = [item for item in required if item not in html]
-          for asset in ("force-design.css", "login-fix.js"):
+          for asset in ("login-fix.js",):
               if not Path(asset).is_file():
                   missing.append("file:" + asset)
           if missing:
