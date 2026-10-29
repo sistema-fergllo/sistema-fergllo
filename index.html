@@ -628,7 +628,7 @@ function printInventoryReport(){
   w.document.close();
   setTimeout(()=>{try{w.focus();w.print()}catch(e){console.error(e)}}, 800);
 }
-function renderInventory(){updateDashboard();let q=(document.getElementById('invSearch')?.value||'').toLowerCase(),b=document.getElementById('invBody');if(!b)return;if(window.__invLastQuery!==q){window.__invCurrentPage=1;window.__invLastQuery=q}let filtered=inventory.map((x,i)=>({x,i})).filter(({x})=>!q||(`${x.code} ${x.name}`.toLowerCase().includes(q)));window.__invCurrentPage=1;let pageSize=filtered.length||1,totalPages=1,page=1,start=0;b.innerHTML='';filtered.forEach(({x,i})=>{let status=x.qty<=0?'<span class="badge out">نفد</span>':x.qty<=5?'<span class="badge low">منخفض</span>':'<span class="badge ok">متوفر</span>';b.innerHTML+=`<tr><td>${x.code}</td><td>${x.name}</td><td>${money(x.price)}</td><td>${x.qty}</td><td>${x.sold||0}</td><td><b>${x.qty}</b></td><td>${money(x.qty*x.price)}</td><td>${status}</td><td><button type="button" class="btn gray" data-edit-inventory-code="${String(x.code).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" onclick="return false">تعديل</button> <button class="btn gold" onclick="printBarcode('${x.code}')">باركود</button> <button class="btn red" style="padding:5px 8px;font-size:12px;min-width:0" title="تصفير رصيد أول المدة والمباع والرصيد الحالي لهذا الصنف" onclick="resetInventoryItem(${i})">↺ إعادة</button></td></tr>`});let nav=document.getElementById('invPagination');if(nav)nav.innerHTML='';}
+function renderInventory(){updateDashboard();let q=(document.getElementById('invSearch')?.value||'').toLowerCase(),b=document.getElementById('invBody');if(!b)return;if(window.__invLastQuery!==q){window.__invCurrentPage=1;window.__invLastQuery=q}let filtered=inventory.map((x,i)=>({x,i})).filter(({x})=>!q||(`${x.code} ${x.name}`.toLowerCase().includes(q)));window.__invCurrentPage=1;let pageSize=filtered.length||1,totalPages=1,page=1,start=0;b.innerHTML='';filtered.forEach(({x,i})=>{let status=x.qty<=0?'<span class="badge out">نفد</span>':x.qty<=5?'<span class="badge low">منخفض</span>':'<span class="badge ok">متوفر</span>';b.innerHTML+=`<tr><td>${x.code}</td><td>${x.name}</td><td>${money(x.price)}</td><td>${x.qty}</td><td>${x.sold||0}</td><td><b>${x.qty}</b></td><td>${money(x.qty*x.price)}</td><td>${status}</td><td><button type="button" class="btn gray" data-edit-inventory-code="${String(x.code).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" onclick="return window.editInventoryButton(this)">تعديل</button> <button class="btn gold" onclick="printBarcode('${x.code}')">باركود</button> <button class="btn red" style="padding:5px 8px;font-size:12px;min-width:0" title="تصفير رصيد أول المدة والمباع والرصيد الحالي لهذا الصنف" onclick="resetInventoryItem(${i})">↺ إعادة</button></td></tr>`});let nav=document.getElementById('invPagination');if(nav)nav.innerHTML='';}
 async function resetInventoryItem(index){const item=inventory[index];if(!item)return;const previous={...item};inventory[index]={...item,qty:0,sold:0};try{localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));localStorage.setItem(KEYS.inv,JSON.stringify(inventory));if(cloudReady){if(activeClient)await syncClientInventoryToCloud();else await syncInventoryToCloud()}refreshAll();logActivity('تم تصفير رصيد الصنف: '+String(item.name||'')+' (كود '+String(item.code||'')+')','inventory');}catch(e){inventory[index]=previous;localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));localStorage.setItem(KEYS.inv,JSON.stringify(inventory));refreshAll();alert('لم يتم تصفير الصنف في قاعدة البيانات: '+(e.message||e));}}
 
 // أدوات التكويدات والباركود — ملصقات عريضة 50×30 مم (Landscape)؛ اختيار اسم الطابعة يتم من نافذة الطباعة في ويندوز
@@ -940,16 +940,24 @@ window.chooseLogin=window.chooseLogin||function(role){
  if(err)err.textContent='';
 };
 
-/* Reliable inventory edit delegation: resolve row by item code, bypassing inline handlers. */
+/* Inventory edit button calls this directly, without relying on delegated clicks. */
+window.editInventoryButton=function(button){
+ try{
+  if(!button)return false;
+  const code=button.getAttribute('data-edit-inventory-code');
+  const index=inventory.findIndex(item=>String(item.code)===String(code));
+  if(index<0){alert('لم يتم العثور على الصنف. حدّث تفاصيل المخزون وجرب مرة أخرى.');return false;}
+  editItem(index);
+ }catch(error){console.error('Inventory edit failed:',error);alert('تعذر فتح تعديل الصنف: '+(error&&error.message?error.message:'خطأ غير معروف'));}
+ return false;
+};
+/* Fallback click handler for browsers that fail to invoke the inline handler. */
 document.addEventListener('click',function(event){
  const button=event.target&&event.target.closest?event.target.closest('#invBody button[data-edit-inventory-code]'):null;
  if(!button)return;
- event.preventDefault();event.stopImmediatePropagation();
- const code=button.getAttribute('data-edit-inventory-code');
- const index=inventory.findIndex(item=>String(item.code)===String(code));
- if(index<0){alert('لم يتم العثور على الصنف. حدّث تفاصيل المخزون وجرب مرة أخرى.');return;}
- if(typeof window.editItem==='function')window.editItem(index);
- else alert('وظيفة تعديل الصنف لم يتم تحميلها. حدّث الصفحة، وإذا استمرت المشكلة أرسل لي صورة الخطأ.');
+ if(button.dataset.editHandled==='1')return;
+ event.preventDefault();
+ window.editInventoryButton(button);
 },true);
 
 const oldShow=window.showPage;
