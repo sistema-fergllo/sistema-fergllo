@@ -192,7 +192,7 @@ body.client-workspace-mode #app .top .user * { color:#000 !important; }
   
   <button class="nav" data-page="transfers" onclick="showPage('transfers')">تحويلات</button>
   <button id="navInventory" class="nav" data-page="inventory" onclick="requestPage('inventory')">المخزون</button>
-  <button id="navInventoryAudit" class="nav" data-page="inventoryAudit" type="button" onclick="showPage('inventoryAudit');return false">إدارة الجرد</button>
+  <button id="navInventoryAudit" class="nav" data-page="inventoryAudit" type="button" onclick="openInventoryAuditReport();return false">إدارة الجرد</button>
   
   <button id="navSettings" class="nav" data-page="settings" onclick="showPage('settings')">الإعدادات</button>
   <button id="navRestartData" class="nav" type="button" onclick="restartSalesData()">إعادة تشغيل</button>
@@ -639,6 +639,23 @@ function openItemModal(){editIndex=null;const title=document.getElementById('mod
 function editItem(index){const n=Number(index),x=inventory[ n ];if(!x){alert('الصنف غير موجود في قائمة المخزون. حدّث الصفحة وجرب مرة أخرى.');return}const modal=document.getElementById('modalBg');if(!modal){alert('نافذة تعديل الصنف غير موجودة في الصفحة.');return}editIndex=n;document.getElementById('modalTitle').textContent='تعديل الصنف';document.getElementById('mCode').value=String(x.code??'');document.getElementById('mCode').disabled=true;document.getElementById('mName').value=String(x.name??'');document.getElementById('mPrice').value=Number(x.price||0);document.getElementById('mQty').value=Number(x.qty||0);modal.classList.remove('hidden');document.body.classList.add('modal-open')}
 window.editItem=editItem;window.saveItem=saveItem;window.closeModal=closeModal;window.openItemModal=openItemModal;
 async function saveItem(){const code=document.getElementById('mCode').value.trim(),name=document.getElementById('mName').value.trim(),price=Number(document.getElementById('mPrice').value),qty=Number(document.getElementById('mQty').value);if(!code||!name){alert('اكتب كود الصنف واسمه');return}if(!Number.isFinite(price)||price<0||!Number.isFinite(qty)||qty<0){alert('تأكد من السعر والكمية');return}const index=editIndex;const old=index!==null&&index!==undefined?inventory[index]:null;if(!old&&inventory.some(x=>String(x.code)===code)){alert('الكود موجود بالفعل في المخزون');return}const next=old?{...old,name,price,qty}:{code,name,price,qty,sold:0};if(old)inventory[index]=next;else inventory.push(next);try{localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));localStorage.setItem(KEYS.inv,JSON.stringify(inventory));if(cloudReady){if(activeClient)await syncClientInventoryToCloud();else await syncInventoryToCloud()}closeModal();refreshAll();logActivity((old?'تم تعديل الصنف: ':'تم إضافة صنف: ')+name+' (كود '+code+') — الكمية '+qty+' والسعر '+money(price),'inventory');}catch(e){if(old)inventory[index]=old;else inventory=inventory.filter(x=>String(x.code)!==code);localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));localStorage.setItem(KEYS.inv,JSON.stringify(inventory));refreshAll();alert('لم يتم حفظ التعديل في قاعدة البيانات: '+(e.message||e))}finally{document.getElementById('mCode').disabled=false}}
+function openInventoryAuditReport(){
+  const app=document.getElementById('app');
+  const login=document.getElementById('login');
+  const report=document.getElementById('inventoryAudit');
+  if(!report){alert('صفحة تقرير الجرد غير موجودة في نسخة النظام.');return false;}
+  if(login)login.classList.add('hidden');
+  if(app)app.classList.remove('hidden');
+  document.querySelectorAll('#app .page').forEach(page=>page.classList.add('hidden'));
+  report.classList.remove('hidden');
+  document.querySelectorAll('#app .nav[data-page]').forEach(nav=>nav.classList.toggle('active',nav.dataset.page==='inventoryAudit'));
+  try{renderInventoryAudit();}catch(error){
+    console.error('Inventory audit render error:',error);
+    const body=document.getElementById('auditBody');
+    if(body)body.innerHTML='<tr><td colspan="6" style="text-align:center;color:#b42318">تعذر تحميل بيانات التقرير. اضغط تحديث الجرد أو أعد تحميل الصفحة.</td></tr>';
+  }
+  return false;
+}
 function renderInventoryAudit(){
   const rows=Array.isArray(inventory)?inventory:[];
   const qty=rows.reduce((n,x)=>n+Number(x.qty||0),0);
