@@ -457,6 +457,51 @@ body.client-workspace-mode #app #activeBranchLabel{
 }
 </style>
 
+<style id="faragello-horizontal-navigation-final">
+/* توحيد القائمة الأفقية على الكمبيوتر والموبايل */
+#app .layout{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+}
+#app .layout>.side{
+  order:0!important;
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  flex:0 0 auto!important;
+  gap:6px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  white-space:nowrap!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-x:contain!important;
+  touch-action:pan-x pan-y!important;
+  scrollbar-width:thin!important;
+  box-sizing:border-box!important;
+}
+#app .layout>.side .nav,
+#app .layout>.side #activeBranchLabel{
+  flex:0 0 auto!important;
+  width:auto!important;
+  white-space:nowrap!important;
+}
+#app .layout>main{
+  order:1!important;
+  width:100%!important;
+  min-width:0!important;
+}
+@media(max-width:900px){
+  #app .layout>.side{padding:7px!important;gap:5px!important}
+  #app .layout>.side .nav,
+  #app .layout>.side #activeBranchLabel{min-height:36px!important;padding:7px 10px!important;font-size:13px!important}
+}
+</style>
 </head>
 <body>
 <div id="login" class="login-screen">
