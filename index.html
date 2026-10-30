@@ -201,16 +201,20 @@ body.client-workspace-mode #app .top .user * { color:#000 !important; }
 </aside><main>
 <div id="home" class="page"><div class="title"><div><h2>لوحة التحكم</h2><div class="sub">إدارة أسهل .. مبيعات أعلى .. نجاح أكبر</div></div></div><div class="cash-panel"><div class="dashboard-bulb" role="img" aria-label="مصباح أصفر">💡</div><h3>مرحباً بك في نظام فرجللو</h3><div class="sub">نظام متكامل لإدارة الحسابات</div></div></div><div id="inventory" class="page hidden"><div class="title"><div><h2>📦 المخزن</h2><div class="sub">جميع الأصناف وكمياتها</div></div><div><button class="btn gray" onclick="printAllBarcodes()">▦ طباعة الباركود</button><button class="btn" onclick="openItemModal()">＋ إضافة صنف</button></div></div><div class="cards"><div class="card"><div class="label">إجمالي الأصناف</div><div id="iCount" class="value cyan"></div></div><div class="card"><div class="label">إجمالي الكميات</div><div id="iQty" class="value green"></div></div><div class="card"><div class="label">قيمة المخزون</div><div id="iValue" class="value gold"></div></div><div class="card"><div class="label">مبيعات اليوم</div><div id="iSales" class="value"></div></div></div><div class="toolbar"><input id="invSearch" placeholder="ابحث بالكود أو اسم الصنف..." oninput="renderInventory()"><button class="btn gray" onclick="document.getElementById('invSearch').value='';renderInventory()">مسح</button></div><div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>اسم الصنف</th><th>السعر</th><th>رصيد أول المدة</th><th>المباع</th><th>الرصيد الحالي</th><th>القيمة</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="invBody"></tbody></table></div><div id="invPagination"></div></div>
 <div id="inventoryAudit" class="page hidden">
-  <div class="title"><div><h2>📋 تقرير الجرد</h2><div class="sub">تقرير شامل ومحدّث بأرصدة الأصناف والكميات وقيمة المخزون</div></div><div><button class="btn gray" onclick="renderInventoryAudit()">↻ تحديث الجرد</button><button class="btn gold" onclick="printInventoryReport()">🖨 طباعة تقرير الجرد</button></div></div>
+  <div class="title"><div><h2>📋 إدارة الجرد</h2><div class="sub">تقرير منظم لحركة وأرصدة الأصناف وقيمة المخزون الحالي</div></div><div><button class="btn gray" onclick="renderInventoryAudit()">↻ تحديث التقرير</button><button class="btn gold" onclick="printInventoryReport()">🖨 طباعة التقرير</button></div></div>
+  <div id="auditReportDate" class="sub" style="margin:0 0 14px;padding:10px 14px;background:rgba(30,120,170,.09);border-radius:10px;font-weight:700">تاريخ التقرير: —</div>
   <div class="cards">
-    <div class="card"><div class="label">عدد الأصناف</div><div id="auditCount" class="value cyan">0</div></div>
-    <div class="card"><div class="label">إجمالي الكميات</div><div id="auditQty" class="value green">0</div></div>
-    <div class="card"><div class="label">قيمة المخزون</div><div id="auditValue" class="value gold">0</div></div>
-    <div class="card"><div class="label">أصناف نافدة</div><div id="auditOut" class="value">0</div></div>
-    <div class="card"><div class="label">أصناف منخفضة الرصيد (5 أو أقل)</div><div id="auditLow" class="value">0</div></div>
+    <div class="card"><div class="label">إجمالي الأصناف</div><div id="auditCount" class="value cyan">0</div></div>
+    <div class="card"><div class="label">إجمالي رصيد المخزون</div><div id="auditQty" class="value green">0</div></div>
+    <div class="card"><div class="label">إجمالي قيمة المخزون</div><div id="auditValue" class="value gold">0</div></div>
+    <div class="card"><div class="label">الأصناف النافدة</div><div id="auditOut" class="value">0</div></div>
+    <div class="card"><div class="label">الأصناف منخفضة الرصيد</div><div id="auditLow" class="value">0</div></div>
   </div>
-  <div class="toolbar"><input id="auditSearch" placeholder="ابحث بكود الصنف أو اسمه..." oninput="renderInventoryAudit()"><button class="btn gray" onclick="document.getElementById('auditSearch').value='';renderInventoryAudit()">مسح البحث</button></div>
-  <div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>اسم الصنف</th><th>السعر</th><th>الرصيد الحالي</th><th>قيمة الرصيد</th><th>الحالة</th></tr></thead><tbody id="auditBody"></tbody></table></div>
+  <div class="cash-panel" style="margin:14px 0;padding:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px"><h3 style="margin:0">تفاصيل أرصدة الأصناف</h3><span id="auditShownCount" class="sub">0 صنف</span></div>
+    <div class="toolbar"><input id="auditSearch" placeholder="ابحث بكود الصنف أو اسم الصنف..." oninput="renderInventoryAudit()"><button class="btn gray" onclick="document.getElementById('auditSearch').value='';renderInventoryAudit()">مسح البحث</button></div>
+    <div class="table-wrap"><table class="table"><thead><tr><th>م</th><th>كود الصنف</th><th>اسم الصنف</th><th>سعر الوحدة</th><th>الرصيد الحالي</th><th>قيمة الرصيد</th><th>حالة المخزون</th></tr></thead><tbody id="auditBody"></tbody></table></div>
+  </div>
 </div>
 <div id="cashier" class="page hidden"><div class="title"><div><h2>🧾 الكاشير</h2><div class="sub">إدخال المبيعات بسرعة بالباركود أو الكود</div></div></div><div class="cash-layout"><div class="cash-panel"><div class="scan"><input id="scan" autofocus placeholder="الكود أو الكمية*الكود مثال 9*101 ثم Enter" onkeydown="if(event.key==='Enter') addToCart()"><button class="btn" onclick="addToCart()">إضافة</button></div><div></div><div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="cartBody"></tbody></table></div></div><div class="cash-panel"><h3>بيانات الشيفت</h3><div class="paybox"><label>الشيفت</label><input id="shift" type="password" inputmode="numeric" placeholder="اكتب الرقم السري للشيفت ثم Enter" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();authorizeShiftOpen()}"><label>طريقة الدفع</label><select id="pay"><option>كاش</option><option>إلكتروني</option></select><div>إجمالي البيع</div><div id="cartTotal" class="cart-total">0.00 EGP</div><button class="btn green" onclick="completeSale()">✓ إتمام البيع</button><button class="btn red" onclick="clearCart()">تفريغ السلة</button></div></div></div></div>
 
@@ -657,7 +661,7 @@ function openInventoryAuditReport(){
   return false;
 }
 function renderInventoryAudit(){
-  const rows=Array.isArray(inventory)?inventory:[];
+  const rows=(Array.isArray(inventory)?inventory:[]).slice();
   const qty=rows.reduce((n,x)=>n+Number(x.qty||0),0);
   const value=rows.reduce((n,x)=>n+Number(x.qty||0)*Number(x.price||0),0);
   const out=rows.filter(x=>Number(x.qty||0)<=0).length;
@@ -668,16 +672,21 @@ function renderInventoryAudit(){
   put('auditValue',money(value));
   put('auditOut',out.toLocaleString('ar-EG'));
   put('auditLow',low.toLocaleString('ar-EG'));
+  const dateEl=document.getElementById('auditReportDate');
+  if(dateEl)dateEl.textContent='تاريخ التقرير: '+new Date().toLocaleString('ar-EG');
   const body=document.getElementById('auditBody');
   if(!body)return;
   const q=(document.getElementById('auditSearch')?.value||'').trim().toLocaleLowerCase();
   const filtered=rows.filter(x=>!q||String(x.code??'').toLocaleLowerCase().includes(q)||String(x.name??'').toLocaleLowerCase().includes(q));
-  body.innerHTML=filtered.map(x=>{
+  filtered.sort((a,b)=>String(a.code??'').localeCompare(String(b.code??''),'ar',{numeric:true}));
+  put('auditShownCount',filtered.length.toLocaleString('ar-EG')+' صنف');
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  body.innerHTML=filtered.map((x,i)=>{
     const current=Number(x.qty||0),price=Number(x.price||0);
     const status=current<=0?'<span class="badge out">نافد</span>':current<=5?'<span class="badge low">منخفض</span>':'<span class="badge ok">متوفر</span>';
-    return '<tr><td>'+String(x.code??'')+'</td><td>'+String(x.name??'')+'</td><td>'+money(price)+'</td><td><b>'+current.toLocaleString('ar-EG')+'</b></td><td>'+money(current*price)+'</td><td>'+status+'</td></tr>';
+    return '<tr><td>'+(i+1).toLocaleString('ar-EG')+'</td><td>'+esc(x.code)+'</td><td><b>'+esc(x.name)+'</b></td><td>'+money(price)+'</td><td><b>'+current.toLocaleString('ar-EG')+'</b></td><td>'+money(current*price)+'</td><td>'+status+'</td></tr>';
   }).join('');
-  if(!filtered.length)body.innerHTML='<tr><td colspan="6" style="text-align:center">لا توجد أصناف مطابقة للبحث</td></tr>';
+  if(!filtered.length)body.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px">لا توجد أصناف مطابقة للبحث</td></tr>';
 }
 function printInventoryReport(){
   const rows=inventory||[];
