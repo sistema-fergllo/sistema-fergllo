@@ -136,25 +136,43 @@ window.togglePinnedLogin=window.togglePinnedLogin||function(){return false;};
 
 
 
-<style id="faragello-client-account-green-strip">
-body.client-workspace-mode #app .top{background:#c9f7d5!important;box-shadow:0 3px 15px #86efac44}body.client-workspace-mode #app .brand h1{color:#fff!important}body.client-workspace-mode #app .brand small{color:#d3e2eb!important}body.client-workspace-mode #app .clock{color:#e4edf2!important}body.client-workspace-mode #app .user{background:#a7efbd!important;border:1px solid #82dba0!important;color:#000!important;box-shadow:0 2px 8px #86efac33}body.client-workspace-mode #app .user b,body.client-workspace-mode #app .user small{color:#000!important}
-body.client-workspace-mode #app .user small{color:#166534!important}
-</style>
-<style>
-/* FARAGELLO TOPBAR TEXT: BLACK ON THE LIGHT-GREEN HEADER */
-body.client-workspace-mode #app .top .brand h1,
-body.client-workspace-mode #app .top .brand small,
-body.client-workspace-mode #app .top .clock,
-body.client-workspace-mode #app .top .clock *,
-body.client-workspace-mode #app .top .user,
-body.client-workspace-mode #app .top .user * { color:#000 !important; }
-</style>
+
+
 <style id="faragello-cashier-code-width">
 #app #cashier .scan{display:flex;align-items:center;gap:9px;flex-wrap:nowrap}
 #app #cashier .scan #scan{flex:1 1 420px;width:min(100%,560px);min-width:260px}
 #app #cashier .scan .btn{flex:0 0 auto}
 @media(max-width:520px){#app #cashier .scan #scan{min-width:0;width:100%;flex-basis:0}}
 </style>
+
+<style id="faragello-client-header-navy-bold">
+body.client-workspace-mode #app .top{
+  background:#082653!important;
+  color:#fff!important;
+  box-shadow:0 3px 15px rgba(8,38,83,.22)!important;
+}
+body.client-workspace-mode #app .top .brand h1,
+body.client-workspace-mode #app .top .brand small,
+body.client-workspace-mode #app .top .clock,
+body.client-workspace-mode #app .top .clock *,
+body.client-workspace-mode #app .top .user,
+body.client-workspace-mode #app .top .user *,
+body.client-workspace-mode #app .top .user b,
+body.client-workspace-mode #app .top .user small{
+  color:#fff!important;
+  font-weight:800!important;
+}
+body.client-workspace-mode #app .top .brand h1{font-weight:900!important}
+body.client-workspace-mode #app .top .brand small{font-weight:700!important}
+body.client-workspace-mode #app .top .clock{font-weight:800!important}
+body.client-workspace-mode #app .top .user{
+  background:rgba(255,255,255,.09)!important;
+  border:1px solid rgba(255,255,255,.28)!important;
+  box-shadow:none!important;
+}
+body.client-workspace-mode #app .top .user small{font-weight:700!important}
+</style>
+
 </head>
 <body>
 <div id="login" class="login-screen">
