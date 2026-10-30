@@ -253,9 +253,9 @@
       #app .side .nav{font-size:17px!important}
       #app .side .logout,#app .side .logout *{font-weight:800!important}
       #app .side #faragello-inventory-count-nav{font-weight:800!important;font-size:17px!important;display:block!important;visibility:visible!important;opacity:1!important}
-      #app .side .nav{direction:rtl!important;text-align:right!important;justify-content:flex-start!important;padding-right:14px!important;padding-left:10px!important}
-      #app .side .nav *{direction:rtl!important;text-align:right!important}
-      #app .side .nav.logout{direction:rtl!important;justify-content:flex-start!important;text-align:right!important}
+      #app .side .nav{direction:rtl!important;text-align:right!important;justify-content:flex-end!important;padding-right:14px!important;padding-left:10px!important}
+      #app .side .nav *{direction:rtl!important;text-align:right!important;margin-left:0!important;margin-right:auto!important}
+      #app .side .nav.logout{direction:rtl!important;justify-content:flex-end!important;text-align:right!important}
     `; document.head.appendChild(style);
     function makeBrandingLight(){ var nodes=document.querySelectorAll('#login .login-card h1,#login .login-card p,#login .login-card > div:last-child,#login .login-card h1 *,#login .login-card p *,#login .login-card > div:last-child *'); nodes.forEach(function(el){el.style.setProperty('font-family','Arial,sans-serif','important');el.style.setProperty('font-weight','300','important');el.style.setProperty('font-style','normal','important');var text=(el.textContent||'').trim();if(text.indexOf('Farag El-Sayed')!==-1||text.indexOf('سيستم محاسبة')!==-1)el.style.setProperty('color','#16a34a','important')}); }
     makeBrandingLight(); if(!window.__faragelloLoginObserver){window.__faragelloLoginObserver=new MutationObserver(function(){makeBrandingLight()});var login=document.getElementById('login');if(login)window.__faragelloLoginObserver.observe(login,{childList:true,subtree:true,characterData:true})}
