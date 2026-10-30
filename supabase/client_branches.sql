@@ -19,6 +19,9 @@ create index if not exists client_branches_client_id_idx
 
 alter table public.client_branches enable row level security;
 
+-- Ensure authenticated admin/client sessions have SQL privileges; RLS policies still restrict rows.
+grant select, insert, update, delete on table public.client_branches to authenticated;
+
 drop policy if exists "Admins manage client branches" on public.client_branches;
 create policy "Admins manage client branches"
 on public.client_branches
