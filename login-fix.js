@@ -248,13 +248,13 @@
       #login .login-card #clientLoginToggle,#login .login-card .btn.gray,#login .login-card button:nth-of-type(2){background:linear-gradient(100deg,#00c8ff,#0877ff)!important;border:1px solid #29dfff!important;color:#fff!important;box-shadow:0 5px 14px rgba(0,160,255,.25)!important}
       #login .login-card h1,#login .login-card h1 *,#login .login-card p,#login .login-card p *,#login .login-card > div:last-child,#login .login-card > div:last-child *{font-family:Arial,sans-serif!important;font-weight:300!important;font-style:normal!important}
       #login .login-card button{font-family:Tahoma,Arial,sans-serif!important;font-weight:600!important}
-      #login .login-card > div:last-child,#login .login-card > div:last-child *{color:#8deaff!important}
+      #login .login-card > div:last-child,#login .login-card > div:last-child *{color:#16a34a!important}
       #app .side .nav,#app .side .nav a,#app .side .nav button,#app .side .nav span,#app .side .nav *{font-weight:800!important}
       #app .side .nav{font-size:17px!important}
       #app .side .logout,#app .side .logout *{font-weight:800!important}
       #app .side #faragello-inventory-count-nav{font-weight:800!important;font-size:17px!important;display:block!important;visibility:visible!important;opacity:1!important}
     `; document.head.appendChild(style);
-    function makeBrandingLight(){ var nodes=document.querySelectorAll('#login .login-card h1,#login .login-card p,#login .login-card > div:last-child,#login .login-card h1 *,#login .login-card p *,#login .login-card > div:last-child *'); nodes.forEach(function(el){el.style.setProperty('font-family','Arial,sans-serif','important');el.style.setProperty('font-weight','300','important');el.style.setProperty('font-style','normal','important');var text=(el.textContent||'').trim();if(text.indexOf('Farag El-Sayed')!==-1||text.indexOf('سيستم محاسبة')!==-1)el.style.setProperty('color','#8deaff','important')}); }
+    function makeBrandingLight(){ var nodes=document.querySelectorAll('#login .login-card h1,#login .login-card p,#login .login-card > div:last-child,#login .login-card h1 *,#login .login-card p *,#login .login-card > div:last-child *'); nodes.forEach(function(el){el.style.setProperty('font-family','Arial,sans-serif','important');el.style.setProperty('font-weight','300','important');el.style.setProperty('font-style','normal','important');var text=(el.textContent||'').trim();if(text.indexOf('Farag El-Sayed')!==-1||text.indexOf('سيستم محاسبة')!==-1)el.style.setProperty('color','#16a34a','important')}); }
     makeBrandingLight(); if(!window.__faragelloLoginObserver){window.__faragelloLoginObserver=new MutationObserver(function(){makeBrandingLight()});var login=document.getElementById('login');if(login)window.__faragelloLoginObserver.observe(login,{childList:true,subtree:true,characterData:true})}
   }
 
