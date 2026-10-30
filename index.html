@@ -401,6 +401,17 @@ body.client-workspace-mode #app .side .nav.logout{
 <style id="faragello-supervisor-green-fix">
 #login #faragello-supervisor-name{color:#16a34a!important;font-weight:800!important;}
 </style>
+<style id="faragello-sidebar-right-final">
+/* نقل القائمة الجانبية بالكامل إلى يمين الشاشة مع بقاء ترتيبها عمودياً */
+#app .layout{display:flex!important;flex-direction:row-reverse!important;align-items:stretch!important}
+#app .layout>.side{order:2!important;margin-left:0!important;margin-right:0!important}
+#app .layout>main{order:1!important;min-width:0}
+@media(max-width:900px){
+  #app .layout{display:flex!important;flex-direction:column!important}
+  #app .layout>.side{order:0!important;width:100%!important;flex:0 0 auto!important;align-items:stretch!important}
+  #app .layout>main{order:1!important}
+}
+</style>
 </head>
 <body>
 <div id="login" class="login-screen">
