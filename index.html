@@ -192,7 +192,7 @@ body.client-workspace-mode #app .top .user * { color:#000 !important; }
   
   <button class="nav" data-page="transfers" onclick="showPage('transfers')">تحويلات</button>
   <button id="navInventory" class="nav" data-page="inventory" onclick="requestPage('inventory')">المخزون</button>
-  <button id="navInventoryAudit" class="nav" data-page="inventoryAudit" onclick="requestPage('inventoryAudit')">إدارة الجرد</button>
+  <button id="navInventoryAudit" class="nav" data-page="inventoryAudit" type="button" onclick="showPage('inventoryAudit');return false">إدارة الجرد</button>
   
   <button id="navSettings" class="nav" data-page="settings" onclick="showPage('settings')">الإعدادات</button>
   <button id="navRestartData" class="nav" type="button" onclick="restartSalesData()">إعادة تشغيل</button>
