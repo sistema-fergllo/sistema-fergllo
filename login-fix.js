@@ -133,14 +133,23 @@
   function escapeAttr(s){ return escapeHtml(s); }
 
   function openInventoryCountReport(clicked){
-    // Use the single, official report page from index.html. Do not create/show the old inventory-count table.
-    document.querySelectorAll('#app main .page').forEach(function(p){ p.classList.add('hidden'); });
-    document.querySelectorAll('#app .side .nav').forEach(function(n){ n.classList.remove('active'); });
-    if(clicked) clicked.classList.add('active');
-    var target=document.getElementById('stocktake');
-    if(target){
-      target.classList.remove('hidden');
-      if(typeof window.renderInventoryAudit==='function') window.renderInventoryAudit();
+    // The actual report page is inventoryAudit in index.html.
+    var app=document.getElementById('app');
+    var login=document.getElementById('login');
+    var target=document.getElementById('inventoryAudit');
+    if(!target) return;
+    if(login) login.classList.add('hidden');
+    if(app) app.classList.remove('hidden');
+    document.querySelectorAll('#app main .page').forEach(function(p){p.classList.add('hidden');});
+    target.classList.remove('hidden');
+    document.querySelectorAll('#app .side .nav').forEach(function(n){n.classList.toggle('active',n===clicked);});
+    if(typeof window.renderInventoryAudit==='function'){
+      try{window.renderInventoryAudit();}
+      catch(error){
+        console.error('Inventory audit render error:',error);
+        var body=document.getElementById('auditBody');
+        if(body) body.innerHTML='<tr><td colspan="6" style="text-align:center">تعذر تحميل بيانات تقرير الجرد</td></tr>';
+      }
     }
   }
 
