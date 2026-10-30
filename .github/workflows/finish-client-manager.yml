@@ -45,10 +45,10 @@ jobs:
           from pathlib import Path
           import re
           html = Path("index.html").read_text(encoding="utf-8")
-          scripts = re.findall(r'<script\\b([^>]*)>([\\s\\S]*?)</script\\s*>', html, re.I)
+          scripts = re.findall(r'<script\b([^>]*)>([\s\S]*?)</script\s*>', html, re.I)
           count = 0
           for attrs, body in scripts:
-              if re.search(r'\\bsrc\\s*=', attrs, re.I) or not body.strip():
+              if re.search(r'\bsrc\s*=', attrs, re.I) or not body.strip():
                   continue
               count += 1
               Path(f"/tmp/faragello-inline-{count}.js").write_text(body, encoding="utf-8")
