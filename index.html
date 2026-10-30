@@ -175,7 +175,8 @@ body.client-workspace-mode #app .top .user small{font-weight:700!important}
 
 
 <style id="faragello-client-sidebar-reference">
-/* إعادة قائمة العميل إلى التنسيق المرجعي: عمودية ومحاذاة لليمين */
+/* إعادة قائمة العميل إلى التنسيق المرجعي: عمودية ومحاذاة لليمين، مع نقلها إلى يمين الشاشة */
+body.client-workspace-mode #app .layout{flex-direction:row-reverse!important;}
 body.client-workspace-mode #app .layout>.side{
   width:215px!important;
   flex:0 0 215px!important;
