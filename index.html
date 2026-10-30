@@ -645,37 +645,7 @@ function printInventoryReport(){
   const styles=`@page{size:auto;margin:12mm}*{box-sizing:border-box}body{font-family:Tahoma,Arial,sans-serif;direction:rtl;padding:28px;color:#111;background:#fff;font-size:14px}h1{text-align:center;margin:0 0 6px;font-size:25px}.subtitle{text-align:center;color:#444;margin:0 0 26px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}.field{border:1px solid #888;padding:16px;border-radius:4px;min-height:54px}.summary{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}.summary .field{font-size:16px;padding:22px}.sign{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:70px;text-align:center}.sign div{border-top:1px solid #555;padding-top:10px}@media print{body{padding:0}.field{break-inside:avoid}}`;
   w.document.open();
   w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير الجرد - سيستم فرجللو</title><style>'+styles+'</style></head><body><h1>سيستم فرجللو</h1><p class="subtitle">تقرير الجرد العام</p><div class="meta"><div class="field"><b>تاريخ التقرير:</b> '+new Date().toLocaleDateString('ar-EG')+'</div><div class="field"><b>وقت الطباعة:</b> '+new Date().toLocaleTimeString('ar-EG')+'</div></div><div class="summary"><div class="field"><b>عدد الأصناف:</b> '+rows.length.toLocaleString('ar-EG')+'</div><div class="field"><b>إجمالي الكميات:</b> '+qty.toLocaleString('ar-EG')+'</div><div class="field"><b>قيمة المخزون:</b> '+money(value)+'</div><div class="field"><b>الأصناف النافدة:</b> '+out.toLocaleString('ar-EG')+'</div><div class="field"><b>الأصناف منخفضة الرصيد:</b> '+low.toLocaleString('ar-EG')+'</div></div><div class="sign"><div>أمين المخزن</div><div>مراجعة الجرد</div><div>اعتماد الإدارة</div></div>
-<!-- FRG_BRANCH_BUTTON_CAPTURE_FIX: ضمان استجابة أزرار إدارة الفروع -->
-<script>
-(function(){
-  document.addEventListener('click', function(event){
-    const button = event.target && event.target.closest ? event.target.closest('button') : null;
-    if (!button) return;
-    const label = (button.textContent || '').replace(/\\s+/g,' ').trim();
-    let mode = null;
-    if (label.includes('إضافة فروع')) mode = 'add';
-    else if (label.includes('حذف فروع')) mode = 'delete';
-    else if (label.includes('تغيير الرقم السري للفروع')) mode = 'pin';
-    if (!mode) return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    const modal = document.getElementById('branchManagerModal');
-    if (modal) {
-      modal.classList.remove('hidden');
-      document.body.classList.add('modal-open');
-    }
-    if (typeof window.openBranchesManager === 'function') {
-      Promise.resolve(window.openBranchesManager(mode)).catch(function(error){
-        const rows = document.getElementById('branchManagerRows');
-        if (rows) rows.textContent = 'تعذر فتح إدارة الفروع: ' + (error && error.message ? error.message : error);
-      });
-    } else {
-      const rows = document.getElementById('branchManagerRows');
-      if (rows) rows.textContent = 'تعذر تحميل وظائف إدارة الفروع. حدّث الصفحة، وإذا استمرت المشكلة أرسل صورة من Console.';
-    }
-  }, true);
-})();
-</script>
+
 
 </body></html>');
   w.document.close();
