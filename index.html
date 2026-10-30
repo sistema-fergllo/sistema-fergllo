@@ -220,6 +220,129 @@ body.client-workspace-mode #app .side .nav.logout{
 }
 </style>
 
+
+<style id="faragello-branch-picker-redesign">
+/* نافذة اختيار الفرع بتصميم أوضح وأنيق */
+#branchGateModal{
+  background:rgba(5,18,38,.68)!important;
+  backdrop-filter:blur(7px)!important;
+  padding:18px!important;
+}
+#branchGateModal>.modal{
+  width:min(500px,100%)!important;
+  padding:26px!important;
+  border:1px solid #dce7f2!important;
+  border-radius:22px!important;
+  background:linear-gradient(180deg,#fff 0%,#f5f9ff 100%)!important;
+  color:#17324d!important;
+  box-shadow:0 24px 80px rgba(3,20,45,.28)!important;
+}
+#branchGateModal>.modal h3{
+  margin:0 0 7px!important;
+  color:#102f59!important;
+  font-size:22px!important;
+  font-weight:900!important;
+  text-align:center!important;
+}
+#branchGateModal>.modal>p.sub{
+  margin:0 0 20px!important;
+  color:#64788d!important;
+  font-size:13px!important;
+  line-height:1.8!important;
+  text-align:center!important;
+}
+#branchGateModal #branchPickerCards{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr))!important;
+  gap:11px!important;
+}
+#branchGateModal #branchPickerCards .card{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  min-height:76px!important;
+  margin:0!important;
+  padding:14px!important;
+  border:1px solid #d5e3f2!important;
+  border-radius:15px!important;
+  background:linear-gradient(145deg,#f1f7ff,#e5effb)!important;
+  color:#123b68!important;
+  font-size:15px!important;
+  font-weight:800!important;
+  text-align:center!important;
+  box-shadow:0 4px 12px rgba(20,57,96,.06)!important;
+  transition:transform .16s,border-color .16s,background .16s,box-shadow .16s!important;
+}
+#branchGateModal #branchPickerCards .card:hover,
+#branchGateModal #branchPickerCards .card:focus-visible{
+  transform:translateY(-2px)!important;
+  border-color:#2386d8!important;
+  background:#e4f2ff!important;
+  box-shadow:0 8px 18px rgba(27,111,184,.14)!important;
+  outline:none!important;
+}
+#branchGateModal #branchPinArea{
+  margin-top:18px!important;
+  padding:17px!important;
+  border:1px solid #dce8f5!important;
+  border-radius:15px!important;
+  background:#f0f6fd!important;
+}
+#branchGateModal #branchPinLabel{
+  display:block!important;
+  margin-bottom:8px!important;
+  color:#173b61!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  text-align:right!important;
+}
+#branchGateModal #branchPinInputGate{
+  width:100%!important;
+  min-height:48px!important;
+  margin:0!important;
+  border:1px solid #cbdbea!important;
+  border-radius:11px!important;
+  background:#fff!important;
+  color:#17324d!important;
+  font-size:18px!important;
+  font-weight:800!important;
+  letter-spacing:5px!important;
+  text-align:center!important;
+  direction:ltr!important;
+  box-shadow:none!important;
+}
+#branchGateModal #branchPinInputGate:focus{
+  border-color:#2585d1!important;
+  box-shadow:0 0 0 3px rgba(37,133,209,.13)!important;
+  outline:none!important;
+}
+#branchGateModal #branchPinArea .modal-actions{margin-top:12px!important}
+#branchGateModal #branchPinArea .modal-actions .btn{
+  width:100%!important;
+  min-height:45px!important;
+  border:1px solid #123d70!important;
+  border-radius:11px!important;
+  background:linear-gradient(110deg,#12345f,#17639a)!important;
+  color:#fff!important;
+  font-size:14px!important;
+  font-weight:850!important;
+}
+#branchGateModal #branchGateError{
+  margin-top:10px!important;
+  color:#c33c4b!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  text-align:center!important;
+}
+@media(max-width:520px){
+  #branchGateModal{padding:12px!important}
+  #branchGateModal>.modal{padding:20px 16px!important;border-radius:18px!important}
+  #branchGateModal #branchPickerCards{grid-template-columns:1fr!important}
+  #branchGateModal #branchPickerCards .card{min-height:62px!important}
+}
+</style>
+
 </head>
 <body>
 <div id="login" class="login-screen">
