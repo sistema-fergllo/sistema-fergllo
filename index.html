@@ -335,7 +335,7 @@ body.client-workspace-mode #app .layout>.side{
   min-height:0!important;
   display:flex!important;
   flex-direction:row!important;
-  flex-wrap:wrap!important;
+  flex-wrap:nowrap!important;
   align-items:center!important;
   justify-content:flex-start!important;
   gap:6px!important;
@@ -343,7 +343,13 @@ body.client-workspace-mode #app .layout>.side{
   background:#fff!important;
   border:0!important;
   border-bottom:1px solid #e6edf1!important;
-  overflow:visible!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-x:contain!important;
+  touch-action:pan-x pan-y!important;
+  scrollbar-width:thin!important;
+  white-space:nowrap!important;
   box-sizing:border-box!important;
 }
 body.client-workspace-mode #app .layout>main{order:1!important;width:100%!important;min-width:0!important}
