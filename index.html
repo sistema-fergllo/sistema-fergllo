@@ -413,20 +413,30 @@ body.client-workspace-mode #app .side .nav.logout{
   text-align:center!important;
 }
 @media(max-width:900px){
+  /* شريط موبايل أفقي بسحب الإصبع — ممنوع نزول العناصر لسطر جديد */
   body.client-workspace-mode #app .layout>.side{
     width:100%!important;
     min-width:0!important;
     flex-direction:row!important;
-    flex-wrap:wrap!important;
+    flex-wrap:nowrap!important;
     justify-content:flex-start!important;
     gap:5px!important;
     padding:7px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior-x:contain!important;
+    touch-action:pan-x pan-y!important;
+    scrollbar-width:thin!important;
+    white-space:nowrap!important;
   }
   body.client-workspace-mode #app #activeBranchLabel,
   body.client-workspace-mode #app .side .nav{
     min-height:36px!important;
     padding:7px 10px!important;
     font-size:13px!important;
+    flex:0 0 auto!important;
+    white-space:nowrap!important;
   }
 }
 </style>
