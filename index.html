@@ -173,6 +173,44 @@ body.client-workspace-mode #app .top .user{
 body.client-workspace-mode #app .top .user small{font-weight:700!important}
 </style>
 
+
+<style id="faragello-client-sidebar-centered">
+/* ترتيب قائمة العميل: عناصر رأسية والنص في المنتصف */
+body.client-workspace-mode #app .layout>.side{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:5px!important;
+}
+body.client-workspace-mode #app .side .nav{
+  width:100%!important;
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  direction:rtl!important;
+  padding:10px 12px!important;
+}
+body.client-workspace-mode #app .side .nav.logout{
+  justify-content:center!important;
+  text-align:center!important;
+}
+@media(max-width:760px){
+  body.client-workspace-mode #app .layout>.side{
+    width:100%!important;
+    flex-direction:column!important;
+    flex-wrap:nowrap!important;
+    overflow:visible!important;
+  }
+  body.client-workspace-mode #app .side .nav{
+    width:100%!important;
+    min-width:0!important;
+    min-height:42px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="login" class="login-screen">
