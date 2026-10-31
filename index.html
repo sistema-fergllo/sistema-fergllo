@@ -1512,10 +1512,7 @@ function printRecords(title, summaryId, tableId){
  const w=window.open('','_blank');
  if(!w){alert('اسمح بفتح النوافذ المنبثقة للطباعة');return}
  w.document.open();
- w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'+title+'</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #777;padding:8px;text-align:right}th{background:#eee}p{margin:8px 0}@media print{body{padding:0}}
-
-
-</style></head><body><h1>'+title+' - سيستم فرجللو</h1>'+(summary?summary.innerHTML:'')+table.innerHTML+'</body></html>');
+ w.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>${title}</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #777;padding:8px;text-align:right}th{background:#eee}p{margin:8px 0}@media print{body{padding:0}}</style></head><body><h1>${title} - سيستم فرجللو</h1>${summary?summary.innerHTML:''}${table.innerHTML}</body></html>`);
  w.document.close();
  w.focus();
  w.print();
