@@ -999,7 +999,8 @@ function printExpenses(){
  const safe=v=>escapeTransferText(v==null?'':v);
  const table='<table><thead><tr><th>التاريخ</th><th>نوع المصروف</th><th>الوردية</th><th>المبلغ</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+safe(x.date||'—')+'</td><td>'+safe(x.category||'—')+'</td><td>'+safe(x.shift||'—')+'</td><td>'+money(x.amount)+'</td></tr>').join('')+'</tbody></table>';
  w.document.open();
- w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>سجل المصروفات - سيستم فرجللو</title><style>body{font-family:Tahoma,Arial,sans-serif;padding:24px;color:#111}h1{text-align:center}p{text-align:center;margin:12px 0 22px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #777;padding:10px;text-align:center}th{background:#eee}@media print{body{padding:0}}</style></head><body><h1>سجل المصروفات - سيستم فرجللو</h1><p>عدد المصروفات: '+rows.length+' — إجمالي المصروفات: '+money(total)+'</p>'+table+'</body></html>');
+ w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>سجل المصروفات - سيستم فرجللو</title><style>body{font-family:Tahoma,Arial,sans-serif;padding:24px;color:#111}h1{text-align:center}p{text-align:center;margin:12px 0 22px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #777;padding:10px;text-align:center}th{background:#eee}@media print{body{padding:0}}</style></head><body><h1>سجل المصروفات - سيستم فرجللو</h1><p>عدد المصروفات: '+rows.length+' — إجمالي المصروفات: '+money(total)+'</p>'+table+'<script src="returns.js?v=20261031"></script>
+</body></html>');
  w.document.close();w.focus();w.print();
 }
 function deleteExpense(id){if(!confirm('هل تريد حذف هذا المصروف؟'))return;localStorage.setItem(workspaceKey('frg_expenses'),JSON.stringify(getExpenses().filter(x=>x.id!==id)));renderExpenses();if(typeof window.renderReports==='function')window.renderReports()}
