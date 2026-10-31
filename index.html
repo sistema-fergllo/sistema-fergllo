@@ -998,7 +998,7 @@ function renderExpenses(){
  const summary=document.getElementById('expenseSummary');
  const body=document.getElementById('expenseRows');
  if(summary)summary.innerHTML='<p>عدد المصروفات: <b>'+rows.length+'</b> — إجمالي المصروفات: <b>'+money(sum)+'</b></p>';
- if(body)body.innerHTML=rows.length?rows.map(x=>'<tr><td>'+esc(x.date||'—')+'</td><td>'+esc(x.category||'—')+'</td><td>'+esc(x.shift||'—')+'</td><td>'+money(x.amount)+'</td><td><button class="btn red" onclick="deleteExpense('+Number(x.id)+')">حذف</button></td></tr>').join(''):'<tr><td colspan="5" class="empty">لا توجد مصروفات مسجلة</td></tr>';
+ if(body)body.innerHTML=rows.length?rows.map(x=>'<tr><td>'+escapeTransferText(x.date||'—')+'</td><td>'+escapeTransferText(x.category||'—')+'</td><td>'+escapeTransferText(x.shift||'—')+'</td><td>'+money(x.amount)+'</td><td><button class="btn red" onclick="deleteExpense('+Number(x.id)+')">حذف</button></td></tr>').join(''):'<tr><td colspan="5" class="empty">لا توجد مصروفات مسجلة</td></tr>';
 }
  
 function getStockAdjustments(){try{return JSON.parse(localStorage.getItem(workspaceKey('frg_stock_adjustments'))||'[]')||[]}catch(e){return []}}
