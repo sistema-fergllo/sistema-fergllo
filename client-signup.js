@@ -24,6 +24,7 @@
       const box=document.createElement('div');box.id='faragello-signup-box';
       box.innerHTML='<div style="display:grid;gap:9px;margin-top:12px">'+
         '<input id="signupName" placeholder="اسم العميل" autocomplete="name">'+
+        '<input id="signupPhone" type="tel" placeholder="رقم الهاتف" autocomplete="tel" inputmode="tel" dir="ltr">'+
         '<input id="signupUser" placeholder="اسم المستخدم" autocomplete="username" dir="ltr">'+
         '<input id="signupPass" type="password" placeholder="كلمة السر — 6 أرقام أو أكثر" autocomplete="new-password" inputmode="numeric">'+
         '<input id="signupPass2" type="password" placeholder="تأكيد كلمة السر" autocomplete="new-password" inputmode="numeric">'+
@@ -34,9 +35,11 @@
       el('signupBack').onclick=function(){box.remove();base(false)};
     }
     async function createAccount(){
-      const name=(el('signupName')?.value||'').trim(), user=(el('signupUser')?.value||'').trim().toLowerCase();
+      const name=(el('signupName')?.value||'').trim(), phone=(el('signupPhone')?.value||'').trim(), user=(el('signupUser')?.value||'').trim().toLowerCase();
       const pass=el('signupPass')?.value||'', pass2=el('signupPass2')?.value||'';
-      if(!name||!user||!pass||!pass2){showError('اكتب كل البيانات المطلوبة.');return}
+      if(!name||!phone||!user||!pass||!pass2){showError('اكتب كل البيانات المطلوبة، ومنها رقم الهاتف.');return}
+      const normalizedPhone=phone.replace(/[\\s()-]/g,'');
+      if(!/^\\+?[0-9]{10,15}$/.test(normalizedPhone)){showError('اكتب رقم هاتف صحيحًا من 10 إلى 15 رقمًا.');return}
       if(!/^[A-Za-z0-9._-]{3,40}$/.test(user)){showError('اسم المستخدم بالإنجليزية والأرقام فقط، من 3 إلى 40 حرفًا.');return}
       if(!/^\d{6,}$/.test(pass)){showError('كلمة السر يجب أن تكون 6 أرقام أو أكثر.');return}
       if(pass!==pass2){showError('كلمتا السر غير متطابقتين.');return}
@@ -44,7 +47,7 @@
       const btn=el('signupSubmit'); if(btn){btn.disabled=true;btn.textContent='جاري إنشاء الحساب...'}
       let created=null;
       try{
-        const rpc=await sb.rpc('create_customer_account',{p_name:name,p_username:user});
+        const rpc=await sb.rpc('create_customer_account',{p_name:name,p_username:user,p_phone:normalizedPhone});
         if(rpc.error)throw rpc.error; created=rpc.data;
         const email=(created?.email)||((user)+'@fergllo.local');
         const res=await sb.auth.signUp({email,password:pass,options:{data:{account_type:'client',full_name:name}}});
