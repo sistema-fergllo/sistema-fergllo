@@ -1208,8 +1208,9 @@ function printInventoryReport(){
     });
     const bar=document.getElementById('clientWorkspaceBar');
     const name=document.getElementById('clientWorkspaceName');
-    if(bar) bar.style.display=window.activeClient?'block':'none';
-    if(name && window.activeClient) name.textContent=(window.activeClient.name||'')+(window.activeClient.project?' • '+window.activeClient.project:'');
+    const client=(typeof activeClient!=='undefined'?activeClient:null);
+    if(bar) bar.style.display=client?'block':'none';
+    if(name && client) name.textContent=(client.name||'')+(client.project?' • '+client.project:'');
     try{
       if(id==='sales' && typeof window.renderSales==='function') window.renderSales();
       if(id==='reports' && typeof window.renderReports==='function') window.renderReports();
@@ -1228,7 +1229,7 @@ function printInventoryReport(){
       notice.textContent='تعذر تحميل بعض بيانات الصفحة. حدّث الصفحة وحاول مرة أخرى.';
       page.prepend(notice);
     }
-    if((id==='sales'||id==='reports') && typeof window.refreshSalesFromCloud==='function' && window.cloudReady){
+    if((id==='sales'||id==='reports') && typeof window.refreshSalesFromCloud==='function' && typeof cloudReady!=='undefined' && cloudReady){
       window.refreshSalesFromCloud().catch(function(error){console.error('Faragello cloud refresh failed:',error);});
     }
     return true;
