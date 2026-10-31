@@ -614,6 +614,7 @@ body.client-workspace-mode #app #activeBranchLabel{
   </div>
 </div>
 <div id="cashier" class="page hidden"><div class="title"><div><h2>🧾 الكاشير</h2><div class="sub">إدخال المبيعات بسرعة بالباركود أو الكود</div></div></div><div class="cash-layout"><div class="cash-panel"><div class="scan"><input id="scan" autofocus placeholder="الكود أو الكمية*الكود مثال 9*101 ثم Enter" onkeydown="if(event.key==='Enter') addToCart()"><button class="btn" onclick="addToCart()">إضافة</button></div><div></div><div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="cartBody"></tbody></table></div></div><div class="cash-panel"><h3>بيانات الشيفت</h3><div class="paybox"><label>الشيفت</label><input id="shift" type="password" inputmode="numeric" placeholder="اكتب الرقم السري للشيفت ثم Enter" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();authorizeShiftOpen()}"><label>طريقة الدفع</label><select id="pay"><option>كاش</option><option>إلكتروني</option></select><div>إجمالي البيع</div><div id="cartTotal" class="cart-total">0.00 EGP</div><button class="btn green" onclick="completeSale()">✓ إتمام البيع</button><button class="btn red" onclick="clearCart()">تفريغ السلة</button>
+</div>
 <div class="cash-panel" style="margin-top:14px">
   <h3>حركات المرتجعات والهوالك</h3>
   <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -639,7 +640,8 @@ body.client-workspace-mode #app #activeBranchLabel{
     <button id="saveAdjustmentBtn" class="btn green" type="button" onclick="saveStockAdjustment()">حفظ الحركة وتحديث المخزون</button>
   </div>
 </div>
-</div></div></div></div>
+</div>
+</div></div></div>
 
 <div id="sales" class="page hidden"><div class="title"><div><h2>📊 سجل المبيعات</h2><div class="sub">كل عمليات البيع التي تمت من الكاشير</div></div></div><div class="cards"><div class="card"><div class="label">عدد العمليات</div><div id="sCount" class="value cyan"></div></div><div class="card"><div class="label">إجمالي المبيعات</div><div id="sTotal" class="value gold"></div></div></div><div class="table-wrap"><table class="table"><thead><tr><th>التاريخ والوقت</th><th>الشيفت</th><th>الإجمالي</th><th>الدفع</th><th>الأصناف</th></tr></thead><tbody id="salesBody"></tbody></table></div></div>
 <div id="reports" class="page hidden"><div class="title"><div><h2>📈 تقفيل الوردية</h2><div class="sub">ملخص المبيعات وحركة الشيفتات والأصناف</div></div><button class="btn gold" onclick="printReport()">🖨 طباعة التقرير</button></div><div class="toolbar"><label>من</label><input id="repFrom" type="date" onchange="renderReports()"><label>إلى</label><input id="repTo" type="date" onchange="renderReports()"><select id="repShift" onchange="renderReports()"><option value="">كل الشيفتات</option><option>صباحي</option><option>مسائي</option><option>السهرة</option></select></div><div class="cards"><div class="card"><div class="label">إجمالي المبيعات</div><div id="rTotal" class="value gold">0.00 EGP</div></div><div class="card"><div class="label">عمليات البيع</div><div id="rInvoices" class="value cyan">لا توجد أصناف</div></div><div class="card"><div class="label">إجمالي القطع</div><div id="rUnits" class="value green">0</div></div><div class="card"><div class="label">متوسط البيع</div><div id="rAvg" class="value">0.00 EGP</div></div></div><div id="shiftSummaryPanel" class="cash-panel"><h3>ملخص الشيفتات <span id="shiftSummaryDate"></span></h3><div id="shiftBody" class="shift-summary-cards"></div></div></div>
@@ -1044,7 +1046,7 @@ async function saveStockAdjustment(){
    }
    localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));localStorage.setItem(KEYS.inv,JSON.stringify(inventory));
    if(cloudReady){if(activeClient)await syncClientInventoryToCloud();else await syncInventoryToCloud()}
-   refreshAll();renderStockAdjustments();document.getElementById('adjustmentQty').value='1';document.getElementById('adjustmentReason').value='';
+   refreshAll();renderStockAdjustments();closeCashierAdjustment();document.getElementById('adjustmentQty').value='1';document.getElementById('adjustmentReason').value='';
    logActivity('تم تسجيل '+(type==='return'?'مرتجع':'هالك')+' للصنف '+item.name+' — كمية '+qty+' — قيمة '+money(value),'inventory');
    alert('تم تسجيل '+(type==='return'?'المرتجع':'الهالك')+' وتحديث المخزون بنجاح.'+(type==='return'?' قيمة المرتجع خُصمت من صافي المبيعات.':''));
  }catch(e){
