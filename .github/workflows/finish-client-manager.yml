@@ -41,6 +41,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check login-fix.js
+          node --check client-signup.js
           python3 - <<'PY'
           from pathlib import Path
           import re
