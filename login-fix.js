@@ -201,7 +201,22 @@
     }
   }
 
-
+  function ensurePublicPhone(){
+    var loginText=document.getElementById('loginText');
+    var card=document.querySelector('#login .login-card');
+    if(!card)return;
+    var phone=document.getElementById('faragello-public-phone');
+    if(!phone){
+      phone=document.createElement('div');
+      phone.id='faragello-public-phone';
+      phone.innerHTML='<div style="margin-bottom:3px">للتواصل والاستفسار</div><a href="tel:01128777287" dir="ltr" style="display:inline-block;color:#ffffff;font-size:20px;font-weight:700;letter-spacing:1px;text-decoration:none">01128777287</a>';
+    }
+    phone.style.cssText='display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;margin:10px auto 14px!important;padding:10px!important;width:100%!important;max-width:290px!important;box-sizing:border-box!important;text-align:center!important;border:1px solid rgba(41,223,255,.7)!important;border-radius:12px!important;background:rgba(0,110,180,.22)!important;color:#dff8ff!important;font-family:Tahoma,Arial,sans-serif!important;font-size:14px!important;line-height:1.7!important;z-index:2!important;';
+    var link=phone.querySelector('a');
+    if(link)link.style.cssText='display:inline-block!important;visibility:visible!important;opacity:1!important;color:#ffffff!important;font-size:20px!important;font-weight:700!important;letter-spacing:1px!important;text-decoration:none!important;direction:ltr!important;';
+    if(loginText && loginText.parentNode===card && loginText.nextElementSibling!==phone)loginText.insertAdjacentElement('afterend',phone);
+    else if(!phone.parentNode)card.appendChild(phone);
+  }
 
   function normalizeLoginScreen(){
     var login=document.getElementById('login');
@@ -248,9 +263,11 @@
 
   function init(){
     normalizeLoginScreen();
+    ensurePublicPhone();
     applyLoginDesign(); startMenuRecovery();
-    function recoverChoice(buttonId,role){var button=document.getElementById(buttonId);if(!button||button.dataset.recoveryBound==='yes')return;button.dataset.recoveryBound='yes';button.removeAttribute('onclick');button.addEventListener('click',function(event){if(event)event.preventDefault();try{var login=document.getElementById('login'),app=document.getElementById('app'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),title=document.getElementById('loginText'),error=document.getElementById('loginErr');if(login){login.dataset.page='';login.classList.remove('hidden')}if(app)app.classList.add('hidden');if(typeof window.chooseLogin==='function'){window.chooseLogin(role)}else{var admin=document.getElementById('adminLoginChoice'),client=document.getElementById('clientLoginToggle');if(fields)fields.classList.remove('hidden');if(admin)admin.classList.add('hidden');if(client)client.classList.add('hidden');if(title)title.textContent=role==='admin'?'دخول المشرف':'دخول العميل'}if(fields)fields.classList.remove('hidden');if(email){email.classList.remove('hidden');email.type='text';email.placeholder='اسم المستخدم';email.autocomplete='username'}if(password){password.classList.remove('hidden');password.type='password';password.autocomplete='current-password'}if(title)title.textContent=role==='all'?'دخول المشرف أو العميل':(role==='admin'?'دخول المشرف':'دخول العميل');if(error)error.textContent='';if(email)email.focus()}catch(e){var title=document.getElementById('loginText');if(title)title.textContent='حصل خطأ عند فتح الدخول: '+(e.message||String(e))}})}
-    recoverChoice('adminLoginChoice','all');recoverChoice('clientLoginToggle','client');
+    setTimeout(ensurePublicPhone,100); setTimeout(ensurePublicPhone,700);
+    function recoverChoice(buttonId,role){var button=document.getElementById(buttonId);if(!button||button.dataset.recoveryBound==='yes')return;button.dataset.recoveryBound='yes';button.removeAttribute('onclick');button.addEventListener('click',function(event){if(event)event.preventDefault();try{var login=document.getElementById('login'),app=document.getElementById('app'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),title=document.getElementById('loginText'),error=document.getElementById('loginErr');if(login){login.dataset.page='';login.classList.remove('hidden')}if(app)app.classList.add('hidden');if(typeof window.chooseLogin==='function'){window.chooseLogin(role)}else{var admin=document.getElementById('adminLoginChoice'),client=document.getElementById('clientLoginToggle');if(fields)fields.classList.remove('hidden');if(admin)admin.classList.add('hidden');if(client)client.classList.add('hidden');if(title)title.textContent=role==='admin'?'دخول المشرف':'دخول العميل'}if(fields)fields.classList.remove('hidden');if(email){email.classList.remove('hidden');email.type='text';email.placeholder='اسم المستخدم';email.autocomplete='username'}if(password){password.classList.remove('hidden');password.type='password';password.autocomplete='current-password'}if(title)title.textContent=role==='admin'?'دخول المشرف':'دخول العميل';if(error)error.textContent='';if(email)email.focus()}catch(e){var title=document.getElementById('loginText');if(title)title.textContent='حصل خطأ عند فتح الدخول: '+(e.message||String(e))}})}
+    recoverChoice('adminLoginChoice','admin');recoverChoice('clientLoginToggle','client');
     var submit=document.getElementById('loginSubmit'); if(submit&&submit.dataset.recoveryBound!=='yes'){submit.dataset.recoveryBound='yes';submit.addEventListener('click',function(event){event.preventDefault();var errorBox=document.getElementById('loginErr');if(errorBox)errorBox.textContent='تم الضغط على زر الدخول، جاري فحص النظام...';try{if(typeof window.doLogin!=='function'){if(errorBox)errorBox.textContent='زر الدخول استجاب، لكن كود تسجيل الدخول الرئيسي لا يعمل.';return}Promise.resolve(window.doLogin()).catch(function(err){if(errorBox)errorBox.textContent='خطأ أثناء الدخول: '+(err&&err.message?err.message:String(err))})}catch(err){if(errorBox)errorBox.textContent='خطأ أثناء الدخول: '+(err&&err.message?err.message:String(err))}})}
     window.addEventListener('error',function(event){var box=document.getElementById('loginText');if(box&&event.message)box.textContent='خطأ تشغيل بالموقع: '+event.message});
   }
