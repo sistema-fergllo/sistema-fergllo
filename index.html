@@ -1602,41 +1602,54 @@ window.showPage=function(id){if(typeof oldShow==='function')oldShow(id);if(id===
 <!-- Faragello: stable routing for the five restored workspace pages -->
 <script id="faragello-stable-work-pages">
 (function(){
-  const targetPages = new Set(['sales','reports','purchaseInvoices','expenses','settings']);
-  const previousShowPage = window.showPage;
+  const targetPages=new Set(['sales','reports','purchaseInvoices','expenses','settings']);
+  const previousShowPage=window.showPage;
   function openWorkPage(id){
     if(!targetPages.has(id)) return false;
+    const app=document.getElementById('app');
     const page=document.getElementById(id);
-    if(!page){console.error('Faragello page missing:',id);return true;}
-    document.querySelectorAll('#app .page').forEach(function(node){node.classList.add('hidden');});
-    page.classList.remove('hidden');
-    document.querySelectorAll('#app .nav[data-page]').forEach(function(node){
+    if(!app||!page){console.error('Faragello workspace page missing:',id);return true;}
+    try{
+      if(typeof previousShowPage==='function') previousShowPage.call(window,id);
+    }catch(error){console.error('Previous page initializer failed:',id,error);}
+    app.classList.remove('hidden');
+    const login=document.getElementById('login');
+    if(login) login.classList.add('hidden');
+    document.querySelectorAll('#app .page').forEach(function(node){
+      const active=node===page;
+      node.classList.toggle('hidden',!active);
+      node.style.setProperty('display',active?'block':'none','important');
+      node.style.visibility=active?'visible':'hidden';
+    });
+    page.style.setProperty('display','block','important');
+    page.style.visibility='visible';
+    page.style.opacity='1';
+    document.querySelectorAll('#app .side .nav[data-page]').forEach(function(node){
       node.classList.toggle('active',node.dataset.page===id);
     });
     const bar=document.getElementById('clientWorkspaceBar');
     const name=document.getElementById('clientWorkspaceName');
     const client=(typeof activeClient!=='undefined'?activeClient:null);
     if(bar) bar.style.display=client?'block':'none';
-    if(name && client) name.textContent=(client.name||'')+(client.project?' • '+client.project:'');
+    if(name&&client) name.textContent=(client.name||'')+(client.project?' • '+client.project:'');
     try{
-      if(id==='sales' && typeof window.renderSales==='function') window.renderSales();
-      if(id==='reports' && typeof window.renderReports==='function') window.renderReports();
+      if(id==='sales'&&typeof window.renderSales==='function') window.renderSales();
+      if(id==='reports'&&typeof window.renderReports==='function') window.renderReports();
       if(id==='purchaseInvoices'){
         const date=document.getElementById('piDate');
-        if(date && !date.value) date.value=new Date().toISOString().slice(0,10);
+        if(date&&!date.value) date.value=new Date().toISOString().slice(0,10);
         if(typeof window.piDraftRender==='function') window.piDraftRender();
         if(typeof window.piRender==='function') window.piRender();
       }
-      if(id==='expenses' && typeof window.renderExpenses==='function') window.renderExpenses();
-      if(id==='settings' && typeof window.loadShiftPinsToSettings==='function') window.loadShiftPinsToSettings();
+      if(id==='expenses'&&typeof window.renderExpenses==='function') window.renderExpenses();
+      if(id==='settings'&&typeof window.loadShiftPinsToSettings==='function') window.loadShiftPinsToSettings();
     }catch(error){
-      console.error('Faragello page render failed:',id,error);
-      const notice=document.createElement('div');
-      notice.className='cash-panel';
-      notice.textContent='تعذر تحميل بعض بيانات الصفحة. حدّث الصفحة وحاول مرة أخرى.';
-      page.prepend(notice);
+      console.error('Faragello page data render failed:',id,error);
+      let notice=document.getElementById('faragello-page-error');
+      if(!notice){notice=document.createElement('div');notice.id='faragello-page-error';notice.className='cash-panel';page.prepend(notice);}
+      notice.textContent='الصفحة ظهرت، لكن تعذر تحميل البيانات. افتح وحدة التحكم لمعرفة سبب الخطأ.';
     }
-    if((id==='sales'||id==='reports') && typeof window.refreshSalesFromCloud==='function' && typeof cloudReady!=='undefined' && cloudReady){
+    if((id==='sales'||id==='reports')&&typeof window.refreshSalesFromCloud==='function'&&typeof cloudReady!=='undefined'&&cloudReady){
       window.refreshSalesFromCloud().catch(function(error){console.error('Faragello cloud refresh failed:',error);});
     }
     return true;
