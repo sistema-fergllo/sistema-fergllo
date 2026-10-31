@@ -1560,6 +1560,7 @@ window.showPage=function(id){if(typeof oldShow==='function')oldShow(id);if(id===
  if(typeof previousLogin==='function')window.doLogin=async function(){await previousLogin();if(window.currentProfileRole==='client'&&activeClient?.id&&byId('login').classList.contains('hidden')){branchGateDone=false;try{await showBranchGate()}catch(e){console.error(e)}}};
 })();
 </script>
+
 <script src="returns.js?v=20261031"></script>
 </body>
 </html>
