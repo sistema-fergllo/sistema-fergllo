@@ -15,6 +15,8 @@
       if(title)title.textContent=showFields?'تسجيل الدخول':'اختر نوع الحساب';
       if(fields)fields.classList.toggle('hidden',!showFields);
       if(submit)submit.classList.toggle('hidden',!showFields);
+      admin.classList.toggle('hidden',showFields);
+      client.classList.toggle('hidden',showFields);
       showError('');
       const old=el('faragello-signup-box');if(old)old.remove();
     }
