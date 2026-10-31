@@ -1400,7 +1400,65 @@ function printRecords(title, summaryId, tableId){
  const w=window.open('','_blank');
  if(!w){alert('اسمح بفتح النوافذ المنبثقة للطباعة');return}
  w.document.open();
- w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'+title+'</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #777;padding:8px;text-align:right}th{background:#eee}p{margin:8px 0}@media print{body{padding:0}}</style></head><body><h1>'+title+' - سيستم فرجللو</h1>'+(summary?summary.innerHTML:'')+table.innerHTML+'</body></html>');
+ w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'+title+'</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #777;padding:8px;text-align:right}th{background:#eee}p{margin:8px 0}@media print{body{padding:0}}
+/* Premium login card refresh — intentionally scoped to the login box only */
+#login .login-card{
+  position:relative;isolation:isolate;overflow:hidden;
+  width:min(100%,460px);padding:clamp(28px,3.4vw,42px);
+  border:1px solid rgba(255,255,255,.92);border-radius:30px;
+  background:linear-gradient(155deg,rgba(255,255,255,.98),rgba(246,251,252,.96));
+  box-shadow:0 30px 85px rgba(16,46,69,.16),0 8px 24px rgba(21,155,140,.08),inset 0 1px 0 #fff;
+  text-align:center;backdrop-filter:blur(18px);
+  transition:box-shadow .25s ease,border-color .25s ease;
+}
+#login .login-card:before{
+  content:"";position:absolute;z-index:-1;inset:0 0 auto;height:7px;
+  background:linear-gradient(90deg,#153e56 0%,#159b8c 52%,#b6d9ce 100%);
+}
+#login .login-card:after{
+  content:"";position:absolute;z-index:-1;width:190px;height:190px;left:-105px;bottom:-115px;
+  border-radius:50%;background:radial-gradient(circle,rgba(21,155,140,.12),transparent 70%);
+  pointer-events:none;
+}
+#login .login-card .logo{
+  width:82px;height:82px;margin:2px auto 20px;border-radius:26px;
+  background:linear-gradient(145deg,#102f49 0%,#176078 58%,#159b8c 100%);
+  border:4px solid #fff;box-shadow:0 12px 28px rgba(16,63,83,.22),0 0 0 1px #dcebe9,0 0 0 9px rgba(21,155,140,.07);
+}
+#login .login-card .logo:after{font-size:48px;text-shadow:0 2px 8px rgba(0,0,0,.18)}
+#login .login-card h1{
+  margin:0 0 23px;color:#153e56;font-size:clamp(27px,3vw,34px);
+  font-weight:900;letter-spacing:-.7px;text-shadow:0 1px 0 #fff;
+}
+#login .login-card #loginText{margin:0 0 22px;color:#718493;font-size:14px}
+#login .login-card input:not([type=checkbox]),#login .login-card select,#login .login-card textarea{
+  min-height:54px;padding:14px 16px;border:1px solid #dce7eb;border-radius:15px;
+  background:linear-gradient(180deg,#fff,#f7fafb);color:#1d3445;
+  box-shadow:inset 0 1px 2px rgba(17,55,76,.025);
+}
+#login .login-card input:not([type=checkbox]):focus{
+  border-color:#159b8c;background:#fff;box-shadow:0 0 0 4px rgba(21,155,140,.12),0 5px 16px rgba(21,155,140,.06);
+}
+#login .login-card #adminLoginChoice,#login .login-card #clientLoginToggle{
+  min-height:66px;border-radius:18px;font-size:16px;
+}
+#login .login-card #loginSubmit{
+  min-height:54px;margin-top:14px;border:0;border-radius:15px;
+  background:linear-gradient(115deg,#102f49 0%,#176078 58%,#159b8c 100%);
+  box-shadow:0 12px 23px rgba(16,63,83,.2),inset 0 1px rgba(255,255,255,.22);
+  font-size:16px;font-weight:850;
+}
+#login .login-card #loginSubmit:hover{transform:translateY(-2px);box-shadow:0 16px 28px rgba(16,63,83,.25)}
+#login .login-card button.btn.gray{background:#f1f6f7;border:1px solid #dce7eb;color:#526a78;box-shadow:none}
+#login .login-card #loginErr{margin:8px 0;color:#bd4350;font-weight:700}
+#login .login-card label{color:#526a78}
+@media(max-width:760px){
+  #login .login-card{width:min(100%,430px);padding:28px 22px;border-radius:25px}
+  #login .login-card .logo{width:74px;height:74px;border-radius:23px}
+  #login .login-card h1{font-size:27px;margin-bottom:19px}
+}
+
+</style></head><body><h1>'+title+' - سيستم فرجللو</h1>'+(summary?summary.innerHTML:'')+table.innerHTML+'</body></html>');
  w.document.close();
  w.focus();
  w.print();
