@@ -1,0 +1,263 @@
+name: Apply Faragello Touch
+
+on:
+  push:
+    branches: ["touch/2026-10-31"]
+
+permissions:
+  contents: write
+
+jobs:
+  apply-touch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Apply visual touch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          index = Path('index.html')
+          text = index.read_text(encoding='utf-8')
+          marker = '<script src="faragello-touch.js?v=20261031"></script>'
+          if marker not in text:
+              text = text.replace('</head>', marker + '\n</head>', 1)
+              index.write_text(text, encoding='utf-8')
+
+          css = Path('faragello-touch.css')
+          css.write_text(r'''/* Faragello visual touch - presentation only. No data/schema changes. */
+:root{
+  --fg-touch-navy:#173b56;
+  --fg-touch-blue:#1686c8;
+  --fg-touch-red:#c84b55;
+  --fg-touch-green:#159b75;
+  --fg-touch-glow:rgba(23,59,86,.18);
+}
+
+/* 1) Unified premium surface */
+#app .top{background:linear-gradient(135deg,#102e45 0%,#173b56 58%,#1d5870 100%)!important;box-shadow:0 7px 24px rgba(16,46,69,.18)!important}
+#app .brand .logo{box-shadow:0 0 0 4px rgba(255,255,255,.08),0 10px 24px rgba(0,0,0,.18)!important}
+#app .side{background:linear-gradient(180deg,#ffffff 0%,#f7fafc 100%)!important;box-shadow:inset -1px 0 0 #e7edf1,8px 0 28px rgba(23,59,86,.04)}
+#app .side .nav{position:relative;overflow:hidden;transition:transform .16s,background .16s,border-color .16s,box-shadow .16s!important}
+#app .side .nav:hover{transform:translateX(-2px);box-shadow:0 7px 18px rgba(23,59,86,.07)!important}
+#app .side .nav.active{box-shadow:inset -4px 0 0 #159b8c,0 7px 20px rgba(21,155,140,.10)!important}
+#app .layout>main{background:linear-gradient(180deg,#f7fafc 0%,#f4f7f9 100%)}
+#app .panel,#app .cash-panel,#app .section,#app .form-panel,#app .card{border-radius:16px!important;box-shadow:0 9px 28px rgba(24,55,77,.055)!important}
+#app .panel:hover,#app .cash-panel:hover,#app .section:hover,#app .form-panel:hover{box-shadow:0 12px 34px rgba(24,55,77,.08)!important}
+
+/* 2) Navigation color language: blue / red / green states */
+#app .side .nav[data-touch-color="blue"]{color:#1678b6!important;font-weight:800!important}
+#app .side .nav[data-touch-color="red"]{color:#c84b55!important;font-weight:800!important}
+#app .side .nav[data-touch-color="green"]{color:#168566!important;font-weight:800!important}
+#app .side .nav.logout{color:#b53d47!important}
+
+/* 3) Login choice cards: navy, clear press feedback */
+#login .login-card #adminLoginChoice,#login .login-card #clientLoginToggle{
+  background:linear-gradient(135deg,#173b56,#205a69)!important;
+  color:#fff!important;border:1px solid #285a75!important;
+  box-shadow:0 9px 20px rgba(23,59,86,.18)!important;
+}
+#login .login-card #adminLoginChoice:hover,#login .login-card #clientLoginToggle:hover{transform:translateY(-2px)!important;box-shadow:0 13px 26px rgba(23,59,86,.24)!important}
+#login .login-card #adminLoginChoice:active,#login .login-card #clientLoginToggle:active{transform:translateY(0)!important;box-shadow:0 5px 12px rgba(23,59,86,.18)!important}
+#login .login-card .btn,#login .login-card button{border-radius:13px!important}
+#login .logo{box-shadow:0 0 0 6px rgba(21,155,140,.08),0 16px 30px rgba(21,155,140,.20)!important}
+
+/* 4) Branch picker */
+.branch-picker-panel{position:relative;overflow:hidden;background:linear-gradient(135deg,#102e45,#173b56 62%,#1e5870)!important;border-color:rgba(74,163,255,.34)!important;box-shadow:0 16px 40px rgba(16,46,69,.20)!important}
+.branch-picker-panel:before{content:"";position:absolute;inset:auto -70px -110px auto;width:230px;height:230px;border-radius:50%;background:rgba(52,176,255,.10);pointer-events:none}
+.branch-picker-panel #branchPickerCards .card{position:relative;overflow:hidden;border-radius:15px!important;background:linear-gradient(145deg,rgba(30,77,113,.96),rgba(17,48,76,.96))!important;transition:transform .16s,box-shadow .16s,border-color .16s!important}
+.branch-picker-panel #branchPickerCards .card:hover{transform:translateY(-3px);border-color:rgba(88,196,255,.72)!important;box-shadow:0 12px 26px rgba(0,0,0,.20)!important}
+.branch-picker-panel .touch-branch-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;padding-top:9px;border-top:1px solid rgba(255,255,255,.12);font-size:11px;color:#cfe9f8}
+.branch-picker-panel .touch-branch-status{display:inline-flex;align-items:center;gap:5px;color:#8ff0bf;font-weight:800}.branch-picker-panel .touch-branch-status:before{content:"";width:7px;height:7px;border-radius:50%;background:#54dfa0;box-shadow:0 0 0 4px rgba(84,223,160,.12)}
+.branch-picker-panel .touch-branch-action{color:#aee3ff;font-weight:800}
+
+/* 5) Dashboard cards */
+#app .cards .card{position:relative;overflow:hidden}
+#app .cards .card:after{content:"";position:absolute;left:-18px;bottom:-28px;width:90px;height:90px;border-radius:50%;background:rgba(21,155,140,.045);pointer-events:none}
+#app .cards .card .value{letter-spacing:.1px}
+
+/* 6) Cashier visual hierarchy */
+#app .cash-panel .cash-touch-total{font-size:clamp(30px,4vw,48px);font-weight:900;color:#173b56;line-height:1.05}
+#app .cash-panel .cash-touch-label{color:#718291;font-size:12px;font-weight:700;margin-bottom:6px}
+#app .cash-panel .cash-touch-net{border:1px solid #cfe9df;background:#f2fbf7!important;color:#14704f!important}
+#app .cash-panel .cash-touch-return{border:1px solid #f1d4d6;background:#fff7f7!important;color:#b43e48!important}
+#app .cash-panel .cash-touch-waste{border:1px solid #f0dfb8;background:#fffaf0!important;color:#9a6b17!important}
+#app .cash-panel .cash-touch-sale{min-height:50px!important;padding:12px 20px!important;border-radius:12px!important;font-size:15px!important;box-shadow:0 10px 22px rgba(23,59,86,.16)!important}
+
+/* 7) Reports: four clear headline cards */
+#app .touch-report-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 18px}
+#app .touch-report-card{padding:16px;border-radius:15px;border:1px solid #e2e9ee;background:#fff;box-shadow:0 8px 24px rgba(24,55,77,.05)}
+#app .touch-report-card .touch-report-label{color:#718291;font-size:11px;font-weight:800;margin-bottom:7px}
+#app .touch-report-card .touch-report-value{font-size:24px;font-weight:900;color:#173b56}
+#app .touch-report-card.return .touch-report-value{color:#c84b55}.touch-report-card.waste .touch-report-value{color:#a1731f}.touch-report-card.net .touch-report-value{color:#148365}
+
+/* 8) Status bar */
+#app .touch-statusbar{display:flex;align-items:center;justify-content:flex-start;gap:14px;flex-wrap:wrap;margin:0 0 14px;padding:8px 12px;border:1px solid #dfe8ec;border-radius:11px;background:#fff;color:#718291;font-size:11px}
+#app .touch-status-item{display:inline-flex;align-items:center;gap:6px}.touch-status-dot{width:7px;height:7px;border-radius:50%;background:#19a36f;box-shadow:0 0 0 4px rgba(25,163,111,.10)}
+#app .touch-status-branch{font-weight:800;color:#173b56}
+
+/* 9) Mobile */
+@media(max-width:900px){#app .touch-report-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){#app .touch-report-grid{grid-template-columns:1fr 1fr;gap:8px}#app .touch-report-card{padding:12px}#app .touch-report-card .touch-report-value{font-size:19px}.branch-picker-panel{padding:15px}}
+''', encoding='utf-8')
+
+          js = Path('faragello-touch.js')
+          js.write_text(r'''/* Faragello touch: UI-only enhancements. Never changes Supabase schema/data. */
+(function(){
+  'use strict';
+
+  function textOf(el){return (el && el.textContent || '').replace(/\s+/g,' ').trim();}
+
+  function colorNavigation(){
+    var blue=['الصفحة الرئيسية','البصمة','بيت الكاشير','المبيعات اليومية','التقارير اليومية','فواتير المشتريات'];
+    var red=['إذن صادر تحويل','تفاصيل المخزون','تقارير الجرد','الإعدادات'];
+    document.querySelectorAll('#app .side .nav').forEach(function(nav){
+      var t=textOf(nav);
+      nav.removeAttribute('data-touch-color');
+      if(blue.some(function(x){return t.indexOf(x)!==-1;})) nav.dataset.touchColor='blue';
+      if(red.some(function(x){return t.indexOf(x)!==-1;})) nav.dataset.touchColor='red';
+      if(t.indexOf('تسجيل الخروج')!==-1) nav.dataset.touchColor='red';
+    });
+  }
+
+  function normalizeLoginChoices(){
+    var buttons=document.querySelectorAll('#login button,#login .btn');
+    buttons.forEach(function(btn){
+      var t=textOf(btn);
+      if(t==='دخول المشرف') btn.textContent='تسجيل الدخول';
+      if(t==='دخول العميل') btn.textContent='إنشاء حساب';
+    });
+  }
+
+  function addRememberBox(){
+    var password=document.getElementById('password');
+    var fields=document.getElementById('loginFields');
+    if(!password || !fields || document.getElementById('touchRememberLogin')) return;
+    var wrap=document.createElement('label');
+    wrap.id='touchRememberLogin';
+    wrap.style.cssText='display:flex;align-items:center;justify-content:flex-start;gap:8px;margin:8px 0 2px;color:#526b7a;font-size:12px;cursor:pointer;';
+    wrap.innerHTML='<input id="touchRememberLoginCheck" type="checkbox" style="width:15px;height:15px;accent-color:#173b56"> تثبيت اسم المستخدم وكلمة السر على هذا الجهاز';
+    password.closest('div') ? password.closest('div').insertAdjacentElement('afterend',wrap) : fields.appendChild(wrap);
+    var check=wrap.querySelector('input');
+    var key='faragello_touch_remember_login';
+    try{
+      var saved=JSON.parse(localStorage.getItem(key)||'null');
+      if(saved && saved.username){
+        var email=document.getElementById('email'); if(email) email.value=saved.username;
+        password.value=saved.password||''; check.checked=true;
+      }
+    }catch(e){}
+    check.addEventListener('change',function(){
+      if(!this.checked){try{localStorage.removeItem(key);}catch(e){} return;}
+      var email=document.getElementById('email');
+      try{localStorage.setItem(key,JSON.stringify({username:email?email.value:'',password:password.value}));}catch(e){}
+    });
+    [document.getElementById('email'),password].forEach(function(input){if(input)input.addEventListener('input',function(){if(check.checked){var email=document.getElementById('email');try{localStorage.setItem(key,JSON.stringify({username:email?email.value:'',password:password.value}));}catch(e){}}});});
+  }
+
+  function decorateBranches(){
+    var cards=document.querySelectorAll('.branch-picker-panel #branchPickerCards .card');
+    cards.forEach(function(card){
+      if(card.querySelector('.touch-branch-meta')) return;
+      var meta=document.createElement('div'); meta.className='touch-branch-meta';
+      meta.innerHTML='<span class="touch-branch-status">متاح الآن</span><span class="touch-branch-action">دخول الفرع ←</span>';
+      card.appendChild(meta);
+    });
+  }
+
+  function addStatusBar(){
+    var app=document.getElementById('app');
+    if(!app || document.getElementById('faragello-touch-status')) return;
+    var bar=document.createElement('div'); bar.id='faragello-touch-status'; bar.className='touch-statusbar';
+    bar.innerHTML='<span class="touch-status-item"><span class="touch-status-dot"></span>النظام يعمل</span><span class="touch-status-item touch-status-branch">🏬 الفرع الحالي: <span id="touchStatusBranch">—</span></span><span class="touch-status-item">● متصل بقاعدة البيانات</span>';
+    var activity=app.querySelector('.activity-strip');
+    if(activity && activity.parentNode) activity.insertAdjacentElement('afterend',bar);
+    else{var layout=app.querySelector('.layout'); if(layout) layout.insertAdjacentElement('beforebegin',bar);}
+  }
+
+  function updateStatusBranch(){
+    var out=document.getElementById('touchStatusBranch'); if(!out) return;
+    var candidates=['#currentBranchName','#branchCurrentName','#currentBranch','.current-branch'];
+    for(var i=0;i<candidates.length;i++){
+      var el=document.querySelector(candidates[i]); if(el && textOf(el)){out.textContent=textOf(el).replace(/^🏬\s*الفرع الحالي:\s*/,'');return;}
+    }
+    var all=document.querySelectorAll('#app *');
+    for(var j=0;j<all.length;j++){
+      var t=textOf(all[j]);
+      if(t.indexOf('الفرع الحالي:')!==-1 && t.length<100){out.textContent=t.replace(/^.*الفرع الحالي:\s*/,'');return;}
+    }
+  }
+
+  function addCashierTouch(){
+    var pages=document.querySelectorAll('#app main .page');
+    pages.forEach(function(page){
+      var title=textOf(page.querySelector('.title h2'));
+      if(title.indexOf('الكاشير')===-1 && title.indexOf('بيت الكاشير')===-1) return;
+      var panel=page.querySelector('.cash-panel')||page.querySelector('.panel');
+      if(!panel || panel.querySelector('.cash-touch-total')) return;
+      var block=document.createElement('div'); block.className='cash-touch-total'; block.textContent='—';
+      var label=document.createElement('div'); label.className='cash-touch-label'; label.textContent='إجمالي المبيعات';
+      panel.insertBefore(label,panel.firstChild); panel.insertBefore(block,label.nextSibling);
+      var vals=panel.querySelectorAll('.value');
+      if(vals[0]) block.textContent=textOf(vals[0]);
+      vals.forEach(function(v){
+        var t=textOf(v.parentElement||v);
+        if(t.indexOf('مرتجع')!==-1) v.classList.add('cash-touch-return');
+        if(t.indexOf('هالك')!==-1 || t.indexOf('هوالك')!==-1) v.classList.add('cash-touch-waste');
+        if(t.indexOf('صافي')!==-1) v.classList.add('cash-touch-net');
+      });
+      var buttons=panel.querySelectorAll('button');
+      buttons.forEach(function(b){if(textOf(b).indexOf('بيع')!==-1 || textOf(b).indexOf('إتمام')!==-1)b.classList.add('cash-touch-sale');});
+    });
+  }
+
+  function addReportTouch(){
+    var pages=document.querySelectorAll('#app main .page');
+    pages.forEach(function(page){
+      var title=textOf(page.querySelector('.title h2'));
+      if(title.indexOf('التقارير')===-1 || page.querySelector('.touch-report-grid')) return;
+      var grid=document.createElement('div'); grid.className='touch-report-grid';
+      [['المبيعات','sales'],['المرتجعات','return'],['الهوالك','waste'],['صافي المبيعات','net']].forEach(function(item){
+        var card=document.createElement('div'); card.className='touch-report-card '+item[1];
+        card.innerHTML='<div class="touch-report-label">'+item[0]+'</div><div class="touch-report-value">—</div>';
+        grid.appendChild(card);
+      });
+      var cards=page.querySelectorAll('.card');
+      cards.forEach(function(c){
+        var t=textOf(c), value=c.querySelector('.value'); if(!value)return;
+        var target=null;
+        if(t.indexOf('صافي')!==-1)target=grid.querySelector('.net .touch-report-value');
+        else if(t.indexOf('مرتجع')!==-1)target=grid.querySelector('.return .touch-report-value');
+        else if(t.indexOf('هالك')!==-1 || t.indexOf('هوالك')!==-1)target=grid.querySelector('.waste .touch-report-value');
+        else if(t.indexOf('مبيعات')!==-1)target=grid.querySelector('.sales .touch-report-value');
+        if(target)target.textContent=textOf(value);
+      });
+      var first=page.querySelector('.title'); if(first) first.insertAdjacentElement('afterend',grid);
+    });
+  }
+
+  function run(){
+    normalizeLoginChoices(); addRememberBox(); colorNavigation(); decorateBranches(); addStatusBar(); updateStatusBranch(); addCashierTouch(); addReportTouch();
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run); else run();
+  var observer=new MutationObserver(function(){run();});
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+})();
+''', encoding='utf-8')
+          PY
+
+      - name: Validate JavaScript
+        run: node --check faragello-touch.js
+
+      - name: Commit touch changes and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html faragello-touch.css faragello-touch.js
+          git rm .github/workflows/apply-faragello-touch.yml
+          git commit -m "Add Faragello visual touch and dashboard polish"
+          git push
