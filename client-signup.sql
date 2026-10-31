@@ -1,6 +1,9 @@
 -- Faragello: self-service customer account creation
 begin;
 
+alter table public.client_accounts add column if not exists username text;
+create unique index if not exists client_accounts_username_lower_uidx on public.client_accounts (lower(username)) where username is not null;
+
 create or replace function public.create_customer_account(
   p_name text,
   p_username text
@@ -26,8 +29,8 @@ begin
     raise exception 'اسم المستخدم مستخدم بالفعل.';
   end if;
 
-  insert into public.client_accounts(id,name,project,email,status,created_at)
-  values(v_id,v_name,v_name,v_email,'نشط',now());
+  insert into public.client_accounts(id,name,project,email,username,status,created_at)
+  values(v_id,v_name,v_name,v_email,v_username,'نشط',now());
 
   return jsonb_build_object('id',v_id,'name',v_name,'username',v_username,'email',v_email);
 end;
