@@ -22,7 +22,6 @@ jobs:
           html = Path("index.html").read_text(encoding="utf-8")
           required = [
               "chooseLogin('admin')",
-              "chooseLogin('client')",
               "async function doLogin()",
               'id="navClients"',
               "client_accounts",
@@ -34,7 +33,18 @@ jobs:
           missing = [item for item in required if item not in html]
           if missing:
               raise SystemExit("Required system feature missing: " + ", ".join(missing))
-          print("Required system features are present.")
+          forbidden = [
+              "للتواصل والاستفسار",
+              "01128777287",
+              "ensurePublicPhone",
+              "faragello-public-phone",
+              "chooseLogin('client')",
+              'id="clientLoginToggle"',
+          ]
+          present = [item for item in forbidden if item in html]
+          if present:
+              raise SystemExit("Removed public/login elements still present: " + ", ".join(present))
+          print("Required features are present and removed public/login elements are absent.")
           PY
 
       - name: Check JavaScript syntax
