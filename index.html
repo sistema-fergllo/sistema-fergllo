@@ -134,6 +134,62 @@ body.modal-open{overflow:hidden!important}
   #login .login-card .logo{width:74px;height:74px;border-radius:23px}
   #login .login-card h1{font-size:27px;margin-bottom:19px}
 }
+
+/* Unified controls inside the login card */
+#login .login-card #loginFields{display:flex;flex-direction:column;gap:12px}
+#login .login-card #loginFields.hidden{display:none}
+#login .login-card #loginFields>div:not(#loginErr){width:100%;margin:0}
+#login .login-card input:not([type=checkbox]),
+#login .login-card select,
+#login .login-card textarea{
+  display:block;width:100%;box-sizing:border-box;min-height:56px;
+  border:1.5px solid #d5e5e8!important;border-radius:16px!important;
+  background:#f5fafb!important;color:#17384b!important;
+  padding:14px 17px!important;font-size:15px;font-weight:650;
+  box-shadow:0 4px 12px rgba(19,62,83,.055),inset 0 1px 0 #fff!important;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+#login .login-card input:not([type=checkbox]):focus,
+#login .login-card select:focus,
+#login .login-card textarea:focus{
+  outline:none;border-color:#159b8c!important;background:#fff!important;
+  box-shadow:0 0 0 4px rgba(21,155,140,.13),0 7px 18px rgba(19,62,83,.08)!important;
+}
+#login .login-card #adminLoginChoice,
+#login .login-card #clientLoginToggle,
+#login .login-card #loginSubmit,
+#login .login-card #loginFields button.btn{
+  display:block;width:100%;min-height:54px;margin:0!important;
+  padding:13px 18px!important;border:1px solid #176078!important;
+  border-radius:16px!important;
+  background:linear-gradient(115deg,#123b55,#176078 58%,#159b8c)!important;
+  color:#fff!important;font-size:15px!important;font-weight:850!important;
+  box-shadow:0 8px 18px rgba(16,63,83,.16),inset 0 1px rgba(255,255,255,.2)!important;
+  transition:transform .2s,box-shadow .2s,filter .2s;
+}
+#login .login-card #adminLoginChoice:hover,
+#login .login-card #clientLoginToggle:hover,
+#login .login-card #loginSubmit:hover,
+#login .login-card #loginFields button.btn:hover{
+  transform:translateY(-1px);filter:brightness(1.04);
+  box-shadow:0 11px 22px rgba(16,63,83,.2)!important;
+}
+#login .login-card #loginFields button.btn.gray{
+  background:#edf5f6!important;color:#31566a!important;
+  border:1.5px solid #d5e5e8!important;box-shadow:none!important;
+}
+#login .login-card label:has(#rememberLogin){
+  box-sizing:border-box;width:100%;min-height:48px;padding:10px 13px!important;
+  margin:0!important;border:1.5px solid #d5e5e8;border-radius:15px;
+  background:#f5fafb;box-shadow:0 4px 12px rgba(19,62,83,.045);
+  color:#31566a!important;font-weight:700;
+}
+#login .login-card #rememberLogin{
+  width:17px!important;height:17px!important;flex:0 0 17px!important;
+  accent-color:#159b8c;margin:0!important;
+}
+#login .login-card #loginErr{width:100%;margin:0!important;text-align:center}
+
 </style>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
