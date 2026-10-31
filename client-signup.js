@@ -3,8 +3,8 @@
   'use strict';
   const NAVY='#173b56';
   function el(id){return document.getElementById(id)}
-  function supabase(){return window.supabaseClient || window.supabase || null}
-  function showError(msg){const x=el('loginErr');if(x)x.textContent=msg||''}
+  function supabase(){return window.supabaseClient || window.__frgSignupClient || null}
+  function showError(msg){const x=el('signupError');const y=el('loginErr');if(x)x.textContent=msg||'';if(y)y.textContent=msg||''}
   function setup(){
     const login=el('login'); const card=document.querySelector('#login .login-card');
     const admin=el('adminLoginChoice'), client=el('clientLoginToggle'), fields=el('loginFields'), submit=el('loginSubmit'), title=el('loginText');
@@ -28,6 +28,7 @@
         '<input id="signupUser" placeholder="اسم المستخدم" autocomplete="username" dir="ltr">'+
         '<input id="signupPass" type="password" placeholder="كلمة السر — 6 أرقام أو أكثر" autocomplete="new-password" inputmode="numeric">'+
         '<input id="signupPass2" type="password" placeholder="تأكيد كلمة السر" autocomplete="new-password" inputmode="numeric">'+
+        '<div id="signupError" class="err" role="alert" style="display:block;min-height:18px"></div>'+
         '<button type="button" id="signupSubmit" class="btn" style="background:'+NAVY+'!important;color:#fff!important">إنشاء الحساب</button>'+
         '<button type="button" id="signupBack" class="btn gray" style="background:'+NAVY+'!important;color:#fff!important">رجوع</button></div>';
       card.appendChild(box);
