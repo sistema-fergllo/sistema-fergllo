@@ -18,7 +18,7 @@
       showError('');
       const old=el('faragello-signup-box');if(old)old.remove();
     }
-    admin.onclick=function(e){e.preventDefault();base(true);if(el('email')){el('email').placeholder='اسم المستخدم';el('email').focus()}}
+    admin.onclick=function(e){e.preventDefault();if(typeof window.chooseLogin==='function')window.chooseLogin('both');base(true);if(el('email')){el('email').placeholder='اسم المستخدم (مشرف أو عميل)';el('email').focus()}}
     client.onclick=function(e){e.preventDefault();base(false);renderSignup()}
     function renderSignup(){
       const box=document.createElement('div');box.id='faragello-signup-box';
@@ -49,7 +49,7 @@
         const email=(created?.email)||((user)+'@fergllo.local');
         const res=await sb.auth.signUp({email,password:pass,options:{data:{account_type:'client',full_name:name}}});
         if(res.error)throw res.error;
-        alert('تم إنشاء حساب العميل بنجاح. الحساب سيظهر في حساب المشرف ضمن العملاء.');
+        alert('تم إنشاء حساب العميل بنجاح، وتم تسجيل بياناته في قائمة العملاء بحساب المشرف.');
         if(res.data?.session){
           location.reload();
         }else{
