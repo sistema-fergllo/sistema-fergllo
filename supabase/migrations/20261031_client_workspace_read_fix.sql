@@ -86,4 +86,69 @@ $$;
 revoke all on function public.get_current_client_workspace() from public, anon;
 grant execute on function public.get_current_client_workspace() to authenticated;
 
+
+-- Also repair the legacy resolver: older login/database paths may still invoke it.
+create or replace function public.resolve_current_client_workspace()
+returns text
+language plpgsql
+security definer
+set search_path = public, auth
+as $
+declare
+  v_uid uuid := auth.uid();
+  v_email text;
+  v_role text;
+  v_client_id text;
+  v_match_count integer;
+begin
+  if v_uid is null then
+    raise exception 'يجب تسجيل الدخول أولاً.';
+  end if;
+
+  select role into v_role
+  from public.user_profiles
+  where user_id = v_uid;
+
+  if v_role is distinct from 'client' then
+    raise exception 'هذه الوظيفة مخصصة لحساب العميل فقط.';
+  end if;
+
+  select lower(email) into v_email
+  from auth.users
+  where id = v_uid;
+
+  select count(distinct ca.id), (array_agg(distinct ca.id))[1]::text
+    into v_match_count, v_client_id
+  from public.client_accounts ca
+  where ca.status = 'نشط'
+    and (
+      (v_email is not null and lower(coalesce(ca.email,'')) = v_email)
+      or (
+        v_email is not null
+        and lower(coalesce(ca.username,'')) =
+            regexp_replace(split_part(v_email,'@',1), '[^a-z0-9._-]', '', 'g')
+        and split_part(v_email,'@',2) = 'fergllo.local'
+      )
+    );
+
+  if coalesce(v_match_count, 0) = 0 then
+    return null;
+  end if;
+
+  if v_match_count > 1 then
+    raise exception 'بيانات الدخول تطابق أكثر من حساب عميل. راجع مدير النظام.';
+  end if;
+
+  update public.user_profiles
+     set client_id = v_client_id
+   where user_id = v_uid
+     and role = 'client';
+
+  return v_client_id;
+end;
+$;
+
+revoke all on function public.resolve_current_client_workspace() from public, anon;
+grant execute on function public.resolve_current_client_workspace() to authenticated;
+
 commit;
