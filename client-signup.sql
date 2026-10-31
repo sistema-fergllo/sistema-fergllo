@@ -44,6 +44,7 @@ declare
   v_name text := trim(coalesce(new.raw_user_meta_data->>'full_name',''));
   v_phone text := regexp_replace(coalesce(new.raw_user_meta_data->>'phone',''), '[[:space:]()-]', '', 'g');
   v_client_id text;
+  v_status text;
 begin
   if coalesce(new.raw_user_meta_data->>'account_type','') <> 'client' then
     return new;
@@ -56,17 +57,33 @@ begin
   if v_phone !~ '^\\+?[0-9]{10,15}$' then
     raise exception 'اكتب رقم هاتف صحيحًا من 10 إلى 15 رقمًا.';
   end if;
-  if lower(coalesce(new.email,'')) <> v_username || '@fergllo.local' then
+  if lower(coalesce(new.email,'')) <> (v_username || '@fergllo.local') then
     raise exception 'بيانات اسم المستخدم غير متطابقة. حاول مرة أخرى.';
   end if;
-  if exists(select 1 from public.client_accounts where lower(username)=v_username or lower(email)=lower(new.email)) then
-    raise exception 'اسم المستخدم مستخدم بالفعل. اختار اسم مستخدم مختلف.';
+  -- Reuse a stranded customer row left by the previous two-step signup,
+  -- but never attach a username that is already linked to another login.
+  select id,status into v_client_id,v_status
+    from public.client_accounts
+   where lower(username)=v_username or lower(email)=lower(new.email)
+   limit 1
+   for update;
+
+  if v_client_id is not null then
+    if v_status <> 'نشط' then
+      raise exception 'حساب اسم المستخدم ده موقوف. تواصل مع مدير النظام.';
+    end if;
+    if exists(select 1 from public.user_profiles where client_id=v_client_id and role='client') then
+      raise exception 'اسم المستخدم مستخدم بالفعل. اختار اسم مستخدم مختلف.';
+    end if;
+    update public.client_accounts
+       set name=v_name, project=v_name, email=lower(new.email),
+           username=v_username, phone=v_phone
+     where id=v_client_id;
+  else
+    v_client_id := 'client-' || replace(gen_random_uuid()::text,'-','');
+    insert into public.client_accounts(id,name,project,email,username,phone,status,created_at)
+    values(v_client_id,v_name,v_name,lower(new.email),v_username,v_phone,'نشط',now());
   end if;
-
-  v_client_id := 'client-' || replace(gen_random_uuid()::text,'-','');
-
-  insert into public.client_accounts(id,name,project,email,username,phone,status,created_at)
-  values(v_client_id,v_name,v_name,lower(new.email),v_username,v_phone,'نشط',now());
 
   insert into public.user_profiles(user_id,full_name,role,client_id)
   values(new.id,v_name,'client',v_client_id)
