@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
   pages: write
 
 jobs:
@@ -13,32 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install cashier returns loader
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-          tag = '<script src="returns.js?v=20261031"></script>'
-          s = s.replace(tag, '')
-          s = re.sub(r"(\+table\+)'\\n</body", r"\1'</body", s)
-          s = re.sub(r"(\+table\+)'\n</body", r"\1'</body", s)
-          pos = s.rfind('</body>')
-          if pos < 0:
-              raise SystemExit('Missing final </body> marker')
-          s = s[:pos] + tag + '\n' + s[pos:]
-          p.write_text(s, encoding='utf-8')
-          PY
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          if ! git diff --cached --quiet; then
-            git commit -m "Install cashier returns loader"
-            git push
-          fi
 
       - name: Verify required system features
         run: |
@@ -56,7 +30,6 @@ jobs:
               "تقرير الجرد",
               "printAllBarcodes",
               'src="login-fix.js',
-              'returns.js?v=20261031',
           ]
           missing = [item for item in required if item not in html]
           if missing:
@@ -68,7 +41,6 @@ jobs:
         run: |
           set -euo pipefail
           node --check login-fix.js
-          node --check returns.js
           python3 - <<'PY'
           from pathlib import Path
           import re
