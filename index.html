@@ -1192,30 +1192,7 @@ function printInventoryReport(){
   const w=window.open('','_blank','width=1000,height=750');if(!w){alert('اسمح بفتح النوافذ المنبثقة للطباعة');return}
   const table='<table><thead><tr><th>الكود</th><th>الصنف</th><th>رصيد السيستم</th><th>الجرد الفعلي</th><th>الفرق</th><th>قيمة الفرق</th><th>الحالة</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+esc(x.code)+'</td><td>'+esc(x.name)+'</td><td>'+x.system+'</td><td>'+x.actual+'</td><td>'+(x.diff>0?'+':'')+x.diff+'</td><td>'+money(x.diffValue)+'</td><td>'+(x.diff===0?'مطابق':x.diff<0?'عجز':'زيادة')+'</td></tr>').join('')+'</tbody></table>';
   w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير العجز والزيادة</title><style>body{font-family:Tahoma,Arial;padding:22px;color:#172033}h1{text-align:center;color:#173b56}p{text-align:center}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{border:1px solid #9aa8b2;padding:7px;text-align:right}th{background:#eaf0f4}.summary{display:flex;gap:20px;flex-wrap:wrap;margin:15px 0}.summary b{padding:10px;border:1px solid #9aa8b2}@media print{body{padding:0}}</style></head><body><h1>سيستم فرجللو — تقرير العجز والزيادة</h1><p>تاريخ الجرد: '+esc(inventoryAuditDate())+' | الفرع: '+esc((()=>{try{return JSON.parse(localStorage.getItem('frg_active_branch')||'null')?.name||'—'}catch(e){return '—'}})())+'</p><div class="summary"><b>الأصناف المطابقة: '+matches+'</b><b>أصناف العجز: '+short.length+' — القيمة: '+money(short.reduce((n,x)=>n+x.diffValue,0))+'</b><b>أصناف الزيادة: '+over.length+' — القيمة: '+money(over.reduce((n,x)=>n+x.diffValue,0))+'</b></div>'+table+'<p>أمين المخزن: ____________ &nbsp;&nbsp; المراجعة: ____________ &nbsp;&nbsp; اعتماد الإدارة: ____________</p>
-<script id="faragello-page-recovery">
-(function(){
-  const previousShowPage=window.showPage;
-  window.showPage=function(id){
-    const page=document.getElementById(id);
-    if(!page){console.error('Faragello page not found:',id);alert('الصفحة المطلوبة غير موجودة حاليًا: '+id);return}
-    try{if(typeof previousShowPage==='function')previousShowPage.call(this,id)}catch(error){console.error('Page initialization recovered:',id,error)}
-    if(page.classList.contains('hidden')){
-      document.querySelectorAll('#app .page').forEach(node=>node.classList.add('hidden'));
-      page.classList.remove('hidden');
-      document.querySelectorAll('#app .side .nav[data-page]').forEach(node=>node.classList.toggle('active',node.dataset.page===id));
-    }
-    try{
-      if(id==='sales'&&typeof window.renderSales==='function')window.renderSales();
-      if(id==='reports'&&typeof window.renderReports==='function')window.renderReports();
-      if(id==='expenses'&&typeof window.renderExpenses==='function')window.renderExpenses();
-      if(id==='purchaseInvoices'&&typeof window.piRender==='function')window.piRender();
-      if(id==='settings'&&typeof window.loadShiftPinsToSettings==='function')window.loadShiftPinsToSettings();
-    }catch(error){console.error('Page refresh failed:',id,error);alert('الصفحة اتفتحت لكن حصل خطأ أثناء تحميل بياناتها. راجع الاتصال وحاول مرة أخرى.')}
-  };
-  if(typeof renderExpenses==='function')window.renderExpenses=renderExpenses;
-  if(typeof loadShiftPinsToSettings==='function')window.loadShiftPinsToSettings=loadShiftPinsToSettings;
-})();
-</script>
+
 </body></html>');
   w.document.close();w.focus();w.print();
 }
@@ -1596,6 +1573,31 @@ window.showPage=function(id){if(typeof oldShow==='function')oldShow(id);if(id===
  window.confirmBranchEntry=async function(){if(!selectedBranchForEntry){byId('branchGateError').textContent='اختار الفرع الأول';return}const pin=byId('branchPinInputGate').value.trim();if(!pin){byId('branchGateError').textContent='اكتب الرقم السري للفرع';return}try{if(await hashBranchPin(pin)!==selectedBranchForEntry.pin_hash){byId('branchGateError').textContent='الرقم السري غير صحيح';return}const branch={id:selectedBranchForEntry.id,name:selectedBranchForEntry.name};localStorage.setItem('frg_active_branch',JSON.stringify(branch));activeClient.branchId=branch.id;activeClient.branchName=branch.name;localStorage.setItem('frg_active_client',JSON.stringify(activeClient));const label=byId('activeBranchLabel');if(label)label.textContent='🏬 الفرع الحالي: '+branch.name;byId('branchGateModal').classList.add('hidden');document.body.classList.remove('modal-open');branchGateDone=true;if(typeof logActivity==='function')logActivity('تم الدخول إلى فرع '+branch.name,'branch')}catch(e){byId('branchGateError').textContent='تعذر التحقق من الرقم السري'}};
  const previousLogin=window.doLogin;
  if(typeof previousLogin==='function')window.doLogin=async function(){await previousLogin();if(window.currentProfileRole==='client'&&activeClient?.id&&byId('login').classList.contains('hidden')){branchGateDone=false;try{await showBranchGate()}catch(e){console.error(e)}}};
+})();
+</script>
+
+<script id="faragello-page-recovery">
+(function(){
+  const previousShowPage=window.showPage;
+  window.showPage=function(id){
+    const page=document.getElementById(id);
+    if(!page){console.error('Faragello page not found:',id);alert('الصفحة المطلوبة غير موجودة حاليًا: '+id);return}
+    try{if(typeof previousShowPage==='function')previousShowPage.call(this,id)}catch(error){console.error('Page initialization recovered:',id,error)}
+    if(page.classList.contains('hidden')){
+      document.querySelectorAll('#app .page').forEach(node=>node.classList.add('hidden'));
+      page.classList.remove('hidden');
+      document.querySelectorAll('#app .side .nav[data-page]').forEach(node=>node.classList.toggle('active',node.dataset.page===id));
+    }
+    try{
+      if(id==='sales'&&typeof window.renderSales==='function')window.renderSales();
+      if(id==='reports'&&typeof window.renderReports==='function')window.renderReports();
+      if(id==='expenses'&&typeof window.renderExpenses==='function')window.renderExpenses();
+      if(id==='purchaseInvoices'&&typeof window.piRender==='function')window.piRender();
+      if(id==='settings'&&typeof window.loadShiftPinsToSettings==='function')window.loadShiftPinsToSettings();
+    }catch(error){console.error('Page refresh failed:',id,error);alert('الصفحة اتفتحت لكن حصل خطأ أثناء تحميل بياناتها. راجع الاتصال وحاول مرة أخرى.')}
+  };
+  if(typeof renderExpenses==='function')window.renderExpenses=renderExpenses;
+  if(typeof loadShiftPinsToSettings==='function')window.loadShiftPinsToSettings=loadShiftPinsToSettings;
 })();
 </script>
 </body>
