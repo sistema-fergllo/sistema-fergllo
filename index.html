@@ -519,6 +519,21 @@ body.client-workspace-mode #app #activeBranchLabel{
 #login #email::placeholder,
 #login #password::placeholder { color: #000000 !important; opacity: 1 !important; }
 </style>
+
+<style id="faragello-login-buttons-same-size">
+#login #loginSubmit,
+#login #loginFields button[onclick*="resetLoginChoice"]{
+  width:150px!important;
+  min-width:150px!important;
+  max-width:150px!important;
+  min-height:46px!important;
+  height:46px!important;
+  padding:11px 16px!important;
+  display:block!important;
+  margin:12px auto 0!important;
+}
+</style>
+
 </head>
 <body>
 <div id="login" class="login-screen">
