@@ -1,0 +1,107 @@
+name: Faragello system verification
+
+on:
+  push:
+    branches: [main, "cleanup/**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify required system features and HTML structure
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          html = Path("index.html").read_text(encoding="utf-8")
+          required = [
+              "chooseLogin('admin')",
+              "chooseLogin('client')",
+              "async function doLogin()",
+              'id="navClients"',
+              "client_accounts",
+              "user_profiles",
+              "تقرير الجرد",
+              "printAllBarcodes",
+              'src="login-fix.js',
+          ]
+          missing = [item for item in required if item not in html]
+          if missing:
+              raise SystemExit("Required system feature missing: " + ", ".join(missing))
+
+          class AuditParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids = set()
+                  self.duplicates = []
+                  self.missing_local_files = []
+
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  element_id = attrs.get("id")
+                  if element_id:
+                      if element_id in self.ids:
+                          self.duplicates.append(element_id)
+                      self.ids.add(element_id)
+
+                  for attr in ("src", "href"):
+                      value = attrs.get(attr, "")
+                      if value and not value.startswith(("https://", "http://", "data:", "tel:", "mailto:", "#")):
+                          local = value.split("?", 1)[0]
+                          if local and not Path(local).exists():
+                              self.missing_local_files.append(local)
+
+          parser = AuditParser()
+          parser.feed(html)
+          if parser.duplicates:
+              raise SystemExit("Duplicate HTML element IDs: " + ", ".join(sorted(set(parser.duplicates))))
+          if parser.missing_local_files:
+              raise SystemExit("Missing local HTML assets: " + ", ".join(sorted(set(parser.missing_local_files))))
+
+          print("Required features, HTML IDs, and local assets passed.")
+          PY
+
+      - name: Check JavaScript syntax
+        run: |
+          set -euo pipefail
+          node --check login-fix.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          html = Path("index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r'<script\b([^>]*)>([\s\S]*?)</script\s*>', html, re.I)
+          count = 0
+          for attrs, body in scripts:
+              if re.search(r'\bsrc\s*=', attrs, re.I) or not body.strip():
+                  continue
+              count += 1
+              Path(f"/tmp/faragello-inline-{count}.js").write_text(body, encoding="utf-8")
+          if count == 0:
+              raise SystemExit("No inline JavaScript blocks found.")
+          print(f"Extracted {count} inline JavaScript blocks for syntax checking.")
+          PY
+          for file in /tmp/faragello-inline-*.js; do
+            node --check "$file"
+          done
+          echo "All JavaScript syntax checks passed."
+
+      - name: Request GitHub Pages rebuild
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds" || true
