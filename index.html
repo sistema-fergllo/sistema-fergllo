@@ -14,19 +14,7 @@
 #login h1{margin:0 0 6px;color:#173b56;font-size:clamp(26px,3vw,32px);font-weight:850;letter-spacing:-.5px}#login #loginText{margin:0 0 25px;color:#728692;font-size:14px;font-weight:400}
 #login .login-card input,#login .login-card select,#login .login-card textarea{width:100%;min-width:0;min-height:48px;padding:12px 14px;border:1px solid #d9e7e8;border-radius:12px;background:#f9fcfc;color:#243746;text-align:right;outline:none;transition:border-color .18s,box-shadow .18s}#login .login-card input:focus{border-color:#159b8c;box-shadow:0 0 0 4px #159b8c18}
 #login .login-card button,#login .login-card .btn{min-height:46px;padding:11px 16px;border:1px solid #173b56;border-radius:12px;background:linear-gradient(120deg,#173b56,#205a69);color:#fff;font-weight:750;box-shadow:0 7px 16px #173b561b;transition:transform .16s,box-shadow .16s}#login .login-card button:hover{transform:translateY(-1px);box-shadow:0 10px 22px #173b5626}#login #adminLoginChoice,#login #clientLoginToggle{width:100%;margin:6px 0}#login #clientLoginToggle{background:#eaf7f5;color:#176f68;border-color:#cdebe5;box-shadow:none}#login #loginFields>div{display:flex;align-items:center;gap:8px;margin:9px 0}#login #loginFields input{flex:1;min-width:0}#login #loginFields button{flex-shrink:0}#login #loginSubmit{width:100%;margin-top:12px}#login #loginErr{color:#bd4350;text-align:right}
-
-/* Refined login role buttons */
-#login #adminLoginChoice,#login #clientLoginToggle{position:relative;display:flex;align-items:center;justify-content:center;gap:12px;min-height:62px;margin:10px 0;padding:12px 20px;border-radius:16px;font-size:16px;font-weight:850;letter-spacing:.1px;overflow:hidden;isolation:isolate;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
-#login #adminLoginChoice:before,#login #clientLoginToggle:before{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border-radius:12px;font-size:19px;line-height:1}
-#login #adminLoginChoice{border:1px solid #153e56;background:linear-gradient(115deg,#102e45 0%,#174b63 58%,#168879 100%);color:#fff;box-shadow:0 10px 22px #173b5630,inset 0 1px #ffffff30}
-#login #adminLoginChoice:before{content:"♙";background:#ffffff20;color:#fff;box-shadow:inset 0 0 0 1px #ffffff35}
-#login #clientLoginToggle{border:1px solid #c8e7df;background:linear-gradient(115deg,#f5fcfa 0%,#e4f5f0 100%);color:#176f68;box-shadow:0 7px 17px #159b8c12,inset 0 1px #fff}
-#login #clientLoginToggle:before{content:"▣";background:#d1eee6;color:#167d72;box-shadow:inset 0 0 0 1px #b9e3d8}
-#login #adminLoginChoice:hover,#login #clientLoginToggle:hover{transform:translateY(-2px);box-shadow:0 13px 26px #173b5625}
-#login #adminLoginChoice:active,#login #clientLoginToggle:active{transform:translateY(0) scale(.99)}
-#login #adminLoginChoice:focus-visible,#login #clientLoginToggle:focus-visible{outline:3px solid #159b8c66;outline-offset:3px}
-@media(max-width:430px){#login #adminLoginChoice,#login #clientLoginToggle{min-height:56px;font-size:15px;border-radius:14px}#login #adminLoginChoice:before,#login #clientLoginToggle:before{width:32px;height:32px;flex-basis:32px}}
-
+#faragello-public-phone{margin-top:20px;padding:14px;border:1px solid #dcebe9;border-radius:14px;background:#f4faf9;color:#70828b}#faragello-public-phone a{color:#167e76;font-size:20px;font-weight:850;text-decoration:none}
 #login .public-hero{grid-column:2;grid-row:1;align-self:center;justify-self:stretch;max-width:570px;padding:clamp(20px,3vw,42px) 0;text-align:right}
 #login .hero-kicker{display:inline-flex;align-items:center;gap:8px;margin-bottom:20px;padding:8px 13px;border:1px solid #ccebe4;border-radius:30px;background:#ffffffa8;color:#187d73;font-size:13px;font-weight:800}
 #login .hero-kicker:before{content:"";width:8px;height:8px;border-radius:50%;background:#159b8c;box-shadow:0 0 0 5px #159b8c18}
@@ -78,118 +66,6 @@ body.modal-open{overflow:hidden!important}
 #shiftSummaryPanel .shift-summary-cards h3,#shiftSummaryPanel .shift-summary-cards h4,#shiftSummaryPanel .shift-summary-cards p,#shiftSummaryPanel .shift-summary-cards span,#shiftSummaryPanel .shift-summary-cards label{color:#172033!important}
 #shiftSummaryPanel .shift-summary-cards table{background:#fff!important;color:#172033!important}
 #shiftSummaryPanel .shift-summary-cards th{background:#eef2f7!important;color:#172033!important}
-/* Premium login card refresh — intentionally scoped to the login box only */
-#login .login-card{
-  position:relative;isolation:isolate;overflow:hidden;
-  width:min(100%,460px);padding:clamp(28px,3.4vw,42px);
-  border:1px solid rgba(255,255,255,.92);border-radius:30px;
-  background:linear-gradient(155deg,rgba(255,255,255,.98),rgba(246,251,252,.96));
-  box-shadow:0 30px 85px rgba(16,46,69,.16),0 8px 24px rgba(21,155,140,.08),inset 0 1px 0 #fff;
-  text-align:center;backdrop-filter:blur(18px);
-  transition:box-shadow .25s ease,border-color .25s ease;
-}
-#login .login-card:before{
-  content:"";position:absolute;z-index:-1;inset:0 0 auto;height:7px;
-  background:linear-gradient(90deg,#153e56 0%,#159b8c 52%,#b6d9ce 100%);
-}
-#login .login-card:after{
-  content:"";position:absolute;z-index:-1;width:190px;height:190px;left:-105px;bottom:-115px;
-  border-radius:50%;background:radial-gradient(circle,rgba(21,155,140,.12),transparent 70%);
-  pointer-events:none;
-}
-#login .login-card .logo{
-  width:82px;height:82px;margin:2px auto 20px;border-radius:26px;
-  background:linear-gradient(145deg,#102f49 0%,#176078 58%,#159b8c 100%);
-  border:4px solid #fff;box-shadow:0 12px 28px rgba(16,63,83,.22),0 0 0 1px #dcebe9,0 0 0 9px rgba(21,155,140,.07);
-}
-#login .login-card .logo:after{font-size:48px;text-shadow:0 2px 8px rgba(0,0,0,.18)}
-#login .login-card h1{
-  margin:0 0 23px;color:#153e56;font-size:clamp(27px,3vw,34px);
-  font-weight:900;letter-spacing:-.7px;text-shadow:0 1px 0 #fff;
-}
-#login .login-card #loginText{margin:0 0 22px;color:#718493;font-size:14px}
-#login .login-card input:not([type=checkbox]),#login .login-card select,#login .login-card textarea{
-  min-height:54px;padding:14px 16px;border:1px solid #dce7eb;border-radius:15px;
-  background:linear-gradient(180deg,#fff,#f7fafb);color:#1d3445;
-  box-shadow:inset 0 1px 2px rgba(17,55,76,.025);
-}
-#login .login-card input:not([type=checkbox]):focus{
-  border-color:#159b8c;background:#fff;box-shadow:0 0 0 4px rgba(21,155,140,.12),0 5px 16px rgba(21,155,140,.06);
-}
-#login .login-card #adminLoginChoice,#login .login-card #clientLoginToggle{
-  min-height:66px;border-radius:18px;font-size:16px;
-}
-#login .login-card #loginSubmit{
-  min-height:54px;margin-top:14px;border:0;border-radius:15px;
-  background:linear-gradient(115deg,#102f49 0%,#176078 58%,#159b8c 100%);
-  box-shadow:0 12px 23px rgba(16,63,83,.2),inset 0 1px rgba(255,255,255,.22);
-  font-size:16px;font-weight:850;
-}
-#login .login-card #loginSubmit:hover{transform:translateY(-2px);box-shadow:0 16px 28px rgba(16,63,83,.25)}
-#login .login-card button.btn.gray{background:#f1f6f7;border:1px solid #dce7eb;color:#526a78;box-shadow:none}
-#login .login-card #loginErr{margin:8px 0;color:#bd4350;font-weight:700}
-#login .login-card label{color:#526a78}
-@media(max-width:760px){
-  #login .login-card{width:min(100%,430px);padding:28px 22px;border-radius:25px}
-  #login .login-card .logo{width:74px;height:74px;border-radius:23px}
-  #login .login-card h1{font-size:27px;margin-bottom:19px}
-}
-
-/* Unified controls inside the login card */
-#login .login-card #loginFields{display:flex;flex-direction:column;gap:12px}
-#login .login-card #loginFields.hidden{display:none}
-#login .login-card #loginFields>div:not(#loginErr){width:100%;margin:0}
-#login .login-card input:not([type=checkbox]),
-#login .login-card select,
-#login .login-card textarea{
-  display:block;width:100%;box-sizing:border-box;min-height:56px;
-  border:1.5px solid #d5e5e8!important;border-radius:16px!important;
-  background:#f5fafb!important;color:#17384b!important;
-  padding:14px 17px!important;font-size:15px;font-weight:650;
-  box-shadow:0 4px 12px rgba(19,62,83,.055),inset 0 1px 0 #fff!important;
-  transition:border-color .2s,box-shadow .2s,background .2s;
-}
-#login .login-card input:not([type=checkbox]):focus,
-#login .login-card select:focus,
-#login .login-card textarea:focus{
-  outline:none;border-color:#159b8c!important;background:#fff!important;
-  box-shadow:0 0 0 4px rgba(21,155,140,.13),0 7px 18px rgba(19,62,83,.08)!important;
-}
-#login .login-card #adminLoginChoice,
-#login .login-card #clientLoginToggle,
-#login .login-card #loginSubmit,
-#login .login-card #loginFields button.btn{
-  display:block;width:100%;min-height:54px;margin:0!important;
-  padding:13px 18px!important;border:1px solid #176078!important;
-  border-radius:16px!important;
-  background:linear-gradient(115deg,#123b55,#176078 58%,#159b8c)!important;
-  color:#fff!important;font-size:15px!important;font-weight:850!important;
-  box-shadow:0 8px 18px rgba(16,63,83,.16),inset 0 1px rgba(255,255,255,.2)!important;
-  transition:transform .2s,box-shadow .2s,filter .2s;
-}
-#login .login-card #adminLoginChoice:hover,
-#login .login-card #clientLoginToggle:hover,
-#login .login-card #loginSubmit:hover,
-#login .login-card #loginFields button.btn:hover{
-  transform:translateY(-1px);filter:brightness(1.04);
-  box-shadow:0 11px 22px rgba(16,63,83,.2)!important;
-}
-#login .login-card #loginFields button.btn.gray{
-  background:#edf5f6!important;color:#31566a!important;
-  border:1.5px solid #d5e5e8!important;box-shadow:none!important;
-}
-#login .login-card label:has(#rememberLogin){
-  box-sizing:border-box;width:100%;min-height:48px;padding:10px 13px!important;
-  margin:0!important;border:1.5px solid #d5e5e8;border-radius:15px;
-  background:#f5fafb;box-shadow:0 4px 12px rgba(19,62,83,.045);
-  color:#31566a!important;font-weight:700;
-}
-#login .login-card #rememberLogin{
-  width:17px!important;height:17px!important;flex:0 0 17px!important;
-  accent-color:#159b8c;margin:0!important;
-}
-#login .login-card #loginErr{width:100%;margin:0!important;text-align:center}
-
 </style>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -203,7 +79,7 @@ window.resetLoginChoice=window.resetLoginChoice||function(){
  if(password){password.classList.remove('hidden');password.value='';password.type='password';password.autocomplete='current-password';}
  var admin=document.getElementById('adminLoginChoice'),client=document.getElementById('clientLoginToggle');
  if(admin)admin.classList.remove('hidden');if(client)client.classList.remove('hidden');
- if(title)title.textContent='';if(err)err.textContent='';
+ if(title)title.textContent='سيستم محاسبي متكامل';if(err)err.textContent='';
 };
 
 /* Safety fallback: prevents stale cached login markup from throwing a missing-handler error. */
@@ -295,6 +171,15 @@ body.client-workspace-mode #app .top .user{
   box-shadow:none!important;
 }
 body.client-workspace-mode #app .top .user small{font-weight:700!important}
+</style>
+
+
+<style id="faragello-public-phone-bold">
+#faragello-public-phone,
+#faragello-public-phone div,
+#faragello-public-phone a{
+  font-weight:850!important;
+}
 </style>
 
 
@@ -622,275 +507,51 @@ body.client-workspace-mode #app #activeBranchLabel{
 /* عرض اسم الفرع أسفل مستطيل الترحيب، بعيدًا عن القائمة الجانبية */
 #app #home #activeBranchLabel{display:block!important;width:max-content!important;max-width:100%!important;margin:12px 0 0 auto!important;padding:9px 15px!important;border:1px solid #dce7ec!important;border-radius:10px!important;background:#fff!important;color:#254766!important;text-align:right!important;direction:rtl!important;font-size:13px!important;font-weight:800!important;line-height:1.5!important;box-shadow:0 3px 12px rgba(24,55,77,.05)!important}
 </style>
-
-
-
-<style id="faragello-complete-interface-rebuild">
-/* COMPLETE UI REBUILD — new ERP shell, page hierarchy and responsive behavior */
-:root{
- --frg-navy:#102b43;--frg-deep:#0a2034;--frg-emerald:#07866c;--frg-mint:#dff3e9;
- --frg-canvas:#f2f6f5;--frg-white:#fff;--frg-ink:#1d3443;--frg-muted:#73858b;
- --frg-line:#e2ebe7;--frg-shadow:0 12px 34px rgba(13,43,58,.07);
-}
-html,body{min-height:100%;background:var(--frg-canvas)!important;color:var(--frg-ink)!important;font-family:"Segoe UI",Tahoma,Arial,sans-serif!important}
-body{background:linear-gradient(135deg,#f4f8f6 0%,#edf3f2 100%)!important}
-#app{min-height:100vh;background:transparent!important}
-#app>.top{
- position:sticky!important;top:0!important;z-index:30!important;
- display:flex!important;align-items:center!important;justify-content:space-between!important;
- min-height:78px!important;padding:12px clamp(16px,2.5vw,36px)!important;
- background:linear-gradient(112deg,#091f33 0%,#103a4b 65%,#087b66 130%)!important;
- border:0!important;border-bottom:3px solid #19a47d!important;
- box-shadow:0 8px 28px rgba(7,34,48,.18)!important;color:#fff!important
-}
-#app .brand{display:flex!important;align-items:center!important;gap:13px!important}
-#app .brand .logo{display:grid!important;place-items:center!important;width:48px!important;height:48px!important;border-radius:15px!important;background:linear-gradient(145deg,#f6fffb,#c9f0df)!important;color:#0b5149!important;border:1px solid #ffffff70!important;box-shadow:0 7px 18px #031a2b55!important;font-size:23px!important}
-#app .brand h1{margin:0!important;color:#fff!important;font-size:21px!important;font-weight:900!important;letter-spacing:.2px!important}
-#app .brand small,#app .brand .sub{color:#cce8dd!important}
-#app .userbox{display:flex!important;align-items:center!important;gap:15px!important}
-#app .clock{color:#e5f3ed!important;text-align:left!important;font-size:12px!important;line-height:1.65!important}
-#app .clock b{color:#fff!important;font-size:13px!important}
-#app .user{padding:9px 14px!important;border:1px solid #ffffff30!important;border-radius:13px!important;background:#ffffff12!important;color:#fff!important;line-height:1.4!important}
-#app .user small{color:#cce8dd!important}
-#app .layout{
- display:grid!important;grid-template-columns:minmax(0,1fr) 258px!important;
- grid-template-areas:"main side"!important;align-items:start!important;
- min-height:calc(100vh - 78px)!important;gap:0!important;background:transparent!important
-}
-#app .layout>main{grid-area:main!important;min-width:0!important;padding:clamp(18px,2.6vw,38px)!important;max-width:1800px!important;width:100%!important;margin:0 auto!important}
-#app .layout>.side{
- grid-area:side!important;position:sticky!important;top:81px!important;align-self:start!important;
- display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:7px!important;
- height:calc(100vh - 81px)!important;overflow-y:auto!important;overflow-x:hidden!important;
- padding:22px 14px!important;background:linear-gradient(180deg,#102f46 0%,#0c263a 100%)!important;
- border:0!important;border-left:1px solid #ffffff0d!important;box-shadow:-9px 0 28px #0b26300b!important
-}
-#app .side:before{content:"مساحة العمل";display:block;padding:2px 13px 13px;color:#a9c9c0;font-size:11px;font-weight:800;letter-spacing:.7px}
-#app .side .nav{
- position:relative!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;
- width:100%!important;min-height:45px!important;padding:10px 14px!important;
- border:1px solid transparent!important;border-radius:12px!important;
- background:transparent!important;color:#d5e5e0!important;text-align:right!important;
- font-size:13px!important;font-weight:700!important;box-shadow:none!important
-}
-#app .side .nav:before{content:"";display:block;width:6px;height:6px;flex:0 0 6px;margin-left:11px;border-radius:50%;background:#78a99a;opacity:.8}
-#app .side .nav:hover:not(.active){background:#ffffff0d!important;color:#fff!important;border-color:#ffffff13!important;transform:translateX(-2px)!important}
-#app .side .nav.active{background:linear-gradient(100deg,#0b755f,#119579)!important;color:#fff!important;border-color:#45b99a!important;box-shadow:0 7px 18px #041b2b55,inset 0 1px #ffffff25!important}
-#app .side .nav.active:before{background:#fff!important;box-shadow:0 0 0 4px #ffffff22!important}
-#app .side .nav.logout{margin-top:auto!important;background:#ffffff0b!important;border-color:#ffffff19!important;color:#ffd9d4!important}
-#app .side .nav.logout:before{background:#f18b80!important}
-#app .page{animation:frgPageIn .22s ease both}
-@keyframes frgPageIn{from{opacity:.45;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-#app .title{
- display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important;
- margin:0 0 23px!important;padding:0 0 17px!important;border:0!important;border-bottom:1px solid #dce8e3!important
-}
-#app .title h2{margin:0!important;color:#12364b!important;font-size:clamp(22px,2.1vw,29px)!important;font-weight:900!important;letter-spacing:-.4px!important}
-#app .title .sub,#app .sub{color:#71838a!important;font-size:13px!important}
-#app .title .sub{margin-top:5px!important}
-#app h3{color:#164c4a!important;font-size:17px!important;font-weight:850!important}
-#app .cash-panel,#app .panel,#app .section,#app .form-panel{
- padding:clamp(17px,2vw,25px)!important;margin-bottom:17px!important;
- border:1px solid #e0eae5!important;border-radius:19px!important;
- background:#fff!important;box-shadow:var(--frg-shadow)!important
-}
-#app .cash-panel>h3:first-child{margin-top:0!important}
-#app .dashboard-bulb{display:grid!important;place-items:center!important;width:54px!important;height:54px!important;border-radius:17px!important;background:#e4f5ec!important;color:#087e65!important;border:1px solid #ccebd9!important;box-shadow:0 7px 18px #0c785b13!important;font-size:26px!important}
-#app #home>.cash-panel{position:relative!important;overflow:hidden!important;min-height:180px!important;padding:30px!important;background:linear-gradient(112deg,#fff 0%,#f6fbf8 65%,#e7f5ed 100%)!important}
-#app #home>.cash-panel:after{content:"";position:absolute;left:-45px;bottom:-110px;width:250px;height:250px;border:1px solid #0a896b20;border-radius:50%;box-shadow:0 0 0 28px #0a896b08,0 0 0 58px #0a896b06;pointer-events:none}
-#app #home>.cash-panel h3{margin:15px 0 5px!important;color:#10384b!important;font-size:23px!important}
-#app .cards{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(175px,1fr))!important;gap:14px!important;margin:0 0 18px!important}
-#app .card{min-width:0!important;padding:18px!important;border:1px solid #e0eae5!important;border-radius:17px!important;background:#fff!important;box-shadow:0 8px 23px #0d2b3a09!important;transition:transform .18s,box-shadow .18s!important}
-#app .card:hover{transform:translateY(-3px)!important;box-shadow:0 13px 28px #0d2b3a12!important}
-#app .card .label{color:#75878b!important;font-size:12px!important;font-weight:750!important}
-#app .card .value{margin-top:8px!important;color:#173d51!important;font-size:clamp(20px,2vw,26px)!important;font-weight:900!important;overflow-wrap:anywhere!important}
-#app .card .value.green{color:#07866c!important}
-#app .card .value.gold{color:#a9782d!important}
-#app .card .value.cyan{color:#287c91!important}
-#app .toolbar{display:flex!important;align-items:center!important;gap:10px!important;flex-wrap:wrap!important;padding:13px!important;margin:0 0 15px!important;border:1px solid #e0eae5!important;border-radius:15px!important;background:#fff!important;box-shadow:0 5px 17px #0d2b3a06!important}
-#app input:not([type=checkbox]):not([type=radio]),#app select,#app textarea{
- min-height:43px!important;padding:10px 13px!important;border:1px solid #dce7e2!important;border-radius:11px!important;
- background:#fbfdfc!important;color:#1d3443!important;outline:none!important
-}
-#app input:focus,#app select:focus,#app textarea:focus{border-color:#0c9875!important;box-shadow:0 0 0 3px #0c98751a!important;background:#fff!important}
-#app .btn,#app button.btn{
- min-height:41px!important;padding:9px 16px!important;border:1px solid #0e725f!important;border-radius:11px!important;
- background:linear-gradient(115deg,#12384d,#087d66)!important;color:#fff!important;font-weight:800!important;
- box-shadow:0 5px 13px #0b715d1c!important
-}
-#app .btn:hover{filter:brightness(1.06)!important;transform:translateY(-1px)!important}
-#app .btn.gray,#app button.gray{background:#f1f6f3!important;border-color:#dce8e1!important;color:#3d5960!important;box-shadow:none!important}
-#app .btn.green,#app button.green{background:linear-gradient(110deg,#087b62,#0a9874)!important;border-color:#087b62!important;color:#fff!important}
-#app .btn.gold,#app button.gold{background:#fff7e8!important;border-color:#f0dfbd!important;color:#896321!important;box-shadow:none!important}
-#app .btn.red,#app button.red,#app .btn.danger{background:#fff1ef!important;border-color:#efd6d2!important;color:#b34740!important;box-shadow:none!important}
-#app .table-wrap{width:100%!important;overflow:auto!important;border:1px solid #e0eae5!important;border-radius:15px!important;background:#fff!important;box-shadow:0 7px 22px #0d2b3a07!important}
-#app table.table{width:100%!important;border-collapse:separate!important;border-spacing:0!important}
-#app table.table th,#app .table-wrap th{padding:13px 12px!important;background:#edf5f0!important;color:#28534e!important;border:0!important;border-bottom:1px solid #dce9e1!important;font-weight:850!important;white-space:nowrap!important}
-#app table.table td,#app .table-wrap td{padding:12px!important;border:0!important;border-bottom:1px solid #edf2ef!important;color:#304853!important;vertical-align:middle!important}
-#app table.table tbody tr:last-child td,#app .table-wrap tbody tr:last-child td{border-bottom:0!important}
-#app table.table tbody tr:hover,#app .table-wrap tbody tr:hover{background:#f5faf7!important}
-#app .cash-layout{display:grid!important;grid-template-columns:minmax(0,1.55fr) minmax(280px,.8fr)!important;gap:17px!important;align-items:start!important}
-#app .cash-layout>.cash-panel{min-width:0!important}
-#app .scan{display:flex!important;gap:10px!important;align-items:center!important;margin-bottom:15px!important}
-#app .scan input{flex:1!important;min-width:0!important;min-height:54px!important;font-size:16px!important}
-#app .paybox{display:flex!important;flex-direction:column!important;gap:11px!important}
-#app .paybox label,#app .cash-panel label{font-weight:750!important;color:#4c646b!important}
-#app .cart-total{padding:17px!important;border-radius:14px!important;background:#e9f6ef!important;color:#087a61!important;font-size:27px!important;font-weight:950!important;text-align:center!important}
-#app .modal-bg{background:#071d2bbd!important;backdrop-filter:blur(5px)!important}
-#app .modal{width:min(94vw,520px)!important;max-height:88vh!important;overflow:auto!important;padding:25px!important;border:1px solid #dce9e2!important;border-radius:20px!important;background:#fff!important;box-shadow:0 25px 80px #061c2c55!important}
-#app .modal h3{margin-top:0!important;color:#12394c!important}
-#app .modal input,#app .modal select{width:100%!important;margin:6px 0!important}
-#app .modal-actions{display:flex!important;gap:9px!important;flex-wrap:wrap!important;margin-top:16px!important}
-#login.login-screen{
- min-height:100vh!important;display:grid!important;grid-template-columns:minmax(330px,.9fr) minmax(0,1.1fr)!important;
- align-items:center!important;gap:clamp(25px,6vw,90px)!important;padding:clamp(22px,6vw,90px)!important;
- background:radial-gradient(circle at 85% 14%,#d4efe2 0,transparent 28%),linear-gradient(135deg,#0b263b 0%,#103c4c 58%,#087b66 130%)!important;
- color:#fff!important;overflow:hidden!important
-}
-#login.login-screen:before{width:520px!important;height:520px!important;left:-230px!important;top:-230px!important;border-color:#ffffff1b!important;box-shadow:0 0 0 55px #ffffff08,0 0 0 110px #ffffff05!important}
-#login.login-screen:after{width:390px!important;height:390px!important;right:-170px!important;bottom:-190px!important;background:#ffffff09!important}
-#login .login-card{
- grid-column:1!important;grid-row:1!important;justify-self:center!important;width:min(100%,440px)!important;
- padding:clamp(25px,3.2vw,40px)!important;border:1px solid #ffffffa6!important;border-radius:24px!important;
- background:#ffffff!important;color:#1c3544!important;box-shadow:0 28px 90px #041a2b55!important;text-align:center!important
-}
-#login .login-card:before{content:"";display:block;width:64px;height:5px;margin:0 auto 22px;border-radius:8px;background:linear-gradient(90deg,#0d3449,#07866c)}
-#login .login-card .logo{display:grid!important;place-items:center!important;width:66px!important;height:66px!important;margin:0 auto 16px!important;border-radius:19px!important;background:linear-gradient(145deg,#10354b,#07866c)!important;color:#fff!important;box-shadow:0 10px 24px #0a715d35!important}
-#login .login-card h1{color:#12384b!important;font-size:29px!important;font-weight:950!important}
-#login .login-card #loginText{color:#77898c!important}
-#login .login-card input:not([type=checkbox]){min-height:48px!important;border:1px solid #dce8e2!important;border-radius:12px!important;background:#f8fbf9!important}
-#login .login-card input:focus{border-color:#07866c!important;box-shadow:0 0 0 3px #07866c1c!important}
-#login .login-card button,#login .login-card .btn{min-height:47px!important;border-radius:12px!important;background:linear-gradient(110deg,#12384b,#07866c)!important;border-color:#08775f!important;color:#fff!important;font-weight:850!important;box-shadow:0 7px 17px #08765f24!important}
-#login .login-card #clientLoginToggle{background:#e9f6ef!important;color:#08775f!important;border-color:#cce8d8!important;box-shadow:none!important}
-#login .login-card label:has(#rememberLogin){padding:10px!important;border:1px solid #e2ece6!important;border-radius:10px!important;background:#f7faf8!important}
-#login .public-hero{grid-column:2!important;grid-row:1!important;max-width:650px!important;justify-self:center!important;color:#fff!important;text-align:right!important}
-#login .public-hero .hero-orb{display:none!important}
-#login .public-hero .hero-kicker{display:inline-flex!important;align-items:center!important;gap:9px!important;padding:8px 13px!important;border:1px solid #ffffff3d!important;border-radius:30px!important;background:#ffffff12!important;color:#d8f2e7!important;font-weight:800!important}
-#login .public-hero .hero-kicker:before{content:"";width:7px;height:7px;border-radius:50%;background:#55d7a9;box-shadow:0 0 0 5px #55d7a922}
-#login .public-hero h2{margin:22px 0 13px!important;color:#fff!important;font-size:clamp(30px,4.2vw,52px)!important;line-height:1.25!important;font-weight:950!important}
-#login .public-hero h2 span{color:#73e0b5!important}
-#login .public-hero>p{max-width:580px!important;color:#d0e5e0!important;font-size:16px!important;line-height:1.95!important}
-#login .hero-points{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:11px!important;margin-top:25px!important}
-#login .hero-point{display:flex!important;align-items:center!important;gap:11px!important;padding:13px!important;border:1px solid #ffffff25!important;border-radius:13px!important;background:#ffffff0d!important;color:#f0faf6!important;box-shadow:none!important}
-#login .hero-point b{display:grid!important;place-items:center!important;width:32px!important;height:32px!important;flex:0 0 32px!important;border-radius:10px!important;background:#ffffff1b!important;color:#79e2b9!important}
-@media(max-width:1050px){
- #app .layout{grid-template-columns:minmax(0,1fr) 220px!important}
- #app .cash-layout{grid-template-columns:minmax(0,1fr)!important}
- #login.login-screen{gap:28px!important;padding:35px!important}
-}
-@media(max-width:760px){
- #app>.top{min-height:66px!important;padding:9px 12px!important}
- #app .brand .logo{width:39px!important;height:39px!important;border-radius:12px!important}
- #app .brand h1{font-size:16px!important}
- #app .clock{display:none!important}
- #app .user{padding:7px 9px!important;font-size:12px!important}
- #app .layout{display:flex!important;flex-direction:column!important;min-height:calc(100vh - 66px)!important}
- #app .layout>.side{
-  position:sticky!important;top:66px!important;z-index:25!important;order:0!important;
-  display:flex!important;flex-direction:row!important;align-items:center!important;gap:7px!important;
-  width:100%!important;height:auto!important;max-height:none!important;overflow-x:auto!important;overflow-y:hidden!important;
-  padding:9px 10px!important;background:#102f46!important;box-shadow:0 6px 18px #0b26301c!important
- }
- #app .side:before{display:none!important}
- #app .side .nav{width:auto!important;min-width:max-content!important;min-height:37px!important;padding:8px 12px!important;font-size:12px!important;border-radius:10px!important}
- #app .side .nav:before{display:none!important}
- #app .side .nav.logout{margin:0!important}
- #app .layout>main{order:1!important;width:100%!important;padding:15px 11px 25px!important}
- #app .title{align-items:flex-start!important;flex-wrap:wrap!important;margin-bottom:17px!important}
- #app .title h2{font-size:21px!important}
- #app .cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
- #app .card{padding:13px!important;border-radius:14px!important}
- #app .card .value{font-size:20px!important}
- #app .cash-panel{padding:14px!important;border-radius:15px!important}
- #app .toolbar{padding:10px!important;gap:8px!important}
- #app .toolbar input,#app .toolbar select{flex:1 1 130px!important;min-width:0!important}
- #app .scan{align-items:stretch!important}
- #app .scan input{font-size:14px!important}
- #app .table-wrap{border-radius:12px!important}
- #app table.table th,#app .table-wrap th{padding:10px!important;font-size:12px!important}
- #app table.table td,#app .table-wrap td{padding:9px!important;font-size:12px!important}
- #login.login-screen{display:flex!important;flex-direction:column!important;justify-content:center!important;gap:22px!important;padding:22px 15px!important}
- #login .public-hero{order:0!important;width:100%!important;text-align:center!important}
- #login .public-hero h2{margin:12px 0 8px!important;font-size:28px!important}
- #login .public-hero>p{margin:0 auto!important;font-size:13px!important}
- #login .hero-points{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;margin-top:13px!important}
- #login .hero-point{padding:9px!important;font-size:11px!important}
- #login .hero-point b{width:27px!important;height:27px!important;flex-basis:27px!important}
- #login .login-card{order:1!important;width:min(100%,430px)!important;padding:22px!important}
-}
-@media(max-width:420px){
- #app .user{max-width:135px!important}
- #app .user b{font-size:11px!important}
- #app .cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}
- #app .title .btn{font-size:12px!important;padding:8px 10px!important}
- #login .hero-points{grid-template-columns:1fr 1fr!important}
- #login .hero-point{gap:6px!important}
-}
-@media(prefers-reduced-motion:reduce){#app .page{animation:none!important}#app *,#login *{transition:none!important}}
-</style>
 </head>
 <body>
-<div id="login" class="login-screen faragello-login">
-  <section class="public-hero faragello-showcase" aria-label="مميزات سيستم فرجللو">
-    <div class="showcase-top"><div class="showcase-mark">ف</div><div><strong>FARAGELLO</strong><small>BUSINESS MANAGEMENT SYSTEM</small></div></div>
-    <div class="showcase-copy"><span class="hero-kicker">منصة واحدة لإدارة شغلك</span><h2>إدارتك اليومية،<br><span>بشكل أذكى.</span></h2><p>تابع الفروع والمخزون والمبيعات والتقارير من مساحة عمل واحدة مصممة لتسهّل كل خطوة.</p></div>
-    <div class="showcase-tiles">
-      <div class="showcase-tile"><b>01</b><span>إدارة الأصناف والمخزون</span><i>▦</i></div>
-      <div class="showcase-tile"><b>02</b><span>المبيعات وحركة الكاشير</span><i>↗</i></div>
-      <div class="showcase-tile"><b>03</b><span>تقارير ومتابعة الفروع</span><i>◫</i></div>
+<div id="login" class="login-screen">
+  <div class="login-card">
+    <div class="logo" aria-label="مصباح أصفر" role="img">💡</div><h1>سيستم فرجللو</h1><p id="loginText">سيستم محاسبي متكامل</p>
+    <button id="adminLoginChoice" class="btn" onclick="chooseLogin('admin')">دخول المشرف</button>
+    <button id="clientLoginToggle" class="btn gray" onclick="chooseLogin('client')">دخول العميل</button>
+    <div id="loginFields" class="hidden"><div><input id="email" type="text" placeholder="اسم المستخدم" autocomplete="username" onkeydown="if(event.key==='Enter') window.doLogin()"></div><div><input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter') window.doLogin()"></div><label style="display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0 12px;font-size:13px;cursor:pointer;color:var(--text,#172033)"><input id="rememberLogin" type="checkbox" onchange="toggleRememberLogin()" style="width:12px;height:12px;accent-color:#16a34a;margin:0;flex:0 0 12px"> تثبيت اسم المستخدم وكلمة السر</label><div id="loginErr" class="err"></div><button id="loginSubmit" class="btn" type="button" onclick="window.doLogin()">تسجيل الدخول</button><button class="btn gray" onclick="window.resetLoginChoice()">رجوع</button></div>
+    <div id="faragello-public-phone"><div>للتواصل والاستفسار</div><a href="tel:01128777287" dir="ltr">01128777287</a></div>
+    <div style="margin-top:18px;color:#16834a;font-size:14px;font-weight:800"><span id="faragello-supervisor-name">Farag El-Sayed • مشرف النظام</span></div>
+  </div>
+  <section class="public-hero" aria-label="مميزات سيستم فرجللو">
+    <div class="hero-orb" aria-hidden="true"><span>ف</span></div>
+    <div class="hero-kicker">إدارة ذكية في مكان واحد</div>
+    <h2>كل شغلك في مكان واحد، <span>ببساطة ووضوح</span></h2>
+    <p>سيستم فرجللو يساعدك تتابع المخزون والمبيعات وتدير شغلك اليومي من واجهة منظمة وسهلة الاستخدام.</p>
+    <div class="hero-points">
+      <div class="hero-point"><b>▦</b><span>إدارة المخزون والأصناف</span></div>
+      <div class="hero-point"><b>↗</b><span>متابعة المبيعات والتقارير</span></div>
+      <div class="hero-point"><b>✓</b><span>تنظيم العمل اليومي</span></div>
+      <div class="hero-point"><b>⌂</b><span>واجهة واضحة على الموبايل والكمبيوتر</span></div>
     </div>
-    <div class="showcase-footer"><span>نظام متكامل لإدارة الحسابات</span><span>● تشغيل أكثر تنظيمًا</span></div>
-  </section>
-  <section class="login-card faragello-login-card" aria-label="تسجيل الدخول">
-    <div class="login-card-head"><div class="login-symbol">ف</div><div><span>مرحبًا بك في</span><h1>سيستم فرجللو</h1></div></div>
-    <p class="login-intro">سجّل دخولك للوصول إلى مساحة العمل الخاصة بك.</p>
-    <div class="login-step-label"><span></span> تسجيل آمن <span></span></div>
-    <button id="adminLoginChoice" class="btn" onclick="chooseLogin('all')">تسجيل الدخول للمشرف أو العميل <b>←</b></button>
-    <div id="loginFields" class="hidden"><div><input id="email" type="text" placeholder="اسم المستخدم" autocomplete="username" onkeydown="if(event.key==='Enter') window.doLogin()"></div><div><input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter') window.doLogin()"></div><label class="remember-login"><input id="rememberLogin" type="checkbox" onchange="toggleRememberLogin()"> تثبيت اسم المستخدم وكلمة السر</label><div id="loginErr" class="err"></div><button id="loginSubmit" class="btn" type="button" onclick="window.doLogin()">تسجيل الدخول</button><button class="btn gray" onclick="window.resetLoginChoice()">رجوع</button></div>
-    <div class="login-card-foot"><span>FARAGELLO SYSTEM</span><span>إدارة أسهل • رؤية أوضح</span></div>
   </section>
 </div>
 <div id="app" class="hidden">
-<header class="top faragello-topbar">
-  <div class="brand"><div class="logo"><span aria-label="مصباح أصفر" role="img">💡</span></div><div><h1>سيستم فرجللو</h1><small>مساحة إدارة الأعمال</small></div></div>
-  <div class="userbox"><div class="clock"><b id="date"></b><br><span id="time"></span></div><div class="user"><span class="user-avatar">👤</span><div><b>admin</b><br><small>مدير النظام</small></div></div></div>
-</header>
-<div class="layout workspace-layout">
-  <aside class="side faragello-sidebar">
-    <div class="sidebar-profile"><div class="sidebar-logo">ف</div><div><b>مساحة العمل</b><small>القائمة الرئيسية</small></div><span class="sidebar-status"></span></div>
-    <div class="nav-caption">الرئيسية</div>
-    <div class="nav-group">
-      <button class="nav active" data-page="home" onclick="showPage('home')"><span class="nav-icon">⌂</span>الصفحة الرئيسية</button>
-    </div>
-    <div class="nav-caption">إدارة التشغيل</div>
-    <div class="nav-group">
-      <button class="nav" data-page="cashier" onclick="requestPage('cashier')"><span class="nav-icon">▣</span>بيت الكاشير</button>
-      <button class="nav nav-nested" data-page="transfers" onclick="showPage('transfers')"><span class="nav-icon">⇄</span>إذن صادر تحويل</button>
-      <button class="nav" data-page="sales" onclick="showPage('sales')"><span class="nav-icon">↗</span>المبيعات اليومية</button>
-    </div>
-    <div class="nav-caption">التقارير والمشتريات</div>
-    <div class="nav-group">
-      <button class="nav" data-page="reports" onclick="showPage('reports')"><span class="nav-icon">▤</span>التقارير اليومية</button>
-      <button class="nav" data-page="purchaseInvoices" onclick="showPage('purchaseInvoices')"><span class="nav-icon">▧</span>فواتير المشتريات</button>
-      <button class="nav" data-page="expenses" onclick="showPage('expenses')"><span class="nav-icon">−</span>المصروفات</button>
-    </div>
-    <div class="nav-caption">المخزون والأصناف</div>
-    <div class="nav-group">
-      <button id="navCoding" class="nav" data-page="coding" type="button" onclick="showPage('coding')"><span class="nav-icon">⌗</span>تكويد الأصناف</button>
-      <button id="navInventory" class="nav" data-page="inventory" onclick="requestPage('inventory')"><span class="nav-icon">▦</span>تفاصيل المخزون</button>
-      <button id="navInventoryAudit" class="nav" data-page="inventoryAudit" type="button" onclick="openInventoryAuditReport();return false"><span class="nav-icon">✓</span>تقارير الجرد</button>
-    </div>
-    <div class="nav-caption">إعدادات النظام</div>
-    <div class="nav-group">
-      <button id="navSettings" class="nav" data-page="settings" onclick="showPage('settings')"><span class="nav-icon">⚙</span>الإعدادات</button>
-      <button id="navRestartData" class="nav" type="button" onclick="restartSalesData()"><span class="nav-icon">↻</span>إعادة تشغيل البيانات</button>
-      <button id="navClients" class="nav" data-page="clients" onclick="showPage('clients')"><span class="nav-icon">♧</span>العملاء</button>
-    </div>
-    <div class="sidebar-bottom"><div class="sidebar-help"><span>?</span><div><b>سيستم فرجللو</b><small>نظام متكامل لإدارة الحسابات</small></div></div><button class="nav logout" onclick="supabaseClient.auth.signOut().finally(()=>location.reload())"><span class="nav-icon">⇥</span>تسجيل الخروج</button></div>
-  </aside>
-  <div class="workspace-main">
-    <div class="workspace-context"><div><span class="context-eyebrow">FARAGELLO / WORKSPACE</span><strong>إدارة أعمالك من مكان واحد</strong></div><span class="context-live"><i></i> مساحة العمل نشطة</span></div>
-    <main class="workspace-content"><div id="home" class="page"><div class="title"><div><h2>لوحة التحكم</h2><div class="sub">إدارة أسهل .. مبيعات أعلى .. نجاح أكبر</div></div></div><div class="cash-panel"><div class="dashboard-bulb" role="img" aria-label="مصباح أصفر">💡</div><h3>مرحباً بك في نظام فرجللو</h3><div class="sub">نظام متكامل لإدارة الحسابات</div></div><div id="activeBranchLabel" aria-live="polite"></div><div id="activeBranchImageWrap" style="margin:10px 0 0 auto;text-align:right;max-width:100%;"><img id="activeBranchImage" src="https://scontent.fcai19-8.fna.fbcdn.net/v/t39.30808-6/326779120_539151501524446_3356444645274466193_n.jpg?stp=dst-jpg_tt6&cstp=mx712x711&ctp=s712x711&_nc_cat=111&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=NPF-bTIK5HkQ7kNvwFG_S-P&_nc_oc=AdodLxPjp5sQ9PhK1oSpjsFglqYvYNyh-vHvSOyxH7AHtIafQSbg9g8IrA_1T41-444&_nc_zt=23&_nc_ht=scontent.fcai19-8.fna&_nc_gid=UoV1CzQHIgV1VkGqHqplcQ&_nc_ss=7b289&oh=00_AQSGcixzA7dEnufI4zIo6vRRNnlLUgS3PiYMOPPsKSd1NA&oe=6AEADA93" alt="صورة الفرع" loading="lazy" style="display:block;width:180px;max-width:100%;height:auto;object-fit:contain;border-radius:12px;"></div></div><div id="inventory" class="page hidden"><div class="title"><div><h2>📦 المخزن</h2><div class="sub">جميع الأصناف وكمياتها</div></div><div><button class="btn" onclick="openItemModal()">＋ إضافة صنف</button></div></div><div class="cards"><div class="card"><div class="label">إجمالي الأصناف</div><div id="iCount" class="value cyan"></div></div><div class="card"><div class="label">إجمالي الكميات</div><div id="iQty" class="value green"></div></div><div class="card"><div class="label">قيمة المخزون</div><div id="iValue" class="value gold"></div></div><div class="card"><div class="label">مبيعات اليوم</div><div id="iSales" class="value"></div></div></div><div class="toolbar"><input id="invSearch" placeholder="ابحث بالكود أو اسم الصنف..." oninput="renderInventory()"><button class="btn gray" onclick="document.getElementById('invSearch').value='';renderInventory()">مسح</button></div><div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>اسم الصنف</th><th>السعر</th><th>رصيد أول المدة</th><th>المباع</th><th>الرصيد الحالي</th><th>القيمة</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="invBody"></tbody></table></div><div id="invPagination"></div></div>
+<header class="top"><div class="brand"><div class="logo"><span aria-label="مصباح أصفر" role="img">💡</span></div><div><h1>سيستم فرجللو</h1><small>Farag El-Sayed • مشرف النظام</small><div></div></div></div><div class="userbox"><div class="clock"><b id="date"></b><br><span id="time"></span></div><div class="user">👤 <b>admin</b><br><small>مدير النظام</small></div></div></header>
+<div class="layout"><aside class="side">
+  <button class="nav active" data-page="home" onclick="showPage('home')">الرئيسية</button>
+  <button class="nav" data-page="cashier" onclick="requestPage('cashier')">بدء البيع</button>
+  <button class="nav" data-page="sales" onclick="showPage('sales')">مبيعات اليوم</button>
+  <button class="nav" data-page="reports" onclick="showPage('reports')">تقارير المبيعات</button>
+  <button class="nav" data-page="purchaseInvoices" onclick="showPage('purchaseInvoices')">مشتريات</button>
+  <button class="nav" data-page="expenses" onclick="showPage('expenses')">مصروفات</button>
+  
+  <button class="nav" data-page="transfers" onclick="showPage('transfers')">تحويلات</button>
+  <button id="navInventory" class="nav" data-page="inventory" onclick="requestPage('inventory')">المخزون</button>
+  <button id="navInventoryAudit" class="nav" data-page="inventoryAudit" type="button" onclick="openInventoryAuditReport();return false">إدارة الجرد</button>
+  <button id="navCoding" class="nav" data-page="coding" type="button" onclick="showPage('coding')">تكويدات</button>
+  
+  <button id="navSettings" class="nav" data-page="settings" onclick="showPage('settings')">الإعدادات</button>
+  <button id="navRestartData" class="nav" type="button" onclick="restartSalesData()">إعادة تشغيل</button>
+  <button id="navClients" class="nav" data-page="clients" onclick="showPage('clients')">العملاء</button>
+  <button class="nav logout" onclick="supabaseClient.auth.signOut().finally(()=>location.reload())">تسجيل الخروج</button>
+</aside><main>
+<div id="home" class="page"><div class="title"><div><h2>لوحة التحكم</h2><div class="sub">إدارة أسهل .. مبيعات أعلى .. نجاح أكبر</div></div></div><div class="cash-panel"><div class="dashboard-bulb" role="img" aria-label="مصباح أصفر">💡</div><h3>مرحباً بك في نظام فرجللو</h3><div class="sub">نظام متكامل لإدارة الحسابات</div></div><div id="activeBranchLabel" aria-live="polite"></div><div id="activeBranchImageWrap" style="margin:10px 0 0 auto;text-align:right;max-width:100%;"><img id="activeBranchImage" src="https://scontent.fcai19-8.fna.fbcdn.net/v/t39.30808-6/326779120_539151501524446_3356444645274466193_n.jpg?stp=dst-jpg_tt6&cstp=mx712x711&ctp=s712x711&_nc_cat=111&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=NPF-bTIK5HkQ7kNvwFG_S-P&_nc_oc=AdodLxPjp5sQ9PhK1oSpjsFglqYvYNyh-vHvSOyxH7AHtIafQSbg9g8IrA_1T41-444&_nc_zt=23&_nc_ht=scontent.fcai19-8.fna&_nc_gid=UoV1CzQHIgV1VkGqHqplcQ&_nc_ss=7b289&oh=00_AQSGcixzA7dEnufI4zIo6vRRNnlLUgS3PiYMOPPsKSd1NA&oe=6AEADA93" alt="صورة الفرع" loading="lazy" style="display:block;width:180px;max-width:100%;height:auto;object-fit:contain;border-radius:12px;"></div></div><div id="inventory" class="page hidden"><div class="title"><div><h2>📦 المخزن</h2><div class="sub">جميع الأصناف وكمياتها</div></div><div><button class="btn" onclick="openItemModal()">＋ إضافة صنف</button></div></div><div class="cards"><div class="card"><div class="label">إجمالي الأصناف</div><div id="iCount" class="value cyan"></div></div><div class="card"><div class="label">إجمالي الكميات</div><div id="iQty" class="value green"></div></div><div class="card"><div class="label">قيمة المخزون</div><div id="iValue" class="value gold"></div></div><div class="card"><div class="label">مبيعات اليوم</div><div id="iSales" class="value"></div></div></div><div class="toolbar"><input id="invSearch" placeholder="ابحث بالكود أو اسم الصنف..." oninput="renderInventory()"><button class="btn gray" onclick="document.getElementById('invSearch').value='';renderInventory()">مسح</button></div><div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>اسم الصنف</th><th>السعر</th><th>رصيد أول المدة</th><th>المباع</th><th>الرصيد الحالي</th><th>القيمة</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="invBody"></tbody></table></div><div id="invPagination"></div></div>
 <div id="inventoryAudit" class="page hidden">
   <div class="title"><div><h2>📋 تقرير العجز والزيادة</h2><div class="sub">أدخل الكمية الفعلية بعد العد، وسيحسب النظام الفرق وقيمته تلقائيًا دون تعديل المخزون</div></div><div><button class="btn gold" onclick="saveInventoryCountReport()">💾 حفظ تقرير الجرد</button><button class="btn gray" onclick="printInventoryReport()">🖨 طباعة</button></div></div>
   <div class="toolbar no-print">
@@ -930,16 +591,16 @@ body{background:linear-gradient(135deg,#f4f8f6 0%,#edf3f2 100%)!important}
 
 <div id="sales" class="page hidden"><div class="title"><div><h2>📊 سجل المبيعات</h2><div class="sub">كل عمليات البيع التي تمت من الكاشير</div></div></div><div class="cards"><div class="card"><div class="label">عدد العمليات</div><div id="sCount" class="value cyan"></div></div><div class="card"><div class="label">إجمالي المبيعات</div><div id="sTotal" class="value gold"></div></div></div><div class="table-wrap"><table class="table"><thead><tr><th>التاريخ والوقت</th><th>الشيفت</th><th>الإجمالي</th><th>الدفع</th><th>الأصناف</th></tr></thead><tbody id="salesBody"></tbody></table></div></div>
 <div id="reports" class="page hidden"><div class="title"><div><h2>📈 تقفيل الوردية</h2><div class="sub">ملخص المبيعات وحركة الشيفتات والأصناف</div></div><button class="btn gold" onclick="printReport()">🖨 طباعة التقرير</button></div><div class="toolbar"><label>من</label><input id="repFrom" type="date" onchange="renderReports()"><label>إلى</label><input id="repTo" type="date" onchange="renderReports()"><select id="repShift" onchange="renderReports()"><option value="">كل الشيفتات</option><option>صباحي</option><option>مسائي</option><option>السهرة</option></select></div><div class="cards"><div class="card"><div class="label">إجمالي المبيعات</div><div id="rTotal" class="value gold">0.00 EGP</div></div><div class="card"><div class="label">عمليات البيع</div><div id="rInvoices" class="value cyan">لا توجد أصناف</div></div><div class="card"><div class="label">إجمالي القطع</div><div id="rUnits" class="value green">0</div></div><div class="card"><div class="label">متوسط البيع</div><div id="rAvg" class="value">0.00 EGP</div></div></div><div id="shiftSummaryPanel" class="cash-panel"><h3>ملخص الشيفتات <span id="shiftSummaryDate"></span></h3><div id="shiftBody" class="shift-summary-cards"></div></div></div>
-<div id="transfers" class="page hidden"><div class="title"><div><h2>⇄ إذن تحويل</h2><div class="sub">إنشاء ومراجعة أذونات تحويل الأصناف بين المواقع أو الفروع</div></div><button class="btn gold" onclick="printTransferPermit()">🖨 طباعة الإذن</button></div><div class="cards"><div class="card"><div class="label">عدد الأذونات</div><div id="trCount" class="value cyan">0</div></div><div class="card"><div class="label">قيد المراجعة</div><div id="trPending" class="value gold">0</div></div><div class="card"><div class="label">تم التنفيذ</div><div id="trDone" class="value green">0</div></div><div class="card"><div class="label">حالة النظام</div><div class="value">جاهز</div></div></div><div class="cash-panel"><h3>بيانات إذن تحويل</h3><div class="toolbar"><input id="trFrom" placeholder="اسم الفرع المُحوِّل"><input id="trTo" placeholder="اسم الفرع المُحوَّل إليه"><input id="trNote" placeholder="ملاحظات / سبب التحويل"></div><div class="toolbar"><input id="trCode" placeholder="اكتب كود الصنف" oninput="lookupTransferItem()" onchange="lookupTransferItem()"><input id="trName" placeholder="اسم الصنف يظهر تلقائيًا من الكود"><input id="trQty" type="number" min="1" step="1" placeholder="الكمية المحوَّلة"><button class="btn" onclick="addTransferLine()">＋ إضافة الصنف</button></div><div class="table-wrap"><table class="table"><thead><tr><th>كود الصنف</th><th>اسم الصنف / المنتج</th><th>الكمية للتحويل</th><th>إجراء</th></tr></thead><tbody id="transferDraftBody"><tr><td colspan="5" class="empty">أضف الأصناف التي تريد تحويلها هنا</td></tr></tbody></table></div><div><span class="sub">تقدر تسجل أي منتج حتى لو مش مضاف للمخزون. الإذن للتوثيق والطباعة فقط ولا يغيّر أرصدة المخزون.</span><button class="btn green" onclick="createTransferPermit()">حفظ إذن تحويل الرسمي</button></div></div><div class="table-wrap"><table class="table"><thead><tr><th>رقم الإذن</th><th>من</th><th>إلى</th><th>الأصناف</th><th>التاريخ</th><th>الحالة</th><th>طباعة</th></tr></thead><tbody id="transfersBody"><tr><td colspan="7" class="empty">لا توجد أذونات تحويل بعد.</td></tr></tbody></table></div></div><div id="clients" class="page hidden"><div class="title"><div><h2>👥 العملاء</h2><div class="sub">إدارة حسابات العملاء المستقلة للنظام</div></div><div><button class="btn gold" onclick="openBranchesManager()">＋ إضافة فروع</button><button class="btn red" onclick="openBranchesManager('delete')">− حذف فروع</button><button class="btn" onclick="openBranchesManager('pin')">🔑 تغيير الرقم السري للفروع</button><button class="btn" onclick="openClientModal()">＋ إضافة حساب عميل</button></div></div><div class="cards"><div class="card"><div class="label">إجمالي العملاء</div><div id="clCount" class="value cyan">0</div></div><div class="card"><div class="label">حسابات نشطة</div><div id="clActive" class="value green">0</div></div><div class="card"><div class="label">حسابات موقوفة</div><div id="clInactive" class="value gold">0</div></div><div class="card"><div class="label">آخر إضافة</div><div id="clLast" class="value">—</div></div></div><div class="toolbar"><input id="clientSearch" placeholder="ابحث باسم العميل أو البريد أو النشاط..." oninput="renderClients()"><button class="btn gray" onclick="document.getElementById('clientSearch').value='';renderClients()">مسح</button></div><div class="table-wrap"><table class="table"><thead><tr><th>اسم العميل</th><th>اسم المستخدم</th><th>النشاط / المشروع</th><th>البريد الإلكتروني</th><th>حالة الحساب</th><th>تاريخ الإضافة</th><th>إجراء</th></tr></thead><tbody id="clientsBody"></tbody></table></div></div>
+<div id="transfers" class="page hidden"><div class="title"><div><h2>⇄ إذن تحويل</h2><div class="sub">إنشاء ومراجعة أذونات تحويل الأصناف بين المواقع أو الفروع</div></div><button class="btn gold" onclick="printTransferPermit()">🖨 طباعة الإذن</button></div><div class="cards"><div class="card"><div class="label">عدد الأذونات</div><div id="trCount" class="value cyan">0</div></div><div class="card"><div class="label">قيد المراجعة</div><div id="trPending" class="value gold">0</div></div><div class="card"><div class="label">تم التنفيذ</div><div id="trDone" class="value green">0</div></div><div class="card"><div class="label">حالة النظام</div><div class="value">جاهز</div></div></div><div class="cash-panel"><h3>بيانات إذن تحويل</h3><div class="toolbar"><input id="trFrom" placeholder="اسم الفرع المُحوِّل"><input id="trTo" placeholder="اسم الفرع المُحوَّل إليه"><input id="trNote" placeholder="ملاحظات / سبب التحويل"></div><div class="toolbar"><input id="trCode" placeholder="اكتب كود الصنف" oninput="lookupTransferItem()" onchange="lookupTransferItem()"><input id="trName" placeholder="اسم الصنف يظهر تلقائيًا من الكود"><input id="trQty" type="number" min="1" step="1" placeholder="الكمية المحوَّلة"><button class="btn" onclick="addTransferLine()">＋ إضافة الصنف</button></div><div class="table-wrap"><table class="table"><thead><tr><th>كود الصنف</th><th>اسم الصنف / المنتج</th><th>الكمية للتحويل</th><th>إجراء</th></tr></thead><tbody id="transferDraftBody"><tr><td colspan="5" class="empty">أضف الأصناف التي تريد تحويلها هنا</td></tr></tbody></table></div><div><span class="sub">تقدر تسجل أي منتج حتى لو مش مضاف للمخزون. الإذن للتوثيق والطباعة فقط ولا يغيّر أرصدة المخزون.</span><button class="btn green" onclick="createTransferPermit()">حفظ إذن تحويل الرسمي</button></div></div><div class="table-wrap"><table class="table"><thead><tr><th>رقم الإذن</th><th>من</th><th>إلى</th><th>الأصناف</th><th>التاريخ</th><th>الحالة</th><th>طباعة</th></tr></thead><tbody id="transfersBody"><tr><td colspan="7" class="empty">لا توجد أذونات تحويل بعد.</td></tr></tbody></table></div></div><div id="clients" class="page hidden"><div class="title"><div><h2>👥 العملاء</h2><div class="sub">إدارة حسابات العملاء المستقلة للنظام</div></div><div><button class="btn gold" onclick="openBranchesManager()">＋ إضافة فروع</button><button class="btn red" onclick="openBranchesManager('delete')">− حذف فروع</button><button class="btn" onclick="openBranchesManager('pin')">🔑 تغيير الرقم السري للفروع</button><button class="btn" onclick="openClientModal()">＋ إضافة حساب عميل</button></div></div><div class="cards"><div class="card"><div class="label">إجمالي العملاء</div><div id="clCount" class="value cyan">0</div></div><div class="card"><div class="label">حسابات نشطة</div><div id="clActive" class="value green">0</div></div><div class="card"><div class="label">حسابات موقوفة</div><div id="clInactive" class="value gold">0</div></div><div class="card"><div class="label">آخر إضافة</div><div id="clLast" class="value">—</div></div></div><div class="toolbar"><input id="clientSearch" placeholder="ابحث باسم العميل أو البريد أو النشاط..." oninput="renderClients()"><button class="btn gray" onclick="document.getElementById('clientSearch').value='';renderClients()">مسح</button></div><div class="table-wrap"><table class="table"><thead><tr><th>اسم العميل</th><th>النشاط / المشروع</th><th>البريد الإلكتروني</th><th>حالة الحساب</th><th>تاريخ الإضافة</th><th>إجراء</th></tr></thead><tbody id="clientsBody"></tbody></table></div></div>
 <div id="settings" class="page hidden"><div class="title"><div><h2>⚙ الإعدادات</h2><div class="sub">إدارة الأرقام السرية والبيانات المحلية</div></div></div><div class="cash-panel"><h3>الرقم السري للإعدادات</h3><div class="paybox"><input id="newSettingsPin" type="password" inputmode="numeric" placeholder="اكتب الرقم السري الجديد"><button class="btn" onclick="saveSettingsPin()">تغيير الرقم السري</button></div><hr><h3>الأرقام السرية للشيفتات</h3><p class="sub">حدد رقمًا سريًا من 4 إلى 12 رقمًا لكل شيفت. سيُطلب الرقم عند فتح الكاشير لبدء الشيفت.</p><div class="paybox"><input id="shiftPinMorning" type="password" inputmode="numeric" placeholder="الرقم السري للشيفت الصباحي"><input id="shiftPinEvening" type="password" inputmode="numeric" placeholder="الرقم السري للشيفت المسائي"><input id="shiftPinLate" type="password" inputmode="numeric" placeholder="الرقم السري لشيفت السهرة"><button class="btn" onclick="saveShiftPins()">حفظ أرقام الشيفتات</button></div><hr><button class="btn red" onclick="deletePagePasswords()">🗑 حذف الرقم السري</button></div></div>
 
 <div id="expenses" class="page hidden"><div class="title"><div><h2>المصروفات</h2><div class="sub">تسجيل المصروفات ومراجعة إجماليها</div></div></div><div class="cash-panel"><h3>إضافة مصروف</h3><div class="paybox"><input id="expenseCategory" placeholder="نوع المصروف (مثل كهرباء أو مواصلات)"><input id="expenseAmount" type="number" min="0.01" step="0.01" placeholder="المبلغ بالجنيه"><select id="expenseShift" aria-label="الوردية"><option value="">اختار الوردية</option><option value="صباحي">صباحي</option><option value="مسائي">مسائي</option><option value="السهرة">السهرة</option></select><button class="btn green" onclick="saveExpense()">حفظ المصروف</button></div></div></div>
 <div id="purchaseInvoices" class="page hidden"><div class="title"><div><h2>فاتورة مشتريات</h2><div class="sub">تسجيل فواتير الموردين وحساب إجمالي المشتريات</div></div></div><div class="cash-panel"><h3>فاتورة مشتريات جديدة</h3><div class="paybox"><input id="piSupplier" placeholder="اسم المورد" /><input id="piNumber" placeholder="رقم الفاتورة" /><input id="piDate" type="date" /><input id="piItem" placeholder="اسم الصنف" /><input id="piQty" type="number" min="0.01" step="any" placeholder="الكمية" /><input id="piPrice" type="number" min="0" step="0.01" placeholder="سعر الوحدة" /><button class="btn" onclick="piAddLine()">إضافة الصنف للفاتورة</button></div><div id="piDraft"></div><div class="paybox"><input id="piNotes" placeholder="ملاحظات (اختياري)" /><button class="btn gold" onclick="piSave()">حفظ الفاتورة</button></div></div><div class="cash-panel"><div class="paybox"><input id="piSearch" placeholder="بحث بالمورد أو رقم الفاتورة" oninput="piRender()" /><button class="btn gray" onclick="piPrint()">🖨 طباعة الفواتير</button></div><div id="piSummary"></div><div id="piTable"></div></div></div>
-</main></div></div></div>
+</main></div></div>
 <div id="barcodeModal" class="modal-bg hidden"><div class="modal"><h3>طباعة الباركود</h3><p class="sub">اختر الصنف وعدد الملصقات.</p><select id="bcSelect"></select><label for="bcOrientation" style="display:block;margin:10px 0 5px;font-weight:700">اتجاه الطباعة (Print Orientation)</label><select id="bcOrientation"><option value="horizontal">أفقي</option><option value="vertical">رأسي</option></select><input id="bcQty" type="number" min="1" value="1" placeholder="عدد الملصقات"><div class="modal-actions"><button class="btn gold" onclick="printSelectedBarcode()">🖨 طباعة</button><button class="btn gray" onclick="closeBarcodeModal()">إلغاء</button></div></div></div>
 <div id="clientModal" class="modal-bg hidden"><div class="modal"><h3>＋ إضافة حساب عميل</h3><p class="sub">أنشئ حساب دخول مستقل للعميل.</p><input id="clientName" placeholder="اسم العميل"><input id="clientUsername" placeholder="اسم المستخدم للدخول" autocomplete="off"><input id="clientPassword" type="password" placeholder="كلمة مرور الدخول" autocomplete="new-password"><input id="clientProject" placeholder="النشاط / اسم المشروع"><input id="clientEmail" type="email" placeholder="البريد الإلكتروني"><select id="clientStatus"><option>نشط</option><option>موقوف</option></select><div class="modal-actions"><button class="btn" onclick="saveClient()">حفظ</button><button class="btn gray" onclick="closeClientModal()">إلغاء</button></div></div></div>
 <div id="modalBg" class="modal-bg hidden"><div class="modal"><h3 id="modalTitle">إضافة صنف</h3><input id="mCode" placeholder="الكود / الباركود"><input id="mName" placeholder="اسم الصنف"><input id="mPrice" type="number" step="0.01" placeholder="سعر البيع"><input id="mQty" type="number" step="1" placeholder="الكمية"><div class="modal-actions"><button type="button" class="btn green" onclick="window.saveItem()">حفظ</button><button class="btn gray" onclick="closeModal()">إلغاء</button></div></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script><script src="login-fix.js?v=20261031-client-workspace-read-fix"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/@supabase/supabase-js@2"></script><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script><script src="login-fix.js?v=20261030-supervisor-green-final"></script>
 <script>
 /* Keep the login button callable even if the main application script fails to initialize. */
 window.__frgLoginHandler = window.__frgLoginHandler || null;
@@ -967,8 +628,6 @@ window.doLogin = function () {
 <script>
 window.addEventListener('error',function(event){const box=document.getElementById('loginErr');if(event.message)window.__frgLastRuntimeError=event.message+(event.filename?' ('+event.filename.split('/').pop()+':'+event.lineno+':'+event.colno+')':'');if(box&&window.__frgLastRuntimeError)box.textContent='خطأ تشغيل: '+window.__frgLastRuntimeError});window.addEventListener('unhandledrejection',function(event){const box=document.getElementById('loginErr');const reason=event.reason&&event.reason.message?event.reason.message:String(event.reason||'');if(box&&reason)box.textContent='خطأ اتصال: '+reason});
 const {createClient}=supabase;const SUPABASE_URL='https://flrtvxxtlbpjhydtlrwd.supabase.co',SUPABASE_ANON_KEY='sb_publishable_U-ufvBXkCEfVaZ-MNFProg_hcxI5LyR';const supabaseClient=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-window.supabaseClient=supabaseClient;
-window.__frgSignupClient=window.__frgSignupClient||createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 // Login handlers are published before optional application initialization.
 const ORIGINAL=[{"code":"101","name":"كريسينا سمسم","price":30,"qty":0},{"code":"102","name":"كريسينا سادة","price":30,"qty":0},{"code":"103","name":"كريسينا سكر و قرفة","price":30,"qty":0},{"code":"104","name":"كريسينا  حبة كاملة","price":35,"qty":0},{"code":"105","name":"باتون حلواني","price":30,"qty":0},{"code":"106","name":"باتون كامون","price":30,"qty":0},{"code":"107","name":"باتون ملح","price":30,"qty":0},{"code":"108","name":"باتون تركى","price":35,"qty":0},{"code":"109","name":"باتون حبة كاملة","price":35,"qty":0},{"code":"110","name":"سماسم","price":30,"qty":0},{"code":"111","name":"عين يمامة","price":30,"qty":0},{"code":"112","name":"برزيانة","price":30,"qty":0},{"code":"113","name":"شرائح سمسم وحبة بركة","price":30,"qty":0},{"code":"114","name":"شرائح تركى","price":45,"qty":0},{"code":"115","name":"شرائح شوفان","price":35,"qty":0},{"code":"116","name":"شرائح سبع حبوب","price":35,"qty":0},{"code":"117","name":"توست كوركوم","price":30,"qty":0},{"code":"118","name":"توست حبة كاملة","price":35,"qty":0},{"code":"119","name":"حرف (s) سكر","price":30,"qty":0},{"code":"120","name":"حرف (s) سكر و قرفة","price":30,"qty":0},{"code":"121","name":"فايش صعيدي","price":35,"qty":0},{"code":"201","name":"نشادر فانيليا","price":60,"qty":0},{"code":"202","name":"نشادر برتقال","price":60,"qty":0},{"code":"203","name":"نشادر شيكولاتة","price":60,"qty":0},{"code":"204","name":"برازق","price":60,"qty":0},{"code":"205","name":"بسكويت صخر","price":60,"qty":0},{"code":"206","name":"بسكويت نسكافيه","price":60,"qty":0},{"code":"207","name":"بسكويت قهوة","price":60,"qty":0},{"code":"208","name":"بسكويت بندق","price":60,"qty":0},{"code":"209","name":"بسكويت بندق حبة كاملة","price":70,"qty":0},{"code":"210","name":"بسكويت قرفة","price":60,"qty":0},{"code":"211","name":"بسكويت ينسون","price":60,"qty":0},{"code":"212","name":"بسكويت ينسون حبة كاملة","price":70,"qty":0},{"code":"213","name":"بسكويت انس","price":40,"qty":0},{"code":"214","name":"كوكيز شيكولاتة","price":60,"qty":0},{"code":"215","name":"كوكيز شيكولاتة حبة كاملة","price":70,"qty":0},{"code":"216","name":"كوكيز فانيليا","price":60,"qty":0},{"code":"217","name":"كوكيز فانيليا حبة كاملة","price":70,"qty":0},{"code":"218","name":"بسكويت لوكسى","price":60,"qty":0},{"code":"219","name":"قرفة حبة كاملة","price":70,"qty":0},{"code":"220","name":"نسكافيه حبة كاملة","price":70,"qty":0},{"code":"301","name":"قراقيش عجوة","price":50,"qty":0},{"code":"302","name":"قراقيش عجوة حبة كاملة","price":60,"qty":0},{"code":"303","name":"قراقيش ينسون","price":50,"qty":0},{"code":"304","name":"قراقيش ملبن","price":50,"qty":0},{"code":"305","name":"قراميش حبة البركة","price":60,"qty":0},{"code":"306","name":"قراقيش سادة","price":50,"qty":0},{"code":"307","name":"قرص عجوة","price":50,"qty":0},{"code":"308","name":"قرص عجوة حبة كاملة","price":60,"qty":0},{"code":"309","name":"قرص ملبن","price":50,"qty":0},{"code":"310","name":"قرص سادة حبة كاملة","price":60,"qty":0},{"code":"311","name":"معمولة عجوة","price":50,"qty":0},{"code":"312","name":"معمولة ملبن","price":50,"qty":0},{"code":"401","name":"باتيه جبنة بيضاء","price":25,"qty":0},{"code":"402","name":"باتيه جبنة بيضاء زيتون","price":25,"qty":0},{"code":"403","name":"باتيه تركىباتيه شيدر","price":25,"qty":0},{"code":"404","name":"باتيه سوسيس","price":25,"qty":0},{"code":"405","name":"باتيه جبنه بيضاء حبة كاملة","price":30,"qty":0},{"code":"406","name":"باتيه جبنة تركي حبة كاملة","price":30,"qty":0},{"code":"407","name":"كرواسون سادة","price":20,"qty":0},{"code":"408","name":"كرواسون سادة حبة كاملة","price":25,"qty":0},{"code":"409","name":"ميني بيتزا (طبق)","price":50,"qty":0},{"code":"410","name":"ساليزون جبنة تركى (طبق)","price":50,"qty":0},{"code":"411","name":"ساليزون جبنة بيضاء (طبق)","price":50,"qty":0},{"code":"412","name":"بيتزا إيطالي","price":30,"qty":0},{"code":"501","name":"انجلش كيك قالب","price":50,"qty":0},{"code":"502","name":"انجلش كيك (طبق)","price":40,"qty":0},{"code":"503","name":"كاب كيك","price":20,"qty":0},{"code":"504","name":"فطير صغير","price":15,"qty":0},{"code":"505","name":"فطير كبير","price":25,"qty":0},{"code":"601","name":"كرواسون شيكولاتة","price":30,"qty":0},{"code":"602","name":"دانش","price":25,"qty":0},{"code":"603","name":"سابليه كبير","price":25,"qty":0},{"code":"604","name":"ميني سابليه (الكيلو)","price":280,"qty":0},{"code":"605","name":"تارت كبير","price":25,"qty":0},{"code":"606","name":"ميني تارت (الكيلو)","price":280,"qty":0},{"code":"607","name":"دونتس كبير","price":30,"qty":0},{"code":"608","name":"ميني دونتس (الكيلو)","price":250,"qty":0},{"code":"609","name":"باباظ","price":30,"qty":0},{"code":"610","name":"ملفيه حلو","price":25,"qty":0},{"code":"611","name":"ملفيه حادق (طبق)","price":50,"qty":0},{"code":"612","name":"جاتوه","price":30,"qty":0},{"code":"613","name":"فلوست","price":45,"qty":0},{"code":"614","name":"هولنديز","price":25,"qty":0},{"code":"615","name":"اكلير","price":25,"qty":0},{"code":"616","name":"ميني اكلير (الكيلو)","price":250,"qty":0},{"code":"617","name":"البولات","price":25,"qty":0},{"code":"618","name":"بيتي فور (الكيلو)","price":280,"qty":0},{"code":"701","name":"هريسة لوز","price":200,"qty":0},{"code":"702","name":"هريسة فسدق كريزة","price":200,"qty":0},{"code":"703","name":"هريسة سادة","price":180,"qty":0},{"code":"404","name":"هريسة عين جمل","price":200,"qty":0},{"code":"705","name":"هريسة بندق","price":200,"qty":0},{"code":"706","name":"جلاش مكسرات","price":200,"qty":0},{"code":"707","name":"جلاش  سادة","price":180,"qty":0},{"code":"708","name":"جلاش نوتيلا","price":200,"qty":0},{"code":"709","name":"جلاش سوستة","price":200,"qty":0},{"code":"710","name":"كنافة كابات","price":15,"qty":0},{"code":"711","name":"كنافة سيجار","price":180,"qty":0},{"code":"712","name":"كنافة  بندق","price":200,"qty":0},{"code":"713","name":"كنافة شيكولاتة نوتيلا","price":200,"qty":0},{"code":"714","name":"كنافة مبروم","price":200,"qty":0},{"code":"715","name":"كنافة مكسرات","price":200,"qty":0},{"code":"716","name":"شكلمة كريز","price":180,"qty":0},{"code":"717","name":"شكلمة مكسرات","price":200,"qty":0},{"code":"718","name":"رموش الست مكسرات","price":200,"qty":0},{"code":"719","name":"رموش الست عادي","price":180,"qty":0}];
 const KEYS={inv:'frg_inv',sales:'frg_sales'};let inventory=JSON.parse(localStorage.getItem(KEYS.inv)||'null')||ORIGINAL.map(x=>({...x,sold:0}));let sales=JSON.parse(localStorage.getItem(KEYS.sales)||'[]');let cart=[],pendingPage=null,editIndex=null,cloudReady=false;window.currentProfileRole='admin';let currentAuthUserId=null,activityRefreshTimer=null,activityFetchBusy=false,activityCloudAvailable=false;
@@ -1069,13 +728,13 @@ function startActivityFeed(){
   if(!window.__faragelloActivityFocusBound){window.__faragelloActivityFocusBound=true;window.addEventListener('focus',refreshActivityFeed)}
 }
 
-function rememberedLoginKey(role){return 'frg_remember_login_'+role}function toggleRememberLogin(){const role=selectedLoginRole||'client',box=document.getElementById('rememberLogin'),user=document.getElementById('email'),pass=document.getElementById('password'),key=rememberedLoginKey(role);if(box&&box.checked){try{localStorage.setItem(key,JSON.stringify({user:user?.value||'',pass:pass?.value||''}))}catch(e){}}else{try{localStorage.removeItem(key)}catch(e){}if(user)user.value='';if(pass)pass.value='';}}function loadRememberedLogin(role){let saved={};try{saved=JSON.parse(localStorage.getItem(rememberedLoginKey(role))||'{}')}catch(e){}const user=document.getElementById('email'),pass=document.getElementById('password'),box=document.getElementById('rememberLogin');if(user)user.value=saved.user||'';if(pass)pass.value=saved.pass||'';if(box)box.checked=!!(saved.user&&saved.pass)}function saveRememberedLogin(){const role=selectedLoginRole||'client',box=document.getElementById('rememberLogin'),user=document.getElementById('email'),pass=document.getElementById('password');if(box?.checked){try{localStorage.setItem(rememberedLoginKey(role),JSON.stringify({user:user?.value||'',pass:pass?.value||''}))}catch(e){}}else{try{localStorage.removeItem(rememberedLoginKey(role))}catch(e){}}}let selectedLoginRole='';function chooseLogin(role){selectedLoginRole=role;const login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),err=document.getElementById('loginErr');if(login)login.dataset.page='';if(fields)fields.classList.remove('hidden');if(email){email.classList.remove('hidden');email.value='';email.placeholder='اسم المستخدم';email.autocomplete='username'}if(password){password.classList.remove('hidden');password.value='';password.autocomplete='current-password'}document.getElementById('adminLoginChoice')?.classList.add('hidden');document.getElementById('clientLoginToggle')?.classList.add('hidden');const title=document.getElementById('loginText');if(title)title.textContent='';if(err)err.textContent='';loadRememberedLogin(role);if(email)email.focus()}function resetLoginChoice(){selectedLoginRole='';pendingPage=null;const login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),err=document.getElementById('loginErr'),box=document.getElementById('rememberLogin');if(login)login.dataset.page='';if(fields)fields.classList.add('hidden');if(email){email.classList.remove('hidden');email.value='';email.placeholder='اسم المستخدم';email.autocomplete='username'}if(password){password.classList.remove('hidden');password.value='';password.autocomplete='current-password'}if(box)box.checked=false;document.getElementById('adminLoginChoice')?.classList.remove('hidden');document.getElementById('clientLoginToggle')?.classList.remove('hidden');const title=document.getElementById('loginText');if(title)title.textContent='';if(err)err.textContent=''}
+function rememberedLoginKey(role){return 'frg_remember_login_'+role}function toggleRememberLogin(){const role=selectedLoginRole||'client',box=document.getElementById('rememberLogin'),user=document.getElementById('email'),pass=document.getElementById('password'),key=rememberedLoginKey(role);if(box&&box.checked){try{localStorage.setItem(key,JSON.stringify({user:user?.value||'',pass:pass?.value||''}))}catch(e){}}else{try{localStorage.removeItem(key)}catch(e){}if(user)user.value='';if(pass)pass.value='';}}function loadRememberedLogin(role){let saved={};try{saved=JSON.parse(localStorage.getItem(rememberedLoginKey(role))||'{}')}catch(e){}const user=document.getElementById('email'),pass=document.getElementById('password'),box=document.getElementById('rememberLogin');if(user)user.value=saved.user||'';if(pass)pass.value=saved.pass||'';if(box)box.checked=!!(saved.user&&saved.pass)}function saveRememberedLogin(){const role=selectedLoginRole||'client',box=document.getElementById('rememberLogin'),user=document.getElementById('email'),pass=document.getElementById('password');if(box?.checked){try{localStorage.setItem(rememberedLoginKey(role),JSON.stringify({user:user?.value||'',pass:pass?.value||''}))}catch(e){}}else{try{localStorage.removeItem(rememberedLoginKey(role))}catch(e){}}}let selectedLoginRole='';function chooseLogin(role){selectedLoginRole=role;const login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),err=document.getElementById('loginErr');if(login)login.dataset.page='';if(fields)fields.classList.remove('hidden');if(email){email.classList.remove('hidden');email.value='';email.placeholder='اسم المستخدم';email.autocomplete='username'}if(password){password.classList.remove('hidden');password.value='';password.autocomplete='current-password'}document.getElementById('adminLoginChoice')?.classList.add('hidden');document.getElementById('clientLoginToggle')?.classList.add('hidden');const title=document.getElementById('loginText');if(title)title.textContent=role==='admin'?'دخول المشرف':'دخول العميل';if(err)err.textContent='';loadRememberedLogin(role);if(email)email.focus()}function resetLoginChoice(){selectedLoginRole='';pendingPage=null;const login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),err=document.getElementById('loginErr'),box=document.getElementById('rememberLogin');if(login)login.dataset.page='';if(fields)fields.classList.add('hidden');if(email){email.classList.remove('hidden');email.value='';email.placeholder='اسم المستخدم';email.autocomplete='username'}if(password){password.classList.remove('hidden');password.value='';password.autocomplete='current-password'}if(box)box.checked=false;document.getElementById('adminLoginChoice')?.classList.remove('hidden');document.getElementById('clientLoginToggle')?.classList.remove('hidden');const title=document.getElementById('loginText');if(title)title.textContent='سيستم محاسبي متكامل';if(err)err.textContent=''}
 function normalizeFaragelloLoginState(){const login=document.getElementById('login'),email=document.getElementById('email'),password=document.getElementById('password');if(login)login.dataset.page='';if(email)email.classList.remove('hidden');if(password)password.classList.remove('hidden')}normalizeFaragelloLoginState();
 async function registerClientAccount(){const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value,errorBox=document.getElementById('loginErr');errorBox.textContent='';if(!email||!password){errorBox.textContent='اكتب الإيميل وكلمة المرور أولًا.';return}if(password.length<8){errorBox.textContent='كلمة المرور لازم تكون 8 أحرف أو أرقام على الأقل.';return}const fullName=prompt('اكتب اسم العميل كما هو مسجل عند مدير النظام:');if(!fullName)return;try{const{data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{account_type:'client',full_name:fullName}}});if(error)throw error;errorBox.textContent=data.session?'تم إنشاء الحساب. سجّل الدخول الآن.':'تم إرسال طلب إنشاء الحساب. لو تأكيد البريد مفعّل، افتح رسالة التأكيد ثم سجّل الدخول.'}catch(e){errorBox.textContent=e.message||'تعذر إنشاء الحساب.'}}
 async function loadClientWorkspaceFromCloud(clientId){const{data:inv,error:invError}=await supabaseClient.from('client_inventory').select('code,name,price,qty,sold').eq('client_id',clientId).order('code');if(invError)throw new Error('تعذر تحميل مخزون العميل: '+invError.message);inventory=(inv||[]).map(x=>({code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)}));const{data:cloudSales,error:salesError}=await supabaseClient.from('client_sales').select('id,created_at,shift,pay,total,items_summary').eq('client_id',clientId).order('created_at',{ascending:false}).limit(300);if(salesError)throw new Error('تعذر تحميل مبيعات العميل: '+salesError.message);sales=mergeSalesWithCache(cloudSales);localStorage.setItem(KEYS.inv+'_'+clientId,JSON.stringify(inventory));localStorage.setItem(KEYS.sales+'_'+clientId,JSON.stringify(sales));cloudReady=true;cart=[];refreshAll()}
 async function syncClientInventoryToCloud(){if(!activeClient?.id)throw new Error('لا توجد مساحة عميل نشطة.');const rows=inventory.map(x=>({client_id:activeClient.id,code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0),updated_at:new Date().toISOString()}));if(!rows.length)return;const{error}=await supabaseClient.from('client_inventory').upsert(rows,{onConflict:'client_id,code'});if(error)throw error}
-async function doLogin(){const page=document.getElementById('login').dataset.page,password=document.getElementById('password').value,errorBox=document.getElementById('loginErr');errorBox.textContent='';saveRememberedLogin();if(page){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('email').classList.remove('hidden');showPage(page);document.getElementById('login').dataset.page='';startActivityFeed();return}const loginName=document.getElementById('email').value.trim();if(!loginName||!password){errorBox.textContent='اكتب اسم المستخدم وكلمة المرور';return}const email=loginName.includes('@')?loginName:(loginName.toLowerCase().replace(/[^a-z0-9._-]/g,'')+'@fergllo.local');try{const{data,error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;let{data:profile,error:profileError}=await supabaseClient.from('user_profiles').select('full_name, role, branch_id, client_id').eq('user_id',data.user.id).single();if(profileError||!profile){if(selectedLoginRole==='admin'){profile={role:'admin'}}else{await supabaseClient.auth.signOut();throw new Error('تعذر قراءة ملف الصلاحيات: '+(profileError?.message||'لا يوجد صف مطابق في user_profiles'))}}if(profile.role==='client'){document.body.classList.add('client-workspace-mode');const{data:account,error:workspaceError}=await supabaseClient.rpc('get_current_client_workspace');if(workspaceError){await supabaseClient.auth.signOut();throw new Error('تعذر تحميل مساحة عمل العميل: '+workspaceError.message+' — تأكد من تطبيق تحديث قاعدة البيانات.')}if(!account||!account.id||account.status!=='نشط'){await supabaseClient.auth.signOut();throw new Error('لم يتم العثور على مساحة عمل نشطة مرتبطة بحساب الدخول. راجع بيانات العميل من لوحة المشرف.')}const clientWorkspaceId=account.id;window.currentProfileRole='client';currentAuthUserId=data.user.id;activeClient={id:account.id,name:account.name,project:account.project,email:account.email};localStorage.setItem('frg_active_client',JSON.stringify(activeClient));document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('login').dataset.page='';document.querySelector('.brand small').textContent='';document.querySelector('.user b').textContent=account.name;document.querySelector('.user small').textContent='حساب العميل';document.querySelectorAll('.nav[data-page="clients"]').forEach(el=>{el.classList.add('hidden');el.style.setProperty('display','none','important')});document.querySelectorAll('.nav[data-page="settings"]').forEach(el=>el.classList.remove('hidden'));await loadClientWorkspaceFromCloud(account.id);showPage('home');logActivity('تم تسجيل دخول العميل: '+account.name+' ('+loginName+')','login');startActivityFeed();return}if(profile.role!=='admin'){await supabaseClient.auth.signOut();throw new Error('نوع الحساب غير مدعوم. راجع مدير النظام.')}window.currentProfileRole='admin';currentAuthUserId=data.user.id;document.querySelectorAll('.nav[data-page="clients"],.nav[data-page="settings"]').forEach(el=>el.classList.remove('hidden'));activeClient=null;localStorage.removeItem('frg_active_client');await loadInventoryFromCloud();document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('login').dataset.page='';const{data:cloudClients,error:clientsError}=await supabaseClient.from('client_accounts').select('id,name,project,username,email,phone,status,created_at').order('created_at',{ascending:true});if(clientsError)throw new Error('تعذر تحميل قائمة العملاء: '+clientsError.message);clients=(cloudClients||[]).map(c=>({...c,date:new Date(c.created_at||Date.now()).toLocaleDateString('ar-EG')}));saveClients();renderClients();refreshAll();logActivity('تم تسجيل دخول المشرف: '+(profile.full_name||loginName)+' ('+loginName+')','login');startActivityFeed()}catch(err){errorBox.textContent=err.message||'تعذر تسجيل الدخول. راجع البريد وكلمة المرور.'}}
-window.__frgLoginHandler=doLogin;window.doLogin=doLogin;window.chooseLogin=chooseLogin;window.resetLoginChoice=window.resetLoginChoice||(typeof resetLoginChoice==='function'?resetLoginChoice:function(){var login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),err=document.getElementById('loginErr'),title=document.getElementById('loginText');if(login)login.dataset.page='';if(fields)fields.classList.add('hidden');if(email){email.classList.remove('hidden');email.value='';email.placeholder='اسم المستخدم';email.autocomplete='username';}if(password){password.classList.remove('hidden');password.value='';password.type='password';password.autocomplete='current-password';}var admin=document.getElementById('adminLoginChoice'),client=document.getElementById('clientLoginToggle');if(admin)admin.classList.remove('hidden');if(client)client.classList.remove('hidden');if(title)title.textContent='';if(err)err.textContent='';});
+async function doLogin(){const page=document.getElementById('login').dataset.page,password=document.getElementById('password').value,errorBox=document.getElementById('loginErr');errorBox.textContent='';saveRememberedLogin();if(page){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('email').classList.remove('hidden');showPage(page);document.getElementById('login').dataset.page='';startActivityFeed();return}const loginName=document.getElementById('email').value.trim();if(!loginName||!password){errorBox.textContent='اكتب اسم المستخدم وكلمة المرور';return}const email=loginName.includes('@')?loginName:(loginName.toLowerCase().replace(/[^a-z0-9._-]/g,'')+'@fergllo.local');try{const{data,error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;let{data:profile,error:profileError}=await supabaseClient.from('user_profiles').select('full_name, role, branch_id, client_id').eq('user_id',data.user.id).single();if(profileError||!profile){if(selectedLoginRole==='admin'){profile={role:'admin'}}else{await supabaseClient.auth.signOut();throw new Error('تعذر قراءة ملف الصلاحيات: '+(profileError?.message||'لا يوجد صف مطابق في user_profiles'))}}if(selectedLoginRole&&profile.role!==selectedLoginRole){await supabaseClient.auth.signOut();throw new Error(selectedLoginRole==='admin'?'هذه بيانات عميل وليست بيانات المشرف.':'هذه بيانات مشرف وليست بيانات العميل.')}if(profile.role==='client'){document.body.classList.add('client-workspace-mode');const{data:account,error:accountError}=await supabaseClient.from('client_accounts').select('id,name,project,email,status').eq('id',profile.client_id).single();if(accountError||!account||account.status!=='نشط'){await supabaseClient.auth.signOut();throw new Error('حساب العميل غير نشط أو غير مربوط بمساحة عمل. تواصل مع مدير النظام.')}window.currentProfileRole='client';currentAuthUserId=data.user.id;activeClient={id:account.id,name:account.name,project:account.project,email:account.email};localStorage.setItem('frg_active_client',JSON.stringify(activeClient));document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('login').dataset.page='';document.querySelector('.brand small').textContent='';document.querySelector('.user b').textContent=account.name;document.querySelector('.user small').textContent='حساب العميل';document.querySelectorAll('.nav[data-page="clients"]').forEach(el=>{el.classList.add('hidden');el.style.setProperty('display','none','important')});document.querySelectorAll('.nav[data-page="settings"]').forEach(el=>el.classList.remove('hidden'));await loadClientWorkspaceFromCloud(account.id);showPage('home');logActivity('تم تسجيل دخول العميل: '+account.name+' ('+loginName+')','login');startActivityFeed();return}if(profile.role!=='admin'){await supabaseClient.auth.signOut();throw new Error('نوع الحساب غير مدعوم. راجع مدير النظام.')}window.currentProfileRole='admin';currentAuthUserId=data.user.id;document.querySelectorAll('.nav[data-page="clients"],.nav[data-page="settings"]').forEach(el=>el.classList.remove('hidden'));activeClient=null;localStorage.removeItem('frg_active_client');await loadInventoryFromCloud();document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('login').dataset.page='';const{data:cloudClients,error:clientsError}=await supabaseClient.from('client_accounts').select('id,name,project,username,email,status,created_at').order('created_at',{ascending:true});if(!clientsError){clients=(cloudClients||[]).map(c=>({...c,date:new Date(c.created_at).toLocaleDateString('ar-EG')}));saveClients()}refreshAll();logActivity('تم تسجيل دخول المشرف: '+(profile.full_name||loginName)+' ('+loginName+')','login');startActivityFeed()}catch(err){errorBox.textContent=err.message||'تعذر تسجيل الدخول. راجع البريد وكلمة المرور.'}}
+window.__frgLoginHandler=doLogin;window.doLogin=doLogin;window.chooseLogin=chooseLogin;window.resetLoginChoice=window.resetLoginChoice||(typeof resetLoginChoice==='function'?resetLoginChoice:function(){var login=document.getElementById('login'),fields=document.getElementById('loginFields'),email=document.getElementById('email'),password=document.getElementById('password'),err=document.getElementById('loginErr'),title=document.getElementById('loginText');if(login)login.dataset.page='';if(fields)fields.classList.add('hidden');if(email){email.classList.remove('hidden');email.value='';email.placeholder='اسم المستخدم';email.autocomplete='username';}if(password){password.classList.remove('hidden');password.value='';password.type='password';password.autocomplete='current-password';}var admin=document.getElementById('adminLoginChoice'),client=document.getElementById('clientLoginToggle');if(admin)admin.classList.remove('hidden');if(client)client.classList.remove('hidden');if(title)title.textContent='سيستم محاسبي متكامل';if(err)err.textContent='';});
 function requestPage(p){const app=document.getElementById('app'),login=document.getElementById('login');if(app&&!app.classList.contains('hidden')&&(window.currentProfileRole==='admin'||window.currentProfileRole==='client'||activeClient)){if(p==='cashier'){const pins=getShiftPins(),activeShift=localStorage.getItem(workspaceKey('frg_active_shift')),shiftField=document.getElementById('shift'),activeIsValid=activeShift&&Object.keys(pins).some(name=>String(pins[name])===String(activeShift));if(!activeIsValid){if(!Object.keys(pins).some(k=>String(pins[k]||'').trim())){alert('لا توجد كلمات مرور محفوظة للشيفتات. افتح الإعدادات واحفظ كلمات مرور الصباحي والمسائي والسهرة أولًا.');return}const entered=prompt('أدخل كلمة مرور الشيفت لفتح الكاشير');if(entered===null)return;const shiftName=Object.keys(pins).find(name=>String(pins[name])===String(entered).trim());if(!shiftName){alert('كلمة مرور الشيفت غير صحيحة. لم يتم فتح الكاشير.');return}localStorage.setItem(workspaceKey('frg_active_shift'),shiftName);if(shiftField){shiftField.value=shiftName;shiftField.type='text';shiftField.readOnly=true;shiftField.dataset.verified='true';shiftField.placeholder='الشيفت المفتوح: '+shiftName}logActivity('تم فتح الكاشير للشيفت '+shiftName,'shift')}}showPage(p);return}resetLoginChoice();if(login)login.classList.remove('hidden');if(app)app.classList.add('hidden')}
 function openSettings(){const saved=localStorage.getItem('frg_settings_pin')||'7319';const entered=prompt('أدخل الرقم السري لفتح الإعدادات');if(entered===null)return;if(entered!==saved){alert('الرقم السري غير صحيح');return}showPage('settings')}
 function getShiftPins(){try{return JSON.parse(localStorage.getItem(workspaceKey('frg_shift_pins'))||'{}')}catch(e){return {}}}
@@ -1152,10 +811,10 @@ if(password) alert('تم تعديل بيانات العميل وكلمة الم�
 }
 function editClient(i){openClientModal(i)}async function toggleClient(i){const next=clients[i].status==='نشط'?'موقوف':'نشط';try{const{error}=await supabaseClient.from('client_accounts').update({status:next}).eq('id',clients[i].id);if(error)throw error;clients[i].status=next;saveClients();renderClients();logActivity('تم تغيير حالة حساب العميل '+clients[i].name+' إلى '+next,'clients')}catch(e){alert('تعذر تحديث الحساب: '+e.message)}}async function deleteClient(i){if(!confirm('حذف سجل العميل ومساحة عمله؟'))return;try{const removedName=clients[i].name;const{error}=await supabaseClient.from('client_accounts').delete().eq('id',clients[i].id);if(error)throw error;clients.splice(i,1);saveClients();renderClients();logActivity('تم حذف سجل حساب العميل: '+removedName,'clients')}catch(e){alert('تعذر حذف الحساب: '+e.message)}}
 async function openClientWorkspace(i){const c=clients[i];if(!c||c.status!=='نشط'){alert('حساب العميل موقوف أو غير موجود');return}document.body.classList.add('client-workspace-mode');activeClient={id:c.id,name:c.name,project:c.project,email:c.email};localStorage.setItem('frg_active_client',JSON.stringify(activeClient));document.querySelector('.brand small').textContent='';document.querySelector('.user b').textContent=c.name;document.querySelector('.user small').textContent='حساب العميل';try{await loadClientWorkspaceFromCloud(c.id);showPage('home');logActivity('فتح المشرف مساحة عمل العميل: '+c.name,'workspace');startActivityFeed()}catch(e){cloudReady=false;alert('تعذر تحميل مخزون العميل من قاعدة البيانات: '+(e?.message||e))}}
-function loadWorkspaceData(){const invKey=workspaceKey(KEYS.inv),salesKey=workspaceKey(KEYS.sales);inventory=JSON.parse(localStorage.getItem(invKey)||'null')||[];sales=JSON.parse(localStorage.getItem(salesKey)||'[]');cloudReady=false;cart=[];refreshAll()}function leaveClientWorkspace(){document.body.classList.remove('client-workspace-mode');activeClient=null;localStorage.removeItem('frg_active_client');const invNav=document.getElementById('navInventory');if(invNav)invNav.classList.add('hidden');inventory=[];sales=[];localStorage.setItem(KEYS.inv,'[]');localStorage.setItem(KEYS.sales,'[]');cloudReady=false;document.querySelector('.brand small').textContent='';document.querySelector('.user b').textContent='admin';document.querySelector('.user small').textContent='مدير النظام';showPage('clients')}
+function loadWorkspaceData(){const invKey=workspaceKey(KEYS.inv),salesKey=workspaceKey(KEYS.sales);inventory=JSON.parse(localStorage.getItem(invKey)||'null')||[];sales=JSON.parse(localStorage.getItem(salesKey)||'[]');cloudReady=false;cart=[];refreshAll()}function leaveClientWorkspace(){document.body.classList.remove('client-workspace-mode');activeClient=null;localStorage.removeItem('frg_active_client');const invNav=document.getElementById('navInventory');if(invNav)invNav.classList.add('hidden');inventory=[];sales=[];localStorage.setItem(KEYS.inv,'[]');localStorage.setItem(KEYS.sales,'[]');cloudReady=false;document.querySelector('.brand small').textContent='Farag El-Sayed • مشرف النظام';document.querySelector('.user b').textContent='admin';document.querySelector('.user small').textContent='مدير النظام';showPage('clients')}
 function renderClients(){
   const q=(document.getElementById('clientSearch')?.value||'').trim().toLowerCase();
-  const list=clients.filter(c=>[c.name,c.username,c.phone,c.project,c.email].join(' ').toLowerCase().includes(q));
+  const list=clients.filter(c=>[c.name,c.username,c.project,c.email].join(' ').toLowerCase().includes(q));
   const setText=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=String(value)};
   setText('clCount',clients.length);
   setText('clActive',clients.filter(c=>c.status==='نشط').length);
@@ -1738,7 +1397,7 @@ function printRecords(title, summaryId, tableId){
  const w=window.open('','_blank');
  if(!w){alert('اسمح بفتح النوافذ المنبثقة للطباعة');return}
  w.document.open();
- w.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>${title}</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #777;padding:8px;text-align:right}th{background:#eee}p{margin:8px 0}@media print{body{padding:0}}</style></head><body><h1>${title} - سيستم فرجللو</h1>${summary?summary.innerHTML:''}${table.innerHTML}</body></html>`);
+ w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'+title+'</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #777;padding:8px;text-align:right}th{background:#eee}p{margin:8px 0}@media print{body{padding:0}}</style></head><body><h1>'+title+' - سيستم فرجللو</h1>'+(summary?summary.innerHTML:'')+table.innerHTML+'</body></html>');
  w.document.close();
  w.focus();
  w.print();
@@ -1780,7 +1439,7 @@ window.chooseLogin=window.chooseLogin||function(role){
  if(fields)fields.classList.remove('hidden');
  document.getElementById('adminLoginChoice')?.classList.add('hidden');
  document.getElementById('clientLoginToggle')?.classList.add('hidden');
- if(title)title.textContent='';
+ if(title)title.textContent=role==='admin'?'دخول المشرف':'دخول العميل';
  if(err)err.textContent='';
 };
 
@@ -1851,27 +1510,5 @@ window.showPage=function(id){if(typeof oldShow==='function')oldShow(id);if(id===
  if(typeof previousLogin==='function')window.doLogin=async function(){await previousLogin();if(window.currentProfileRole==='client'&&activeClient?.id&&byId('login').classList.contains('hidden')){branchGateDone=false;try{await showBranchGate()}catch(e){console.error(e)}}};
 })();
 </script>
-
-
-
-
-
-<style id="faragello-structural-rebuild">
-:root{--fr-ink:#102a2b;--fr-deep:#092021;--fr-panel:#103638;--fr-green:#12a879;--fr-mint:#b8f2d8;--fr-gold:#e8bd69;--fr-paper:#f3f7f5;--fr-line:#dce8e3}
-body{background:var(--fr-paper)!important;color:#172b2a}
-.faragello-login{min-height:100vh!important;display:grid!important;grid-template-columns:minmax(0,1.08fr) minmax(360px,.78fr)!important;align-items:stretch!important;gap:0!important;padding:0!important;background:#f3f7f5!important;overflow:hidden}
-.faragello-showcase{position:relative!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;min-height:100vh!important;margin:0!important;padding:clamp(34px,6vw,88px)!important;border-radius:0 0 0 110px!important;background:radial-gradient(circle at 78% 20%,rgba(39,178,133,.28),transparent 28%),radial-gradient(circle at 15% 85%,rgba(232,189,105,.14),transparent 30%),linear-gradient(145deg,#0a2527,#0e4540 58%,#092a2d)!important;color:#fff!important;text-align:right!important;overflow:hidden}
-.faragello-showcase:after{content:"";position:absolute;width:440px;height:440px;border:1px solid rgba(184,242,216,.16);border-radius:50%;left:-170px;bottom:-230px;box-shadow:0 0 0 35px rgba(184,242,216,.035),0 0 0 75px rgba(184,242,216,.025)}
-.showcase-top{display:flex;align-items:center;gap:14px;direction:ltr;align-self:flex-start;letter-spacing:2px}.showcase-top strong{display:block;font-size:17px}.showcase-top small{display:block;color:#a9d9c9;font-size:9px;letter-spacing:1.4px;margin-top:4px}.showcase-mark,.login-symbol{display:grid;place-items:center;font-weight:900;color:#0c3932;background:linear-gradient(145deg,#e9c879,#fff0bd);box-shadow:0 10px 35px #0003}.showcase-mark{width:54px;height:54px;border-radius:18px;font-size:29px}.showcase-copy{position:relative;z-index:1;max-width:650px;margin:auto 0}.showcase-copy .hero-kicker{display:inline-flex;padding:9px 15px;border:1px solid #ffffff2b;border-radius:30px;color:#b8f2d8;background:#ffffff0c}.showcase-copy h2{font-size:clamp(42px,6vw,76px)!important;line-height:1.2!important;margin:26px 0 18px!important;font-weight:900!important;letter-spacing:-2px}.showcase-copy h2 span{color:#e8c979}.showcase-copy p{max-width:520px;color:#c2d9d2!important;font-size:17px!important;line-height:2!important}.showcase-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;position:relative;z-index:1}.showcase-tile{min-height:115px;padding:18px;border:1px solid #ffffff24;border-radius:20px;background:#ffffff0b;backdrop-filter:blur(8px);display:flex;flex-direction:column;justify-content:space-between}.showcase-tile b{color:#e8c879;font-size:12px}.showcase-tile span{font-weight:700;font-size:13px}.showcase-tile i{font-style:normal;align-self:flex-end;color:#9de2c5;font-size:22px}.showcase-footer{display:flex;justify-content:space-between;color:#a9c9c0;font-size:11px;position:relative;z-index:1;margin-top:28px}
-.faragello-login-card{align-self:center!important;justify-self:center!important;width:min(100% - 48px,470px)!important;padding:clamp(28px,4vw,48px)!important;border:1px solid #e1ebe6!important;border-radius:30px!important;background:#fff!important;box-shadow:0 28px 80px rgba(12,48,43,.12)!important;text-align:right!important}
-.login-card-head{display:flex;align-items:center;gap:15px;margin-bottom:18px}.login-symbol{width:58px;height:58px;border-radius:19px;font-size:30px}.login-card-head span{color:#78908a;font-size:13px}.login-card-head h1{margin:4px 0 0!important;color:#143c36!important;font-size:27px!important}.login-intro{color:#71847f;line-height:1.9;margin:0 0 25px}.login-step-label{display:flex;align-items:center;gap:10px;color:#84948e;font-size:11px;margin-bottom:13px}.login-step-label span{height:1px;background:#e4ece8;flex:1}.faragello-login-card #adminLoginChoice,.faragello-login-card #loginSubmit{width:100%;min-height:55px;border-radius:15px!important;background:linear-gradient(110deg,#0d5548,#12a879)!important;box-shadow:0 10px 24px #0b6d502b!important;font-size:15px!important}.faragello-login-card #adminLoginChoice b{float:left;font-size:20px}.faragello-login-card #loginFields{margin-top:20px}.faragello-login-card #loginFields>div{margin-bottom:12px}.faragello-login-card #loginFields input:not([type=checkbox]){width:100%;min-height:52px;border:1px solid #dce8e3;border-radius:13px;background:#f8fbf9;padding:12px 15px;outline:none}.faragello-login-card #loginFields input:focus{border-color:#12a879;box-shadow:0 0 0 3px #12a8791a}.remember-login{display:flex;align-items:center;justify-content:flex-start;gap:9px;margin:12px 0 18px;font-size:12px;color:#647a73;cursor:pointer}.remember-login input{width:15px;height:15px;accent-color:#12a879}.login-card-foot{display:flex;justify-content:space-between;gap:10px;border-top:1px solid #edf2ef;padding-top:17px;margin-top:28px;color:#94a39e;font-size:9px;letter-spacing:.5px}
-.faragello-topbar{height:auto!important;min-height:82px!important;padding:12px clamp(18px,3vw,42px)!important;background:#fff!important;border-bottom:1px solid #e3ece7!important;box-shadow:0 5px 24px #173d3210!important;display:flex!important;align-items:center!important;justify-content:space-between!important;position:relative!important;z-index:5}.faragello-topbar .brand{display:flex;align-items:center;gap:13px}.faragello-topbar .brand .logo{width:48px;height:48px;border-radius:16px;background:linear-gradient(145deg,#0b4b40,#12a879)!important;display:grid;place-items:center;box-shadow:0 8px 20px #0c76502b}.faragello-topbar .brand h1{font-size:19px!important;color:#143d36!important;margin:0!important}.faragello-topbar .brand small{font-size:10px;color:#82948e;display:block;margin-top:4px}.faragello-topbar .userbox{display:flex;align-items:center;gap:22px}.faragello-topbar .clock{font-size:11px;color:#70847c;text-align:left;line-height:1.8}.faragello-topbar .clock b{color:#1c4a40}.faragello-topbar .user{display:flex;align-items:center;gap:10px;padding:8px 13px;border:1px solid #e3ece7;border-radius:14px;color:#24453e}.faragello-topbar .user small{color:#82948e}.user-avatar{display:grid;place-items:center;width:35px;height:35px;border-radius:12px;background:#e7f5ee}
-.workspace-layout{display:grid!important;grid-template-columns:260px minmax(0,1fr)!important;gap:0!important;min-height:calc(100vh - 82px)!important;background:#f3f7f5!important}.faragello-sidebar{position:sticky!important;top:0!important;height:calc(100vh - 82px)!important;overflow-y:auto!important;padding:22px 15px 18px!important;background:linear-gradient(180deg,#0b2b2c,#103c38)!important;border:0!important;border-radius:0!important;color:#fff!important;display:flex!important;flex-direction:column!important;gap:7px!important}.sidebar-profile{display:flex;align-items:center;gap:11px;padding:12px 10px 22px;border-bottom:1px solid #ffffff1a;margin-bottom:10px}.sidebar-logo{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#e8c879,#fff0bf);color:#10463a;font-weight:900;font-size:23px}.sidebar-profile b{display:block;font-size:13px}.sidebar-profile small{display:block;color:#9ebdb2;font-size:10px;margin-top:4px}.sidebar-status{width:8px;height:8px;border-radius:50%;background:#42d69b;box-shadow:0 0 0 5px #42d69b20;margin-right:auto}.nav-caption{padding:10px 12px 4px;color:#7fa99b;font-size:10px;font-weight:800;letter-spacing:.5px}.nav-group{display:grid;gap:4px}.faragello-sidebar .nav{width:100%;min-height:43px!important;display:flex!important;align-items:center!important;gap:11px!important;padding:9px 12px!important;border:1px solid transparent!important;border-radius:12px!important;background:transparent!important;color:#c2d8d0!important;text-align:right!important;font-size:12px!important;font-weight:650!important;transition:background .18s ease,border-color .18s ease,transform .18s ease}.faragello-sidebar .nav:hover{background:#ffffff0c!important;color:#fff!important;transform:translateX(-2px)}.faragello-sidebar .nav.active{background:linear-gradient(100deg,#0e7659,#149b70)!important;border-color:#5ed7a43b!important;color:#fff!important;box-shadow:0 8px 20px #031a1733!important}.nav-icon{width:25px;height:25px;display:grid;place-items:center;border-radius:8px;background:#ffffff10;color:#9ee4c5;font-size:15px;flex:0 0 25px}.faragello-sidebar .nav.active .nav-icon{background:#ffffff20;color:#fff}.faragello-sidebar .nav-nested{margin-right:14px;width:calc(100% - 14px);border-right:2px solid #4bc99b!important;border-radius:0 10px 10px 0!important}.sidebar-bottom{margin-top:auto;padding-top:14px;border-top:1px solid #ffffff1a}.sidebar-help{display:flex;align-items:center;gap:10px;padding:10px 8px 15px}.sidebar-help>span{width:30px;height:30px;border-radius:10px;background:#ffffff13;display:grid;place-items:center;color:#e8c879}.sidebar-help b{display:block;font-size:11px}.sidebar-help small{display:block;color:#8eb3a6;font-size:9px;margin-top:4px}.faragello-sidebar .logout{color:#f1b6aa!important}.faragello-sidebar .logout .nav-icon{color:#f1b6aa}
-.workspace-main{min-width:0;padding:0 clamp(15px,2.6vw,38px) 40px}.workspace-context{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid #e2ebe6;margin-bottom:22px}.context-eyebrow{display:block;color:#9aaa9f;font-size:9px;letter-spacing:1.4px;margin-bottom:5px}.workspace-context strong{font-size:15px;color:#21483e}.context-live{display:flex;align-items:center;gap:8px;color:#6c8980;font-size:10px;padding:8px 12px;border:1px solid #dcebe3;border-radius:30px;background:#fff}.context-live i{width:7px;height:7px;border-radius:50%;background:#18b77b;box-shadow:0 0 0 4px #18b77b1c}.workspace-content{min-width:0;padding:0!important;background:transparent!important}.workspace-content>.page{min-width:0;padding:0!important;margin:0!important;background:transparent!important;border:0!important;box-shadow:none!important}.workspace-content .page>.title{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:21px 24px;margin:0 0 18px!important;border:1px solid #e2ebe6;border-radius:18px;background:#fff;box-shadow:0 7px 22px #173d3208}.workspace-content .page>.title h2{color:#173f37!important;font-size:22px!important;margin:0 0 5px!important}.workspace-content .page>.title .sub{color:#84958e!important;font-size:11px!important}.workspace-content .page>.cash-panel,.workspace-content .page>.cards,.workspace-content .page>.toolbar,.workspace-content .page>.table-wrap,.workspace-content .page>div[id$="Summary"],.workspace-content .page>div[id$="Table"]{border-radius:18px!important}.workspace-content .page>.cash-panel{padding:22px!important;border:1px solid #e1ebe6!important;background:#fff!important;box-shadow:0 8px 24px #173d3208!important}.workspace-content .page>.cards{gap:14px!important}.workspace-content .page .card{border:1px solid #e1ebe6!important;border-radius:17px!important;box-shadow:0 7px 20px #173d3208!important;background:#fff!important;padding:19px!important}.workspace-content .page .toolbar{padding:13px!important;background:#fff!important;border:1px solid #e1ebe6!important}.workspace-content .page .table-wrap{overflow:auto;border:1px solid #e1ebe6;background:#fff;box-shadow:0 7px 20px #173d3208}.workspace-content .page table{border-collapse:separate!important;border-spacing:0!important}.workspace-content .page table thead th{background:#eaf4ef!important;color:#315c4e!important}.workspace-content .page input,.workspace-content .page select,.workspace-content .page textarea{border-radius:11px!important;border-color:#dce8e3!important}.workspace-content .page .btn{border-radius:11px!important}
-#home .cash-panel{background:linear-gradient(120deg,#0d3734,#12634e)!important;color:#fff!important;min-height:185px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;position:relative;overflow:hidden}#home .cash-panel:after{content:"ف";position:absolute;left:35px;top:-65px;font-size:230px;font-weight:900;color:#ffffff0a;line-height:1}#home .cash-panel h3,#home .cash-panel .sub{position:relative;z-index:1;color:#fff!important}#home .dashboard-bulb{font-size:30px;margin-bottom:12px}
-#cashier .cash-panel{border-top:3px solid #16a879!important}#inventory .cards .card,#sales .cards .card,#reports .cards .card{min-height:105px}#purchaseInvoices .cash-panel,#expenses .cash-panel{margin-bottom:16px}
-@media(max-width:900px){.faragello-login{grid-template-columns:1fr!important}.faragello-showcase{min-height:410px!important;border-radius:0 0 30px 30px!important;padding:30px!important}.showcase-copy{margin:45px 0 25px}.showcase-copy h2{font-size:44px!important}.showcase-tiles{grid-template-columns:repeat(3,1fr)}.faragello-login-card{margin:28px auto!important}.workspace-layout{grid-template-columns:82px minmax(0,1fr)!important}.faragello-sidebar{padding:18px 9px!important}.sidebar-profile{justify-content:center;padding:8px 0 18px}.sidebar-profile>div:not(.sidebar-logo),.sidebar-status,.nav-caption,.faragello-sidebar .nav:not(.logout){font-size:0!important}.sidebar-profile>div:not(.sidebar-logo){display:none}.faragello-sidebar .nav{justify-content:center;padding:9px 5px!important;font-size:0!important}.faragello-sidebar .nav .nav-icon{font-size:16px}.faragello-sidebar .nav-nested{margin-right:0;width:100%;border:1px solid transparent!important;border-right:0!important}.sidebar-help{display:none}.faragello-sidebar .logout{font-size:0!important}.workspace-main{padding:0 14px 28px}.workspace-context{min-height:66px}.context-live{font-size:0}.context-live i{font-size:initial}}
-@media(max-width:560px){.faragello-topbar{padding:10px 12px!important;min-height:68px!important}.faragello-topbar .brand .logo{width:40px;height:40px}.faragello-topbar .brand h1{font-size:15px!important}.faragello-topbar .brand small{font-size:8px}.faragello-topbar .userbox{gap:8px}.faragello-topbar .clock{font-size:9px}.faragello-topbar .user{padding:5px 7px}.faragello-topbar .user-avatar{width:29px;height:29px}.workspace-layout{min-height:calc(100vh - 68px)!important;grid-template-columns:62px minmax(0,1fr)!important}.faragello-sidebar{height:calc(100vh - 68px)!important;padding:12px 5px!important}.faragello-sidebar .nav{min-height:40px!important}.nav-icon{width:23px;height:23px;flex-basis:23px}.workspace-main{padding:0 9px 22px}.workspace-context{margin-bottom:13px}.workspace-context strong{font-size:12px}.workspace-content .page>.title{padding:15px!important;border-radius:14px!important;align-items:flex-start}.workspace-content .page>.title h2{font-size:17px!important}.workspace-content .page>.cash-panel{padding:15px!important}.showcase-tiles{gap:7px}.showcase-tile{min-height:95px;padding:10px;border-radius:13px}.showcase-tile span{font-size:10px}.showcase-copy h2{font-size:36px!important}.showcase-copy p{font-size:13px!important}.showcase-footer{font-size:9px}.faragello-login-card{width:calc(100% - 28px)!important;padding:24px!important}}
-</style>
 </body>
 </html>
