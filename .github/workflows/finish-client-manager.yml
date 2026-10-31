@@ -21,7 +21,7 @@ jobs:
           from pathlib import Path
           html = Path("index.html").read_text(encoding="utf-8")
           required = [
-              "chooseLogin('admin')",
+              "chooseLogin('all')",
               "async function doLogin()",
               'id="navClients"',
               "client_accounts",
