@@ -41,26 +41,36 @@
       const user=(el('signupUser')?.value||'').trim().toLowerCase();
       const pass=el('signupPass')?.value||'', pass2=el('signupPass2')?.value||'';
       if(!name||!phone||!user||!pass||!pass2){showError('اكتب كل البيانات المطلوبة، ومنها رقم الهاتف.');return}
-      const normalizedPhone=phone.replace(/[\s()-]/g,'');
-      if(!/^\+?[0-9]{10,15}$/.test(normalizedPhone)){showError('اكتب رقم هاتف صحيحًا من 10 إلى 15 رقمًا.');return}
+      const normalizedPhone=phone.replace(/[\\s()-]/g,'');
+      if(!/^\\+?[0-9]{10,15}$/.test(normalizedPhone)){showError('اكتب رقم هاتف صحيحًا من 10 إلى 15 رقمًا.');return}
       if(!/^[A-Za-z0-9._-]{3,40}$/.test(user)){showError('اسم المستخدم بالإنجليزية والأرقام فقط، من 3 إلى 40 حرفًا.');return}
-      if(!/^\d{6,}$/.test(pass)){showError('كلمة السر يجب أن تكون 6 أرقام أو أكثر.');return}
+      if(!/^\\d{6,}$/.test(pass)){showError('كلمة السر يجب أن تكون 6 أرقام أو أكثر.');return}
       if(pass!==pass2){showError('كلمتا السر غير متطابقتين.');return}
-      const sb=supabase(); if(!sb?.auth?.signUp||!sb?.rpc){showError('الاتصال بقاعدة البيانات غير متاح حاليًا.');return}
+      const sb=window.__frgSignupClient;
+      if(!sb?.auth?.signUp){showError('خدمة إنشاء الحساب غير جاهزة. حدّث الصفحة وحاول مرة أخرى.');return}
       const btn=el('signupSubmit'); if(btn){btn.disabled=true;btn.textContent='جاري إنشاء الحساب...'}
+      showError('');
       try{
-        const rpc=await sb.rpc('create_customer_account',{p_name:name,p_username:user,p_phone:normalizedPhone});
-        if(rpc.error)throw rpc.error;
-        const created=rpc.data||{};
-        const email=created.email||((user)+'@fergllo.local');
-        const res=await sb.auth.signUp({email,password:pass,options:{data:{account_type:'client',full_name:name}}});
-        if(res.error)throw res.error;
-        if(res.data?.session)await sb.auth.signOut();
-        alert('تم إنشاء حساب العميل وتسجيله في قائمة العملاء بحساب المشرف. اسم المستخدم: '+user);
-        showError(res.data?.session?'تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول.':'تم إنشاء سجل العميل، لكن يلزم تعطيل تأكيد البريد الإلكتروني في إعدادات Supabase حتى يعمل الدخول باسم المستخدم.');
-        if(btn){btn.disabled=false;btn.textContent='إنشاء الحساب'}
+        const email=user+'@fergllo.local';
+        const {data,error}=await sb.auth.signUp({
+          email,password:pass,
+          options:{data:{account_type:'client',full_name:name,username:user,phone:normalizedPhone}}
+        });
+        if(error)throw error;
+        if(!data?.user)throw new Error('لم يتم إنشاء حساب الدخول. حاول مرة أخرى.');
+        if(!data.session){
+          throw new Error('تم إرسال الطلب لكن لم يتم تفعيل الدخول تلقائيًا. راجع إعدادات التسجيل في قاعدة البيانات.');
+        }
+        await sb.auth.signOut();
+        alert('تم إنشاء حساب العميل بنجاح وإضافته تلقائيًا لقائمة العملاء. اسم المستخدم: '+user);
+        boxSuccess();
+        function boxSuccess(){showError('تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول باسم المستخدم وكلمة السر.')}
+        ['signupName','signupPhone','signupUser','signupPass','signupPass2'].forEach(id=>{const field=el(id);if(field)field.value=''});
       }catch(err){
-        console.error(err); showError(err?.message||'تعذر إنشاء الحساب.');
+        console.error('Faragello customer signup failed:',err);
+        const message=String(err?.message||'تعذر إنشاء الحساب.');
+        showError(/already registered|already exists|duplicate|unique/i.test(message)?'اسم المستخدم مستخدم بالفعل. اختار اسم مستخدم مختلف.':message);
+      }finally{
         if(btn){btn.disabled=false;btn.textContent='إنشاء الحساب'}
       }
     }
