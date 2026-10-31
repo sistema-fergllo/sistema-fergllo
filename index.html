@@ -613,7 +613,33 @@ body.client-workspace-mode #app #activeBranchLabel{
     <div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>اسم الصنف</th><th>السعر</th><th>الرصيد</th><th>الباركود</th></tr></thead><tbody id="codingBody"></tbody></table></div>
   </div>
 </div>
-<div id="cashier" class="page hidden"><div class="title"><div><h2>🧾 الكاشير</h2><div class="sub">إدخال المبيعات بسرعة بالباركود أو الكود</div></div></div><div class="cash-layout"><div class="cash-panel"><div class="scan"><input id="scan" autofocus placeholder="الكود أو الكمية*الكود مثال 9*101 ثم Enter" onkeydown="if(event.key==='Enter') addToCart()"><button class="btn" onclick="addToCart()">إضافة</button></div><div></div><div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="cartBody"></tbody></table></div></div><div class="cash-panel"><h3>بيانات الشيفت</h3><div class="paybox"><label>الشيفت</label><input id="shift" type="password" inputmode="numeric" placeholder="اكتب الرقم السري للشيفت ثم Enter" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();authorizeShiftOpen()}"><label>طريقة الدفع</label><select id="pay"><option>كاش</option><option>إلكتروني</option></select><div>إجمالي البيع</div><div id="cartTotal" class="cart-total">0.00 EGP</div><button class="btn green" onclick="completeSale()">✓ إتمام البيع</button><button class="btn red" onclick="clearCart()">تفريغ السلة</button></div></div></div></div>
+<div id="cashier" class="page hidden"><div class="title"><div><h2>🧾 الكاشير</h2><div class="sub">إدخال المبيعات بسرعة بالباركود أو الكود</div></div></div><div class="cash-layout"><div class="cash-panel"><div class="scan"><input id="scan" autofocus placeholder="الكود أو الكمية*الكود مثال 9*101 ثم Enter" onkeydown="if(event.key==='Enter') addToCart()"><button class="btn" onclick="addToCart()">إضافة</button></div><div></div><div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="cartBody"></tbody></table></div></div><div class="cash-panel"><h3>بيانات الشيفت</h3><div class="paybox"><label>الشيفت</label><input id="shift" type="password" inputmode="numeric" placeholder="اكتب الرقم السري للشيفت ثم Enter" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();authorizeShiftOpen()}"><label>طريقة الدفع</label><select id="pay"><option>كاش</option><option>إلكتروني</option></select><div>إجمالي البيع</div><div id="cartTotal" class="cart-total">0.00 EGP</div><button class="btn green" onclick="completeSale()">✓ إتمام البيع</button><button class="btn red" onclick="clearCart()">تفريغ السلة</button>
+<div class="cash-panel" style="margin-top:14px">
+  <h3>حركات المرتجعات والهوالك</h3>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn" type="button" onclick="openCashierAdjustment('return')">↩ تسجيل مرتجع</button>
+    <button class="btn red" type="button" onclick="openCashierAdjustment('wastage')">✕ تسجيل هالك</button>
+  </div>
+  <div class="sub" style="margin-top:8px">المرتجع يعيد الكمية للمخزون ويخصم قيمته من صافي البيع، والهالك يخصم الكمية من المخزون.</div>
+</div>
+<div id="cashierAdjustmentModal" class="modal hidden" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.58);display:none;align-items:center;justify-content:center;padding:16px">
+  <div class="cash-panel" style="width:min(520px,100%);max-height:90vh;overflow:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+      <h3 id="cashierAdjustmentTitle">تسجيل حركة</h3>
+      <button class="btn gray" type="button" onclick="closeCashierAdjustment()">إغلاق ✕</button>
+    </div>
+    <input id="adjustmentType" type="hidden" value="return">
+    <label for="adjustmentItem">الصنف</label>
+    <select id="adjustmentItem" style="width:100%;margin:8px 0 12px"></select>
+    <label for="adjustmentQty">الكمية</label>
+    <input id="adjustmentQty" type="number" min="1" step="1" value="1" style="width:100%;margin:8px 0 12px">
+    <label for="adjustmentReason">ملاحظات (اختياري)</label>
+    <input id="adjustmentReason" type="text" placeholder="سبب المرتجع أو الهالك" style="width:100%;margin:8px 0 12px">
+    <div id="adjustmentHint" class="sub" style="margin:4px 0 14px"></div>
+    <button id="saveAdjustmentBtn" class="btn green" type="button" onclick="saveStockAdjustment()">حفظ الحركة وتحديث المخزون</button>
+  </div>
+</div>
+</div></div></div></div>
 
 <div id="sales" class="page hidden"><div class="title"><div><h2>📊 سجل المبيعات</h2><div class="sub">كل عمليات البيع التي تمت من الكاشير</div></div></div><div class="cards"><div class="card"><div class="label">عدد العمليات</div><div id="sCount" class="value cyan"></div></div><div class="card"><div class="label">إجمالي المبيعات</div><div id="sTotal" class="value gold"></div></div></div><div class="table-wrap"><table class="table"><thead><tr><th>التاريخ والوقت</th><th>الشيفت</th><th>الإجمالي</th><th>الدفع</th><th>الأصناف</th></tr></thead><tbody id="salesBody"></tbody></table></div></div>
 <div id="reports" class="page hidden"><div class="title"><div><h2>📈 تقفيل الوردية</h2><div class="sub">ملخص المبيعات وحركة الشيفتات والأصناف</div></div><button class="btn gold" onclick="printReport()">🖨 طباعة التقرير</button></div><div class="toolbar"><label>من</label><input id="repFrom" type="date" onchange="renderReports()"><label>إلى</label><input id="repTo" type="date" onchange="renderReports()"><select id="repShift" onchange="renderReports()"><option value="">كل الشيفتات</option><option>صباحي</option><option>مسائي</option><option>السهرة</option></select></div><div class="cards"><div class="card"><div class="label">إجمالي المبيعات</div><div id="rTotal" class="value gold">0.00 EGP</div></div><div class="card"><div class="label">عمليات البيع</div><div id="rInvoices" class="value cyan">لا توجد أصناف</div></div><div class="card"><div class="label">إجمالي القطع</div><div id="rUnits" class="value green">0</div></div><div class="card"><div class="label">متوسط البيع</div><div id="rAvg" class="value">0.00 EGP</div></div></div><div id="shiftSummaryPanel" class="cash-panel"><h3>ملخص الشيفتات <span id="shiftSummaryDate"></span></h3><div id="shiftBody" class="shift-summary-cards"></div></div></div>
@@ -1027,6 +1053,22 @@ async function saveStockAdjustment(){
  }finally{if(button){button.disabled=false;button.textContent='حفظ الحركة وتحديث المخزون'}}
 }
 
+function openCashierAdjustment(type){
+ const modal=document.getElementById('cashierAdjustmentModal');
+ const typeField=document.getElementById('adjustmentType');
+ if(!modal||!typeField)return;
+ typeField.value=type==='wastage'?'wastage':'return';
+ const title=document.getElementById('cashierAdjustmentTitle');
+ if(title)title.textContent=typeField.value==='return'?'تسجيل مرتجع':'تسجيل هالك';
+ const qty=document.getElementById('adjustmentQty');if(qty)qty.value='1';
+ const reason=document.getElementById('adjustmentReason');if(reason)reason.value='';
+ renderStockAdjustments();updateAdjustmentHint();
+ modal.classList.remove('hidden');modal.style.display='flex';
+}
+function closeCashierAdjustment(){
+ const modal=document.getElementById('cashierAdjustmentModal');
+ if(modal){modal.style.display='none';modal.classList.add('hidden')}
+}
 function showPage(id){if(id==='settings')loadShiftPinsToSettings();const activityLabels={home:'القائمة الرئيسية',inventory:'المخزن',inventoryAudit:'إدارة الجرد',cashier:'الكاشير',sales:'مبيعات اليوم',reports:'تقفيل الوردية',transfers:'إذن تحويل',clients:'العملاء',settings:'الإعدادات',dailyTransfers:'الاستعلامات اليومية'};const clientsNav=document.getElementById('navClients');if(clientsNav){clientsNav.classList.toggle('hidden',window.currentProfileRole==='client');clientsNav.style.setProperty('display',window.currentProfileRole==='client'?'none':'','important')}if(window.currentProfileRole==='client'&&id==='clients')id='home';const invNav=document.getElementById('navInventory');if(invNav)invNav.classList.remove('hidden');document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));const bar=document.getElementById('clientWorkspaceBar');if(bar){bar.style.display=activeClient?'block':'none';document.getElementById('clientWorkspaceName').textContent=activeClient?(activeClient.name+(activeClient.project?' • '+activeClient.project:'')):''}if(id==='wastage'){renderStockAdjustments();updateAdjustmentHint()}if(id==='expenses'){const d=document.getElementById('expenseDate');if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);renderExpenses()}if(id==='inventory')renderInventory();if(id==='coding')renderCoding();if(id==='inventoryAudit'){renderInventoryAudit();requestAnimationFrame(()=>renderInventoryAudit())}if(id==='sales'){window.renderSales();if(cloudReady)refreshSalesFromCloud().catch(e=>{console.error('تعذر تحديث المبيعات:',e);alert('تعذر تحديث المبيعات من قاعدة البيانات: '+(e.message||e))})}if(id==='reports'){window.renderReports();if(cloudReady)refreshSalesFromCloud().catch(e=>{console.error('تعذر تحديث بيانات التقارير:',e);alert('تعذر تحديث التقارير من قاعدة البيانات: '+(e.message||e))})}if(id==='coding')renderCoding();if(id==='transfers')renderTransfers();if(id==='dailyTransfers')renderDailyTransfers();if(id==='clients')renderClients();if(id==='cashier'){renderCart();const shiftField=document.getElementById('shift');const activeShift=localStorage.getItem(workspaceKey('frg_active_shift'));if(shiftField&&activeShift){shiftField.value=activeShift;shiftField.type='text';shiftField.readOnly=true;shiftField.dataset.verified='true';shiftField.placeholder='الشيفت المفتوح'}else if(shiftField){shiftField.value='';shiftField.type='password';shiftField.readOnly=false;shiftField.dataset.verified='false';shiftField.placeholder='اكتب الرقم السري للشيفت ثم Enter';setTimeout(()=>shiftField.focus(),100)}else setTimeout(()=>document.getElementById('scan').focus(),100)}if(activityLabels[id])logActivity('تم فتح صفحة '+activityLabels[id],'navigation')}
 function refreshAll(){updateDashboard();renderInventory();window.renderSales();renderCart()}function updateDashboard(){let qty=inventory.reduce((a,x)=>a+Number(x.qty||0),0),value=inventory.reduce((a,x)=>a+Number(x.qty||0)*Number(x.price||0),0),st=sales.reduce((a,x)=>a+Number(x.total||0),0);const setText=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};setText('cItems',inventory.length);setText('cQty',qty.toLocaleString());setText('cSales',money(st));setText('cStock',money(value));setText('iCount',inventory.length);setText('iQty',qty.toLocaleString());setText('iValue',money(value));setText('iSales',money(st))}
 function closeModal(){const modal=document.getElementById('modalBg');if(modal)modal.classList.add('hidden');document.body.classList.remove('modal-open');editIndex=null}
