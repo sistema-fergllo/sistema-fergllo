@@ -33,7 +33,7 @@ begin
   from auth.users
   where id = v_uid;
 
-  select count(distinct ca.id), min(ca.id)
+  select count(distinct ca.id), (array_agg(distinct ca.id))[1]::text
     into v_match_count, v_client_id
   from public.client_accounts ca
   where ca.status = 'نشط'
