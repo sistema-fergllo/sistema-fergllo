@@ -28,37 +28,36 @@
         '<input id="signupUser" placeholder="اسم المستخدم" autocomplete="username" dir="ltr">'+
         '<input id="signupPass" type="password" placeholder="كلمة السر — 6 أرقام أو أكثر" autocomplete="new-password" inputmode="numeric">'+
         '<input id="signupPass2" type="password" placeholder="تأكيد كلمة السر" autocomplete="new-password" inputmode="numeric">'+
-        '<button type="button" id="signupSubmit" class="btn" style="background:'+NAVY+'!important;color:#fff!important">إنشاء الحساب</button>'+ 
+        '<button type="button" id="signupSubmit" class="btn" style="background:'+NAVY+'!important;color:#fff!important">إنشاء الحساب</button>'+
         '<button type="button" id="signupBack" class="btn gray" style="background:'+NAVY+'!important;color:#fff!important">رجوع</button></div>';
       card.appendChild(box);
       el('signupSubmit').onclick=createAccount;
       el('signupBack').onclick=function(){box.remove();base(false)};
     }
     async function createAccount(){
-      const name=(el('signupName')?.value||'').trim(), phone=(el('signupPhone')?.value||'').trim(), user=(el('signupUser')?.value||'').trim().toLowerCase();
+      const name=(el('signupName')?.value||'').trim();
+      const phone=(el('signupPhone')?.value||'').trim();
+      const user=(el('signupUser')?.value||'').trim().toLowerCase();
       const pass=el('signupPass')?.value||'', pass2=el('signupPass2')?.value||'';
       if(!name||!phone||!user||!pass||!pass2){showError('اكتب كل البيانات المطلوبة، ومنها رقم الهاتف.');return}
-      const normalizedPhone=phone.replace(/[\\s()-]/g,'');
-      if(!/^\\+?[0-9]{10,15}$/.test(normalizedPhone)){showError('اكتب رقم هاتف صحيحًا من 10 إلى 15 رقمًا.');return}
+      const normalizedPhone=phone.replace(/[\s()-]/g,'');
+      if(!/^\+?[0-9]{10,15}$/.test(normalizedPhone)){showError('اكتب رقم هاتف صحيحًا من 10 إلى 15 رقمًا.');return}
       if(!/^[A-Za-z0-9._-]{3,40}$/.test(user)){showError('اسم المستخدم بالإنجليزية والأرقام فقط، من 3 إلى 40 حرفًا.');return}
       if(!/^\d{6,}$/.test(pass)){showError('كلمة السر يجب أن تكون 6 أرقام أو أكثر.');return}
       if(pass!==pass2){showError('كلمتا السر غير متطابقتين.');return}
-      const sb=supabase(); if(!sb?.auth?.signUp){showError('الاتصال بقاعدة البيانات غير متاح حاليًا.');return}
+      const sb=supabase(); if(!sb?.auth?.signUp||!sb?.rpc){showError('الاتصال بقاعدة البيانات غير متاح حاليًا.');return}
       const btn=el('signupSubmit'); if(btn){btn.disabled=true;btn.textContent='جاري إنشاء الحساب...'}
-      let created=null;
       try{
         const rpc=await sb.rpc('create_customer_account',{p_name:name,p_username:user,p_phone:normalizedPhone});
-        if(rpc.error)throw rpc.error; created=rpc.data;
-        const email=(created?.email)||((user)+'@fergllo.local');
+        if(rpc.error)throw rpc.error;
+        const created=rpc.data||{};
+        const email=created.email||((user)+'@fergllo.local');
         const res=await sb.auth.signUp({email,password:pass,options:{data:{account_type:'client',full_name:name}}});
         if(res.error)throw res.error;
-        alert('تم إنشاء حساب العميل بنجاح، وتم تسجيل بياناته في قائمة العملاء بحساب المشرف.');
-        if(res.data?.session){
-          location.reload();
-        }else{
-          showError('تم إنشاء الحساب. إذا كان تأكيد البريد مفعّلًا في Supabase، يجب إتمام التأكيد أولًا.');
-          if(btn){btn.disabled=false;btn.textContent='إنشاء الحساب'}
-        }
+        if(res.data?.session)await sb.auth.signOut();
+        alert('تم إنشاء حساب العميل وتسجيله في قائمة العملاء بحساب المشرف. اسم المستخدم: '+user);
+        showError(res.data?.session?'تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول.':'تم إنشاء سجل العميل، لكن يلزم تعطيل تأكيد البريد الإلكتروني في إعدادات Supabase حتى يعمل الدخول باسم المستخدم.');
+        if(btn){btn.disabled=false;btn.textContent='إنشاء الحساب'}
       }catch(err){
         console.error(err); showError(err?.message||'تعذر إنشاء الحساب.');
         if(btn){btn.disabled=false;btn.textContent='إنشاء الحساب'}
