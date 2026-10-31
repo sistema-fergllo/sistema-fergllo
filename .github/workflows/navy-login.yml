@@ -1,0 +1,36 @@
+name: Apply navy login buttons
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/navy-login.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply navy styling
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '/* FARAGELLO NAVY LOGIN BUTTONS */'
+          if marker not in s:
+              css = '''\n<style id="faragello-navy-login-buttons">\n/* FARAGELLO NAVY LOGIN BUTTONS */\n#login #adminLoginChoice,\n#login #clientLoginToggle,\n#login .login-card .btn.gray,\n#login .login-card button[id*="back"],\n#login .login-card button[id*="Back"] {\n  background: #173b56 !important;\n  background-image: none !important;\n  border-color: #173b56 !important;\n  color: #fff !important;\n  box-shadow: 0 7px 16px rgba(23,59,86,.18) !important;\n}\n#login #adminLoginChoice:hover,\n#login #clientLoginToggle:hover,\n#login .login-card .btn.gray:hover,\n#login .login-card button[id*="back"]:hover,\n#login .login-card button[id*="Back"]:hover {\n  background: #102e45 !important;\n  background-image: none !important;\n}\n</style>\n'''
+              s = s.replace('</head>', css + '</head>', 1)
+              p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit change
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Color client/admin entry and back buttons navy'
+          git push
