@@ -963,10 +963,44 @@ async function closeCurrentShift(){
  refreshAll();renderTransfers();renderDailyTransfers();
 }
 function getExpenses(){try{return JSON.parse(localStorage.getItem(workspaceKey('frg_expenses'))||'[]')}catch(e){return []}}
-function saveExpense(){const category=document.getElementById('expenseCategory'),amount=document.getElementById('expenseAmount'),shift=document.getElementById('expenseShift');const value=Number(amount.value),shiftName=shift?.value||localStorage.getItem(workspaceKey('frg_active_shift'))||'';if(!category.value.trim()||!Number.isFinite(value)||value<=0){alert('اكتب نوع المصروف والمبلغ بشكل صحيح');return}if(!shiftName){alert('اختار الوردية اللي المصروف تابع ليها');return}const rows=getExpenses();rows.unshift({id:Date.now(),date:(document.getElementById('expenseDate')?.value||new Date().toISOString().slice(0,10)),shift:shiftName,category:category.value.trim(),amount:value});localStorage.setItem(workspaceKey('frg_expenses'),JSON.stringify(rows));category.value='';amount.value='';const dateField=document.getElementById('expenseDate');if(dateField)dateField.value=new Date().toISOString().slice(0,10);if(shift)shift.value='';renderExpenses();if(typeof window.renderReports==='function')window.renderReports();logActivity('تم تسجيل مصروف لوردية '+shiftName,'expenses')}
+function saveExpense(){
+ const category=document.getElementById('expenseCategory');
+ const amount=document.getElementById('expenseAmount');
+ const shift=document.getElementById('expenseShift');
+ const value=Number(amount?.value);
+ const shiftName=shift?.value||localStorage.getItem(workspaceKey('frg_active_shift'))||'';
+ if(!category?.value.trim()||!Number.isFinite(value)||value<=0){alert('اكتب نوع المصروف والمبلغ بشكل صحيح');return}
+ if(!shiftName){alert('اختار الوردية اللي المصروف تابع ليها');return}
+ try{
+  const key=workspaceKey('frg_expenses');
+  const rows=getExpenses();
+  const expense={id:Date.now(),date:(document.getElementById('expenseDate')?.value||new Date().toISOString().slice(0,10)),shift:shiftName,category:category.value.trim(),amount:value};
+  rows.unshift(expense);
+  localStorage.setItem(key,JSON.stringify(rows));
+  const saved=getExpenses();
+  if(!saved.some(x=>String(x.id)===String(expense.id)))throw new Error('تعذر التأكد من حفظ المصروف');
+  category.value='';amount.value='';
+  const dateField=document.getElementById('expenseDate');
+  if(dateField)dateField.value=new Date().toISOString().slice(0,10);
+  if(shift)shift.value='';
+  renderExpenses();
+  alert('تم حفظ المصروف وإضافته إلى سجل المصروفات');
+  if(typeof window.renderReports==='function')window.renderReports();
+  if(typeof logActivity==='function')logActivity('تم تسجيل مصروف لوردية '+shiftName,'expenses');
+ }catch(e){console.error('Expense save error:',e);alert('لم يتم حفظ المصروف: '+(e.message||e))}
+}
 function deleteExpense(id){if(!confirm('هل تريد حذف هذا المصروف؟'))return;localStorage.setItem(workspaceKey('frg_expenses'),JSON.stringify(getExpenses().filter(x=>x.id!==id)));renderExpenses();if(typeof window.renderReports==='function')window.renderReports()}
-function renderExpenses(){const q=(document.getElementById('expenseSearch')?.value||'').trim().toLowerCase(),all=getExpenses(),rows=all.filter(x=>(x.date+' '+x.category).toLowerCase().includes(q)),sum=rows.reduce((s,x)=>s+Number(x.amount||0),0),summary=document.getElementById('expenseSummary'),body=document.getElementById('expenseRows'),from=document.getElementById('repFrom')?.value||'',to=document.getElementById('repTo')?.value||'',shift=document.getElementById('repShift')?.value||'',salesRows=(sales||[]).filter(x=>{const d=new Date(x.created_at||x.date||0);if(from&&(!Number.isFinite(d.getTime())||d<new Date(from+'T00:00:00')))return false;if(to&&(!Number.isFinite(d.getTime())||d>new Date(to+'T23:59:59')))return false;if(shift&&String(x.shift||'')!==shift)return false;return true}),salesTotal=salesRows.reduce((a,x)=>a+Number(x.total||0),0),salesCount=salesRows.length,net=salesTotal-sum;if(summary)summary.innerHTML='<p>عمليات البيع: <b>'+salesCount+'</b> — المصروفات: <b>'+money(sum)+'</b> — صافي المبيعات بعد المصروفات: <b>'+money(net)+'</b></p>';if(body)body.innerHTML=rows.length?rows.map(x=>'<tr><td>'+esc(x.date)+'</td><td>'+esc(x.category)+'</td><td>'+esc(x.shift||'—')+'</td><td>'+money(x.amount)+'</td><td><button class="btn red" onclick="deleteExpense('+Number(x.id)+')">حذف</button></td></tr>').join(''):'<tr><td colspan="5" class="empty">لا توجد مصروفات مسجلة</td></tr>'}
-
+function renderExpenses(){
+ const q=(document.getElementById('expenseSearch')?.value||'').trim().toLowerCase();
+ const all=getExpenses();
+ const rows=all.filter(x=>(String(x.date||'')+' '+String(x.category||'')+' '+String(x.shift||'')).toLowerCase().includes(q));
+ const sum=rows.reduce((total,x)=>total+Number(x.amount||0),0);
+ const summary=document.getElementById('expenseSummary');
+ const body=document.getElementById('expenseRows');
+ if(summary)summary.innerHTML='<p>عدد المصروفات: <b>'+rows.length+'</b> — إجمالي المصروفات: <b>'+money(sum)+'</b></p>';
+ if(body)body.innerHTML=rows.length?rows.map(x=>'<tr><td>'+esc(x.date||'—')+'</td><td>'+esc(x.category||'—')+'</td><td>'+esc(x.shift||'—')+'</td><td>'+money(x.amount)+'</td><td><button class="btn red" onclick="deleteExpense('+Number(x.id)+')">حذف</button></td></tr>').join(''):'<tr><td colspan="5" class="empty">لا توجد مصروفات مسجلة</td></tr>';
+}
+ 
 function getStockAdjustments(){try{return JSON.parse(localStorage.getItem(workspaceKey('frg_stock_adjustments'))||'[]')||[]}catch(e){return []}}
 function saveStockAdjustments(rows){localStorage.setItem(workspaceKey('frg_stock_adjustments'),JSON.stringify(rows));localStorage.setItem('frg_stock_adjustments',JSON.stringify(rows))}
 function renderStockAdjustments(){
