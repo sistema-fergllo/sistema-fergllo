@@ -1,0 +1,43 @@
+/* Faragello visual touch - presentation only. No Supabase schema/data changes. */
+:root{--fg-navy:#173b56;--fg-blue:#1678b6;--fg-red:#c84b55;--fg-green:#168566}
+#app .top{background:linear-gradient(135deg,#102e45 0%,#173b56 58%,#1d5870 100%)!important;box-shadow:0 7px 24px rgba(16,46,69,.18)!important}
+#app .brand .logo{box-shadow:0 0 0 4px rgba(255,255,255,.08),0 10px 24px rgba(0,0,0,.18)!important}
+#app .side{background:linear-gradient(180deg,#fff 0%,#f7fafc 100%)!important;box-shadow:inset -1px 0 0 #e7edf1,8px 0 28px rgba(23,59,86,.04)}
+#app .side .nav{position:relative;overflow:hidden;transition:transform .16s,background .16s,border-color .16s,box-shadow .16s!important}
+#app .side .nav:hover{transform:translateX(-2px);box-shadow:0 7px 18px rgba(23,59,86,.07)!important}
+#app .side .nav.active{box-shadow:inset -4px 0 0 #159b8c,0 7px 20px rgba(21,155,140,.10)!important}
+#app .layout>main{background:linear-gradient(180deg,#f7fafc 0%,#f4f7f9 100%)}
+#app .panel,#app .cash-panel,#app .section,#app .form-panel,#app .card{border-radius:16px!important;box-shadow:0 9px 28px rgba(24,55,77,.055)!important}
+#app .panel:hover,#app .cash-panel:hover,#app .section:hover,#app .form-panel:hover{box-shadow:0 12px 34px rgba(24,55,77,.08)!important}
+#app .side .nav[data-touch-color=blue]{color:#1678b6!important;font-weight:800!important}
+#app .side .nav[data-touch-color=red]{color:#c84b55!important;font-weight:800!important}
+#app .side .nav.logout{color:#b53d47!important}
+#login .login-card #adminLoginChoice,#login .login-card #clientLoginToggle{background:linear-gradient(135deg,#173b56,#205a69)!important;color:#fff!important;border:1px solid #285a75!important;box-shadow:0 9px 20px rgba(23,59,86,.18)!important}
+#login .login-card #adminLoginChoice:hover,#login .login-card #clientLoginToggle:hover{transform:translateY(-2px)!important;box-shadow:0 13px 26px rgba(23,59,86,.24)!important}
+#login .login-card #adminLoginChoice:active,#login .login-card #clientLoginToggle:active{transform:translateY(0)!important}
+#login .logo{box-shadow:0 0 0 6px rgba(21,155,140,.08),0 16px 30px rgba(21,155,140,.20)!important}
+.branch-picker-panel{position:relative;overflow:hidden;background:linear-gradient(135deg,#102e45,#173b56 62%,#1e5870)!important;border-color:rgba(74,163,255,.34)!important;box-shadow:0 16px 40px rgba(16,46,69,.20)!important}
+.branch-picker-panel:before{content:"";position:absolute;inset:auto -70px -110px auto;width:230px;height:230px;border-radius:50%;background:rgba(52,176,255,.10);pointer-events:none}
+.branch-picker-panel #branchPickerCards .card{position:relative;overflow:hidden;border-radius:15px!important;background:linear-gradient(145deg,rgba(30,77,113,.96),rgba(17,48,76,.96))!important;transition:transform .16s,box-shadow .16s,border-color .16s!important}
+.branch-picker-panel #branchPickerCards .card:hover{transform:translateY(-3px);border-color:rgba(88,196,255,.72)!important;box-shadow:0 12px 26px rgba(0,0,0,.20)!important}
+.branch-picker-panel .touch-branch-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;padding-top:9px;border-top:1px solid rgba(255,255,255,.12);font-size:11px;color:#cfe9f8}
+.branch-picker-panel .touch-branch-status{display:inline-flex;align-items:center;gap:5px;color:#8ff0bf;font-weight:800}.branch-picker-panel .touch-branch-status:before{content:"";width:7px;height:7px;border-radius:50%;background:#54dfa0;box-shadow:0 0 0 4px rgba(84,223,160,.12)}
+.branch-picker-panel .touch-branch-action{color:#aee3ff;font-weight:800}
+#app .cards .card{position:relative;overflow:hidden}
+#app .cards .card:after{content:"";position:absolute;left:-18px;bottom:-28px;width:90px;height:90px;border-radius:50%;background:rgba(21,155,140,.045);pointer-events:none}
+#app .cash-panel .cash-touch-total{font-size:clamp(30px,4vw,48px);font-weight:900;color:#173b56;line-height:1.05}
+#app .cash-panel .cash-touch-label{color:#718291;font-size:12px;font-weight:700;margin-bottom:6px}
+#app .cash-panel .cash-touch-net{border:1px solid #cfe9df;background:#f2fbf7!important;color:#14704f!important}
+#app .cash-panel .cash-touch-return{border:1px solid #f1d4d6;background:#fff7f7!important;color:#b43e48!important}
+#app .cash-panel .cash-touch-waste{border:1px solid #f0dfb8;background:#fffaf0!important;color:#9a6b17!important}
+#app .cash-panel .cash-touch-sale{min-height:50px!important;padding:12px 20px!important;border-radius:12px!important;font-size:15px!important;box-shadow:0 10px 22px rgba(23,59,86,.16)!important}
+#app .touch-report-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 18px}
+#app .touch-report-card{padding:16px;border-radius:15px;border:1px solid #e2e9ee;background:#fff;box-shadow:0 8px 24px rgba(24,55,77,.05)}
+#app .touch-report-card .touch-report-label{color:#718291;font-size:11px;font-weight:800;margin-bottom:7px}
+#app .touch-report-card .touch-report-value{font-size:24px;font-weight:900;color:#173b56}
+#app .touch-report-card.return .touch-report-value{color:#c84b55}.touch-report-card.waste .touch-report-value{color:#a1731f}.touch-report-card.net .touch-report-value{color:#148365}
+#app .touch-statusbar{display:flex;align-items:center;justify-content:flex-start;gap:14px;flex-wrap:wrap;margin:0 0 14px;padding:8px 12px;border:1px solid #dfe8ec;border-radius:11px;background:#fff;color:#718291;font-size:11px}
+#app .touch-status-item{display:inline-flex;align-items:center;gap:6px}.touch-status-dot{width:7px;height:7px;border-radius:50%;background:#19a36f;box-shadow:0 0 0 4px rgba(25,163,111,.10)}
+#app .touch-status-branch{font-weight:800;color:#173b56}
+@media(max-width:900px){#app .touch-report-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){#app .touch-report-grid{grid-template-columns:1fr 1fr;gap:8px}#app .touch-report-card{padding:12px}#app .touch-report-card .touch-report-value{font-size:19px}.branch-picker-panel{padding:15px}}
