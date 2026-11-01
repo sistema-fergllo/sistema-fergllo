@@ -39,15 +39,15 @@
     document.head.appendChild(st);
   }
   async function removeItem(index){
-    var item=Array.isArray(window.inventory)?window.inventory[index]:null;
+    var item=Array.isArray(inventory)?inventory[index]:null;
     if(!item)return;
     var name=String(item.name||'الصنف');
     if(!confirm('هل تريد حذف الصنف «'+name+'» من المخزون؟\nسيتم حذف الصنف من المخزون فقط ولن يتم حذف سجلات المبيعات السابقة.'))return;
-    var previous=window.inventory.map(function(x){return {...x}});
-    window.inventory.splice(index,1);
+    var previous=inventory.map(function(x){return {...x}});
+    inventory.splice(index,1);
     try{
-      localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(window.inventory));
-      localStorage.setItem(KEYS.inv,JSON.stringify(window.inventory));
+      localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));
+      localStorage.setItem(KEYS.inv,JSON.stringify(inventory));
       if(cloudReady){
         if(activeClient&&typeof syncClientInventoryToCloud==='function')await syncClientInventoryToCloud();
         else if(typeof syncInventoryToCloud==='function')await syncInventoryToCloud();
@@ -55,9 +55,9 @@
       if(typeof refreshAll==='function')refreshAll();
       if(typeof logActivity==='function')logActivity('تم حذف الصنف من المخزون: '+name+' (كود '+String(item.code||'')+')','inventory');
     }catch(e){
-      window.inventory=previous;
-      localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(window.inventory));
-      localStorage.setItem(KEYS.inv,JSON.stringify(window.inventory));
+      inventory=previous;
+      localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));
+      localStorage.setItem(KEYS.inv,JSON.stringify(inventory));
       if(typeof refreshAll==='function')refreshAll();
       alert('لم يتم حذف الصنف من قاعدة البيانات: '+(e.message||e));
     }
