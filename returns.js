@@ -27,3 +27,57 @@
   function init(){makeModal();addButton();[100,500,1000,2000,4000].forEach(function(ms){setTimeout(addButton,ms)});if(!window.__frgReturnObserver){window.__frgReturnObserver=new MutationObserver(addButton);var app=document.getElementById('app');if(app)window.__frgReturnObserver.observe(app,{childList:true,subtree:true})}}
   window.frgOpenReturnModal=open;window.frgCloseReturnModal=close;window.frgRenderReturnInvoices=renderInvoices;window.frgSelectReturnInvoice=select;window.frgReturnQtyChanged=qtyChanged;window.frgSaveReturn=saveReturn;if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
+
+/* Faragello inventory delete: add a Delete button beside the existing Reset button. */
+(function(){
+  'use strict';
+  var STYLE_ID='faragello-inventory-delete-style';
+  function addStyle(){
+    if(document.getElementById(STYLE_ID))return;
+    var st=document.createElement('style');st.id=STYLE_ID;
+    st.textContent='#invBody .frg-inventory-delete{margin-inline-start:6px;padding:5px 8px;font-size:12px;min-width:0;background:#fff0f0;border-color:#efc9cc;color:#b43d48}#invBody .frg-inventory-delete:hover{background:#ffe4e6}';
+    document.head.appendChild(st);
+  }
+  async function removeItem(index){
+    var item=Array.isArray(window.inventory)?window.inventory[index]:null;
+    if(!item)return;
+    var name=String(item.name||'الصنف');
+    if(!confirm('هل تريد حذف الصنف «'+name+'» من المخزون؟\nسيتم حذف الصنف من المخزون فقط ولن يتم حذف سجلات المبيعات السابقة.'))return;
+    var previous=window.inventory.map(function(x){return {...x}});
+    window.inventory.splice(index,1);
+    try{
+      localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(window.inventory));
+      localStorage.setItem(KEYS.inv,JSON.stringify(window.inventory));
+      if(cloudReady){
+        if(activeClient&&typeof syncClientInventoryToCloud==='function')await syncClientInventoryToCloud();
+        else if(typeof syncInventoryToCloud==='function')await syncInventoryToCloud();
+      }
+      if(typeof refreshAll==='function')refreshAll();
+      if(typeof logActivity==='function')logActivity('تم حذف الصنف من المخزون: '+name+' (كود '+String(item.code||'')+')','inventory');
+    }catch(e){
+      window.inventory=previous;
+      localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(window.inventory));
+      localStorage.setItem(KEYS.inv,JSON.stringify(window.inventory));
+      if(typeof refreshAll==='function')refreshAll();
+      alert('لم يتم حذف الصنف من قاعدة البيانات: '+(e.message||e));
+    }
+  }
+  window.deleteInventoryItem=removeItem;
+  function decorate(){
+    addStyle();
+    var body=document.getElementById('invBody');if(!body)return;
+    Array.prototype.forEach.call(body.querySelectorAll('tr'),function(row){
+      var cell=row.lastElementChild;if(!cell||cell.querySelector('.frg-inventory-delete'))return;
+      var reset=cell.querySelector('button[onclick^="resetInventoryItem("]');if(!reset)return;
+      var m=reset.getAttribute('onclick').match(/resetInventoryItem\((\d+)\)/);if(!m)return;
+      var b=document.createElement('button');b.type='button';b.className='btn red frg-inventory-delete';b.textContent='حذف';b.title='حذف الصنف من المخزون';b.onclick=function(){window.deleteInventoryItem(Number(m[1]))};
+      cell.appendChild(b);
+    });
+  }
+  var originalRender=window.renderInventory;
+  if(typeof originalRender==='function'){
+    window.renderInventory=function(){var result=originalRender.apply(this,arguments);decorate();return result};
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){decorate();setTimeout(decorate,300)});else{decorate();setTimeout(decorate,300)}
+  if(!window.__frgInventoryDeleteObserver){window.__frgInventoryDeleteObserver=new MutationObserver(decorate);var body=document.getElementById('invBody');if(body)window.__frgInventoryDeleteObserver.observe(body,{childList:true,subtree:true})}
+})();
