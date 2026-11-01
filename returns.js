@@ -4,7 +4,7 @@
   var STYLE_ID='faragello-cashier-returns-style';
   var MODAL_ID='faragello-return-modal';
   var state={sale:null,items:[],selected:{}};
-  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function esc(v){return String(v==null?'':v).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]})}
   function money(v){return Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' EGP'}
   function getSales(){try{return Array.isArray(sales)?sales:[]}catch(e){return []}}
   function getInventory(){try{return Array.isArray(inventory)?inventory:[]}catch(e){return []}}
@@ -28,56 +28,42 @@
   window.frgOpenReturnModal=open;window.frgCloseReturnModal=close;window.frgRenderReturnInvoices=renderInvoices;window.frgSelectReturnInvoice=select;window.frgReturnQtyChanged=qtyChanged;window.frgSaveReturn=saveReturn;if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 
-/* Faragello inventory delete: add a Delete button beside the existing Reset button. */
+/* inventory action adjustment */
 (function(){
   'use strict';
-  var STYLE_ID='faragello-inventory-delete-style';
+  var STYLE_ID='faragello-inventory-action-style';
   function addStyle(){
     if(document.getElementById(STYLE_ID))return;
     var st=document.createElement('style');st.id=STYLE_ID;
-    st.textContent='#invBody .frg-inventory-delete{margin-inline-start:6px;padding:5px 8px;font-size:12px;min-width:0;background:#fff0f0;border-color:#efc9cc;color:#b43d48}#invBody .frg-inventory-delete:hover{background:#ffe4e6}';
+    st.textContent='#invBody .frg-inventory-delete{margin-inline-start:6px!important;padding:5px 9px!important;font-size:12px!important;min-width:52px!important;background:#fff0f0!important;border:1px solid #efc9cc!important;color:#b43d48!important}';
     document.head.appendChild(st);
   }
-  async function removeItem(index){
-    var item=Array.isArray(inventory)?inventory[index]:null;
-    if(!item)return;
-    var name=String(item.name||'الصنف');
-    if(!confirm('هل تريد حذف الصنف «'+name+'» من المخزون؟\nسيتم حذف الصنف من المخزون فقط ولن يتم حذف سجلات المبيعات السابقة.'))return;
-    var previous=inventory.map(function(x){return {...x}});
-    inventory.splice(index,1);
+  function list(){try{return Array.isArray(inventory)?inventory:[]}catch(e){return []}}
+  function removeRow(index){
+    var arr=list(),item=arr[index];if(!item)return;
+    var name=String(item.name||item.item_name||'الصنف');
+    if(!confirm('هل تريد حذف الصنف «'+name+'» من المخزون؟'))return;
+    arr.splice(index,1);
     try{
-      localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));
-      localStorage.setItem(KEYS.inv,JSON.stringify(inventory));
-      if(cloudReady){
-        if(activeClient&&typeof syncClientInventoryToCloud==='function')await syncClientInventoryToCloud();
-        else if(typeof syncInventoryToCloud==='function')await syncInventoryToCloud();
-      }
-      if(typeof refreshAll==='function')refreshAll();
-      if(typeof logActivity==='function')logActivity('تم حذف الصنف من المخزون: '+name+' (كود '+String(item.code||'')+')','inventory');
-    }catch(e){
-      inventory=previous;
-      localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));
-      localStorage.setItem(KEYS.inv,JSON.stringify(inventory));
-      if(typeof refreshAll==='function')refreshAll();
-      alert('لم يتم حذف الصنف من قاعدة البيانات: '+(e.message||e));
-    }
+      localStorage.setItem(typeof workspaceKey==='function'?workspaceKey('frg_inv'):'frg_inv',JSON.stringify(arr));
+      localStorage.setItem('frg_inv',JSON.stringify(arr));
+      if(typeof activeClient!=='undefined'&&activeClient&&typeof syncClientInventoryToCloud==='function')syncClientInventoryToCloud();
+      else if(typeof syncInventoryToCloud==='function')syncInventoryToCloud();
+      if(typeof refreshAll==='function')refreshAll();else if(typeof renderInventory==='function')renderInventory();
+    }catch(e){alert('تعذر حفظ التعديل: '+(e.message||e));if(typeof refreshAll==='function')refreshAll()}
   }
-  window.deleteInventoryItem=removeItem;
+  window.deleteInventoryItem=removeRow;
   function decorate(){
-    addStyle();
-    var body=document.getElementById('invBody');if(!body)return;
-    Array.prototype.forEach.call(body.querySelectorAll('tr'),function(row){
-      var cell=row.lastElementChild;if(!cell||cell.querySelector('.frg-inventory-delete'))return;
-      var reset=cell.querySelector('button[onclick^="resetInventoryItem("]');if(!reset)return;
-      var m=reset.getAttribute('onclick').match(/resetInventoryItem\((\d+)\)/);if(!m)return;
-      var b=document.createElement('button');b.type='button';b.className='btn red frg-inventory-delete';b.textContent='حذف';b.title='حذف الصنف من المخزون';b.onclick=function(){window.deleteInventoryItem(Number(m[1]))};
-      cell.appendChild(b);
+    addStyle();var body=document.getElementById('invBody');if(!body)return;
+    var rows=Array.prototype.filter.call(body.querySelectorAll('tr'),function(r){return !r.querySelector('th')});
+    rows.forEach(function(row,index){
+      if(row.querySelector('.frg-inventory-delete'))return;
+      var reset=Array.prototype.find.call(row.querySelectorAll('button'),function(b){var t=(b.textContent||'').replace(/\s+/g,'').trim();return t==='إعادة'||t==='اعادة'||t.indexOf('إعادة')===0||t.indexOf('اعادة')===0});
+      if(!reset)return;
+      var b=document.createElement('button');b.type='button';b.className='btn red frg-inventory-delete';b.textContent='حذف';b.onclick=function(e){e.preventDefault();e.stopPropagation();removeRow(index)};
+      reset.insertAdjacentElement('afterend',b);
     });
   }
-  var originalRender=window.renderInventory;
-  if(typeof originalRender==='function'){
-    window.renderInventory=function(){var result=originalRender.apply(this,arguments);decorate();return result};
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){decorate();setTimeout(decorate,300)});else{decorate();setTimeout(decorate,300)}
-  if(!window.__frgInventoryDeleteObserver){window.__frgInventoryDeleteObserver=new MutationObserver(decorate);var body=document.getElementById('invBody');if(body)window.__frgInventoryDeleteObserver.observe(body,{childList:true,subtree:true})}
+  function init(){decorate();setTimeout(decorate,200);setTimeout(decorate,800);var app=document.getElementById('app');if(app&&!window.__frgInventoryActionObserver){window.__frgInventoryActionObserver=true;new MutationObserver(decorate).observe(app,{childList:true,subtree:true})}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
