@@ -1459,7 +1459,7 @@ function createTransferPermit(){
 }
 function deleteTransferPermit(id){
  const permits=getTransferPermits(),p=permits.find(x=>x.id===id);if(!p)return;
- if(!confirm('هل أنت متأكد من حذف إذن التحويل '+p.number+' نهائيًا؟'))return;
+ 
  saveTransferPermits(permits.filter(x=>x.id!==id));
  logActivity('تم حذف إذن تحويل '+p.number,'transfer');
  renderTransfers();
