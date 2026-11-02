@@ -648,6 +648,37 @@ html,body{background:#edf2f5}
 @media(prefers-reduced-motion:reduce){#login .public-hero .hero-orb{animation:none}*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
 </style>
 
+<style id="faragello-motion-effects">
+/* Subtle motion polish for the public and internal interfaces */
+@keyframes frgFadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes frgSoftFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes frgGlowPulse{0%,100%{box-shadow:0 0 0 0 rgba(21,155,140,.12)}50%{box-shadow:0 0 0 10px rgba(21,155,140,0)}}
+@keyframes frgShimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+#login .login-card{animation:frgFadeUp .7s cubic-bezier(.2,.75,.25,1) both}
+#login .public-hero{animation:frgFadeUp .8s cubic-bezier(.2,.75,.25,1) .08s both}
+#login .hero-orb{animation:frgSoftFloat 4.5s ease-in-out infinite}
+#login .hero-kicker:before{animation:frgGlowPulse 2.8s ease-out infinite}
+#login .hero-point{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+#login .hero-point:hover{transform:translateY(-4px);border-color:#a9d9d1;box-shadow:0 14px 28px #173b5612}
+#login .hero-point b{transition:transform .25s ease,background .25s ease}
+#login .hero-point:hover b{transform:rotate(-7deg) scale(1.06);background:#d5f1e9}
+#app .top{animation:frgFadeUp .45s ease both}
+#app .brand .logo{transition:transform .25s ease,box-shadow .25s ease}
+#app .brand .logo:hover{transform:translateY(-2px) rotate(-5deg);box-shadow:0 8px 20px #ffffff24}
+#app .side .nav{transition:transform .2s ease,background-color .2s ease,color .2s ease,box-shadow .2s ease}
+#app .side .nav:hover{transform:translateX(-4px);box-shadow:0 5px 14px #102e4512}
+#app main>.page:not(.hidden){animation:frgFadeUp .38s cubic-bezier(.2,.75,.25,1) both}
+#app .page .title{animation:frgFadeUp .42s ease both}
+#app .page .cards>.card,#app .page>.card,#app #currentActivitiesPanel{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+#app .page .cards>.card:hover,#app .page>.card:hover,#app #currentActivitiesPanel:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(24,55,77,.10)}
+#app .btn,#app button:not(.nav){transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+#app .btn:hover,#app button:not(.nav):hover{filter:brightness(1.04);box-shadow:0 7px 18px rgba(16,46,69,.14)}
+#app .btn:active,#app button:not(.nav):active{transform:scale(.975)}
+#app #currentActivitiesPanel .activity-dot{animation:frgGlowPulse 2.6s ease-out infinite}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
 </head>
 <body>
 <div id="login" class="login-screen">
