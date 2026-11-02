@@ -4,7 +4,7 @@
   var STYLE_ID='faragello-cashier-returns-style';
   var MODAL_ID='faragello-return-modal';
   var state={sale:null,items:[],selected:{}};
-  function esc(v){return String(v==null?'':v).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]})}
+  function esc(v){return String(v==null?'':v).replace(/[&<>\\\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\\\"':'&quot;',"'":'&#39;'}[c]})}
   function money(v){return Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' EGP'}
   function getSales(){try{return Array.isArray(sales)?sales:[]}catch(e){return []}}
   function getInventory(){try{return Array.isArray(inventory)?inventory:[]}catch(e){return []}}
@@ -17,7 +17,7 @@
   function open(){makeModal();state={sale:null,items:[],selected:{}};document.getElementById(MODAL_ID).classList.remove('hidden');document.body.classList.add('modal-open');var search=document.getElementById('frg-return-search');if(search)search.value='';renderInvoices();renderDetails()}
   function close(){var m=document.getElementById(MODAL_ID);if(m)m.classList.add('hidden');document.body.classList.remove('modal-open')}
   function invoiceLabel(s){return String(s.id||'').slice(-8)||'—'}
-  function renderInvoices(){var box=document.getElementById('frg-return-invoices');if(!box)return;var q=(document.getElementById('frg-return-search')?.value||'').trim().toLowerCase();var rows=getSales().filter(function(s){if(isReturn(s))return false;var text=[invoiceLabel(s),s.id,s.date,s.created_at,s.shift,s.pay,saleItems(s).map(function(i){return i.name||i.code||''}).join(' ')].join(' ').toLowerCase();return !q||text.indexOf(q)!==-1}).slice(0,100);if(!rows.length){box.innerHTML='<div class="frg-return-empty">لا توجد فواتير بيع يمكن إرجاع أصناف منها.</div>';return}box.innerHTML=rows.map(function(s){var active=state.sale&&key(state.sale)===key(s)?' active':'';var d=s.date||s.created_at||'—';return '<div class="frg-return-invoice'+active+'" onclick="window.frgSelectReturnInvoice(\''+esc(key(s)).replace(/'/g,'&#39;')+'\')"><b>فاتورة #'+esc(invoiceLabel(s))+'</b> — '+esc(s.shift||'—')+' — '+money(s.total)+'<div style="font-size:12px;color:#718291;margin-top:3px">'+esc(d)+'</div></div>'}).join('')}
+  function renderInvoices(){var box=document.getElementById('frg-return-invoices');if(!box)return;var q=(document.getElementById('frg-return-search')?.value||'').trim().toLowerCase();var rows=getSales().filter(function(s){if(isReturn(s))return false;var text=[invoiceLabel(s),s.id,s.date,s.created_at,s.shift,s.pay,saleItems(s).map(function(i){return i.name||i.code||''}).join(' ')].join(' ').toLowerCase();return !q||text.indexOf(q)!==-1}).slice(0,100);if(!rows.length){box.innerHTML='<div class="frg-return-empty">لا توجد فواتير بيع يمكن إرجاع أصناف منها.</div>';return}box.innerHTML=rows.map(function(s){var active=state.sale&&key(state.sale)===key(s)?' active':'';var d=s.date||s.created_at||'—';return '<div class="frg-return-invoice'+active+'" onclick="window.frgSelectReturnInvoice(\\''+esc(key(s)).replace(/'/g,'&#39;')+'\\')"><b>فاتورة #'+esc(invoiceLabel(s))+'</b> — '+esc(s.shift||'—')+' — '+money(s.total)+'<div style="font-size:12px;color:#718291;margin-top:3px">'+esc(d)+'</div></div>'}).join('')}
   function select(id){state.sale=getSales().find(function(s){return key(s)===String(id)})||null;state.items=[];state.selected={};if(state.sale){saleItems(state.sale).forEach(function(i){var code=String(i.code||'');var sold=Number(i.qty||0);var already=returnedForSale(state.sale.id,code);state.items.push({code:code,name:i.name||code,unit_price:Number(i.unit_price??i.price??0),sold:sold,returned:already,remaining:Math.max(0,sold-already)})})}renderInvoices();renderDetails()}
   function renderDetails(){var box=document.getElementById('frg-return-details');if(!box)return;if(!state.sale){box.innerHTML='';return}if(!state.items.length){box.innerHTML='<div class="frg-return-empty">الفاتورة لا تحتوي على تفاصيل أصناف يمكن إرجاعها.</div>';return}var rows=state.items.map(function(i,idx){var disabled=i.remaining<=0?' disabled':'';var val=state.selected[idx]||'';return '<tr><td>'+esc(i.code)+'</td><td>'+esc(i.name)+'</td><td>'+i.sold+'</td><td>'+i.returned+'</td><td>'+i.remaining+'</td><td><input type="number" min="0" max="'+i.remaining+'" step="1" value="'+esc(val)+'" '+disabled+' data-return-index="'+idx+'" oninput="window.frgReturnQtyChanged(this)"></td><td>'+money(i.unit_price)+'</td></tr>'}).join('');box.innerHTML='<div class="frg-return-items"><table><thead><tr><th>الكود</th><th>الصنف</th><th>المباع</th><th>مرتجع سابقًا</th><th>المتبقي للمرتجع</th><th>كمية المرتجع</th><th>السعر</th></tr></thead><tbody>'+rows+'</tbody></table></div><div class="frg-return-total">إجمالي المرتجع: <span id="frg-return-total-value">'+money(totalSelected())+'</span></div><div id="frg-return-actions" class="frg-return-actions"><button type="button" class="btn red" onclick="window.frgSaveReturn()">✓ حفظ المرتجع</button><button type="button" class="btn gray" onclick="window.frgCloseReturnModal()">إلغاء</button></div>'}
   function totalSelected(){return state.items.reduce(function(sum,i,idx){return sum+Number(state.selected[idx]||0)*Number(i.unit_price||0)},0)}
@@ -58,7 +58,7 @@
     var rows=Array.prototype.filter.call(body.querySelectorAll('tr'),function(r){return !r.querySelector('th')});
     rows.forEach(function(row,index){
       if(row.querySelector('.frg-inventory-delete'))return;
-      var reset=Array.prototype.find.call(row.querySelectorAll('button'),function(b){var t=(b.textContent||'').replace(/\s+/g,'').trim();return t==='إعادة'||t==='اعادة'||t.indexOf('إعادة')===0||t.indexOf('اعادة')===0});
+      var reset=Array.prototype.find.call(row.querySelectorAll('button'),function(b){var t=(b.textContent||'').replace(/\\s+/g,'').trim();return t==='إعادة'||t==='اعادة'||t.indexOf('إعادة')===0||t.indexOf('اعادة')===0});
       if(!reset)return;
       var b=document.createElement('button');b.type='button';b.className='btn red frg-inventory-delete';b.textContent='حذف';b.onclick=function(e){e.preventDefault();e.stopPropagation();removeRow(index)};
       reset.insertAdjacentElement('afterend',b);
@@ -66,4 +66,71 @@
   }
   function init(){decorate();setTimeout(decorate,200);setTimeout(decorate,800);var app=document.getElementById('app');if(app&&!window.__frgInventoryActionObserver){window.__frgInventoryActionObserver=true;new MutationObserver(decorate).observe(app,{childList:true,subtree:true})}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+
+/* cashier item lookup: accept item code OR item name, while preserving barcode and quantity*item input. */
+(function(){
+  'use strict';
+  function inv(){try{return Array.isArray(window.inventory)?window.inventory:[]}catch(e){return []}}
+  function norm(v){return String(v==null?'':v).trim().toLocaleLowerCase('ar-EG')}
+  function findItem(term){
+    var q=norm(term),items=inv();
+    if(!q)return null;
+    var byCode=items.find(function(x){return String(x.code==null?'':x.code).trim()===String(term).trim()});
+    if(byCode)return byCode;
+    var exact=items.filter(function(x){return norm(x.name)===q});
+    if(exact.length===1)return exact[0];
+    if(exact.length>1)return {__ambiguous:true,items:exact};
+    var starts=items.filter(function(x){return norm(x.name).indexOf(q)===0});
+    if(starts.length===1)return starts[0];
+    if(starts.length>1)return {__ambiguous:true,items:starts};
+    var contains=items.filter(function(x){return norm(x.name).indexOf(q)!==-1});
+    if(contains.length===1)return contains[0];
+    if(contains.length>1)return {__ambiguous:true,items:contains};
+    return null;
+  }
+  function setup(){
+    var input=document.getElementById('scan');if(!input)return;
+    input.placeholder='اكتب كود الصنف أو اسم الصنف — مثال 101 أو 9*101';
+    input.setAttribute('autocomplete','off');
+    var listId='faragello-cashier-item-names';
+    input.setAttribute('list',listId);
+    var dl=document.getElementById(listId);
+    if(!dl){dl=document.createElement('datalist');dl.id=listId;input.parentNode.insertBefore(dl,input.nextSibling)}
+    function fill(){
+      var items=inv();dl.innerHTML=items.map(function(x){return '<option value="'+String(x.name||'').replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'">'+String(x.code||'')+'</option>'}).join('')
+    }
+    fill();
+    setTimeout(fill,500);setTimeout(fill,1500);
+    input.onfocus=function(){fill()};
+  }
+  function addByNameOrCode(){
+    var input=document.getElementById('scan');if(!input)return;
+    var raw=input.value.trim();if(!raw)return;
+    var qty=1,term=raw;
+    var multiply=raw.match(/^(\d+(?:\.\d+)?)\s*\*\s*(.+?)$/);
+    if(multiply){qty=Number(multiply[1]);term=multiply[2].trim();if(!Number.isFinite(qty)||qty<=0){alert('اكتب كمية صحيحة قبل علامة * مثال: 9*101');input.select();return}}
+    var result=findItem(term);
+    if(result&&result.__ambiguous){
+      var names=result.items.slice(0,8).map(function(x){return '• '+String(x.name||'غير مسمى')+' — كود '+String(x.code||'')}).join('\n');
+      alert('يوجد أكثر من صنف مطابق. اكتب اسم الصنف بشكل أدق أو استخدم الكود:\n\n'+names);input.select();return;
+    }
+    if(!result){alert('الصنف غير موجود في المخزون. اكتب الكود أو اسم الصنف الصحيح.');input.select();return}
+    var existing=Array.isArray(window.cart)?window.cart.find(function(x){return String(x.code)===String(result.code)}):null;
+    if(existing)existing.qty=Number(existing.qty||0)+qty;
+    else window.cart.push({code:result.code,name:result.name,price:Number(result.price||0),qty:qty});
+    input.value='';
+    if(typeof window.renderCart==='function')window.renderCart();
+    input.focus();
+  }
+  function install(){
+    setup();
+    if(typeof window.addToCart==='function' && !window.__frgCashierLookupInstalled){
+      window.__frgCashierOriginalAddToCart=window.addToCart;
+      window.addToCart=addByNameOrCode;
+      window.__frgCashierLookupInstalled=true;
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(install,0)});else setTimeout(install,0);
+  [300,1000,2000].forEach(function(ms){setTimeout(install,ms)});
 })();
