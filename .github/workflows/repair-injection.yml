@@ -1,0 +1,48 @@
+name: Faragello Repair Injection
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  inject-repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject centralized repair script
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          text=p.read_text(encoding='utf-8')
+          marker='faragello-system-repair-v1'
+          if marker not in text:
+              tag='\n<script src="./system-repair.js?v=1" defer></script>\n'
+              pos=text.lower().rfind('</head>')
+              if pos==-1:
+                  raise SystemExit('index.html has no </head>')
+              text=text[:pos]+tag+text[pos:]
+              p.write_text(text,encoding='utf-8')
+              print('Repair script injected')
+          else:
+              print('Repair script already injected')
+          PY
+
+      - name: Commit repair injection
+        shell: bash
+        run: |
+          git config user.name 'Faragello Repair Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'No injection change needed'
+          else
+            git commit -m 'Fix system screen visibility and external login background'
+            git push
+          fi
