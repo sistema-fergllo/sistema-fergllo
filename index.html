@@ -2,6 +2,15 @@
 <!-- Faragello Pages rebuild trigger: 2026-11-01 -->
 <html lang="ar" dir="rtl">
 <head>
+<style id="faragello-current-activities-style">
+.activity-entry{display:flex;gap:10px;align-items:flex-start;padding:10px 2px;border-bottom:1px solid #edf1f4}
+.activity-entry:last-child{border-bottom:0}
+.activity-dot{width:9px;height:9px;min-width:9px;margin-top:6px;border-radius:50%;background:#159b8c}
+.activity-entry-body{min-width:0;flex:1}
+.activity-entry-message{color:#243746;font-size:14px;line-height:1.65;overflow-wrap:anywhere}
+.activity-entry-time{color:#8795a0;font-size:11px;margin-top:3px}
+.activity-empty{text-align:center;padding:20px 8px;color:#718291;font-size:14px}
+</style>
 <style id="faragello-new-matjrah-dashboard">
 
 :root{--bg:#f4f7f9;--paper:#fff;--navy:#173b56;--navy2:#102e45;--teal:#159b8c;--soft:#e7f6f3;--ink:#243746;--muted:#718291;--line:#e2e9ee;--red:#c84b55;--shadow:0 5px 22px rgba(24,55,77,.06);font-family:"Segoe UI",Tahoma,Arial,sans-serif}
@@ -684,7 +693,7 @@ html,body{background:#edf2f5}
   <button id="navClients" class="nav" data-page="clients" onclick="showPage('clients')">العملاء</button>
   <button class="nav logout" onclick="supabaseClient.auth.signOut().finally(()=>location.reload())">تسجيل الخروج</button>
 </aside><main>
-<div id="home" class="page"><div class="title"><div><h2>لوحة التحكم</h2><div class="sub">إدارة أسهل .. مبيعات أعلى .. نجاح أكبر</div></div></div><div class="cash-panel"><div class="dashboard-bulb" role="img" aria-label="مصباح أصفر">💡</div><h3>مرحباً بك في نظام فرجللو</h3><div class="sub">نظام متكامل لإدارة الحسابات</div></div><div id="activeBranchLabel" aria-live="polite"></div><div id="activeBranchImageWrap" style="margin:10px 0 0 auto;text-align:right;max-width:100%;"><img id="activeBranchImage" src="https://scontent.fcai19-8.fna.fbcdn.net/v/t39.30808-6/326779120_539151501524446_3356444645274466193_n.jpg?stp=dst-jpg_tt6&cstp=mx712x711&ctp=s712x711&_nc_cat=111&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=NPF-bTIK5HkQ7kNvwFG_S-P&_nc_oc=AdodLxPjp5sQ9PhK1oSpjsFglqYvYNyh-vHvSOyxH7AHtIafQSbg9g8IrA_1T41-444&_nc_zt=23&_nc_ht=scontent.fcai19-8.fna&_nc_gid=UoV1CzQHIgV1VkGqHqplcQ&_nc_ss=7b289&oh=00_AQSGcixzA7dEnufI4zIo6vRRNnlLUgS3PiYMOPPsKSd1NA&oe=6AEADA93" alt="صورة الفرع" loading="lazy" style="display:block;width:180px;max-width:100%;height:auto;object-fit:contain;border-radius:12px;"></div></div><div id="inventory" class="page hidden"><div class="title"><div><h2>📦 المخزن</h2><div class="sub">جميع الأصناف وكمياتها</div></div><div><button class="btn" onclick="openItemModal()">＋ إضافة صنف</button></div></div><div class="cards"><div class="card"><div class="label">إجمالي الأصناف</div><div id="iCount" class="value cyan"></div></div><div class="card"><div class="label">إجمالي الكميات</div><div id="iQty" class="value green"></div></div><div class="card"><div class="label">قيمة المخزون</div><div id="iValue" class="value gold"></div></div><div class="card"><div class="label">مبيعات اليوم</div><div id="iSales" class="value"></div></div></div><div class="toolbar"><input id="invSearch" placeholder="ابحث بالكود أو اسم الصنف..." oninput="renderInventory()"><button class="btn gray" onclick="document.getElementById('invSearch').value='';renderInventory()">مسح</button></div><div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>اسم الصنف</th><th>السعر</th><th>رصيد أول المدة</th><th>المباع</th><th>الرصيد الحالي</th><th>القيمة</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="invBody"></tbody></table></div><div id="invPagination"></div></div>
+<div id="home" class="page"><div class="title"><div><h2>لوحة التحكم</h2><div class="sub">إدارة أسهل .. مبيعات أعلى .. نجاح أكبر</div></div></div><div class="cash-panel"><div class="dashboard-bulb" role="img" aria-label="مصباح أصفر">💡</div><h3>مرحباً بك في نظام فرجللو</h3><div class="sub">نظام متكامل لإدارة الحسابات</div></div><div id="activeBranchLabel" aria-live="polite"></div><div id="activeBranchImageWrap" style="margin:10px 0 0 auto;text-align:right;max-width:100%;"><img id="activeBranchImage" src="https://scontent.fcai19-8.fna.fbcdn.net/v/t39.30808-6/326779120_539151501524446_3356444645274466193_n.jpg?stp=dst-jpg_tt6&cstp=mx712x711&ctp=s712x711&_nc_cat=111&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=NPF-bTIK5HkQ7kNvwFG_S-P&_nc_oc=AdodLxPjp5sQ9PhK1oSpjsFglqYvYNyh-vHvSOyxH7AHtIafQSbg9g8IrA_1T41-444&_nc_zt=23&_nc_ht=scontent.fcai19-8.fna&_nc_gid=UoV1CzQHIgV1VkGqHqplcQ&_nc_ss=7b289&oh=00_AQSGcixzA7dEnufI4zIo6vRRNnlLUgS3PiYMOPPsKSd1NA&oe=6AEADA93" alt="صورة الفرع" loading="lazy" style="display:block;width:180px;max-width:100%;height:auto;object-fit:contain;border-radius:12px;"></div><section id="currentActivitiesPanel" class="card" style="margin:16px 0;padding:16px;border:1px solid #dbe5ec;border-radius:14px;background:#fff;box-shadow:0 4px 16px rgba(20,45,65,.06)"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px"><div><h3 style="margin:0;color:#173b56;font-size:18px">الأنشطة الحالية</h3><div id="activityStatus" style="font-size:12px;color:#718291;margin-top:4px">جاري تحميل الأنشطة...</div></div><span style="background:#eaf2f7;color:#173b56;border-radius:20px;padding:4px 10px;font-weight:700;font-size:12px"><span id="activityFeedCount">0</span> نشاط</span></div><div id="activityFeedList" style="max-height:260px;overflow-y:auto"><div class="activity-empty">بسم الله الرحمن الرحيم</div></div></section></div><div id="inventory" class="page hidden"><div class="title"><div><h2>📦 المخزن</h2><div class="sub">جميع الأصناف وكمياتها</div></div><div><button class="btn" onclick="openItemModal()">＋ إضافة صنف</button></div></div><div class="cards"><div class="card"><div class="label">إجمالي الأصناف</div><div id="iCount" class="value cyan"></div></div><div class="card"><div class="label">إجمالي الكميات</div><div id="iQty" class="value green"></div></div><div class="card"><div class="label">قيمة المخزون</div><div id="iValue" class="value gold"></div></div><div class="card"><div class="label">مبيعات اليوم</div><div id="iSales" class="value"></div></div></div><div class="toolbar"><input id="invSearch" placeholder="ابحث بالكود أو اسم الصنف..." oninput="renderInventory()"><button class="btn gray" onclick="document.getElementById('invSearch').value='';renderInventory()">مسح</button></div><div class="table-wrap"><table class="table"><thead><tr><th>الكود</th><th>اسم الصنف</th><th>السعر</th><th>رصيد أول المدة</th><th>المباع</th><th>الرصيد الحالي</th><th>القيمة</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="invBody"></tbody></table></div><div id="invPagination"></div></div>
 <div id="inventoryAudit" class="page hidden">
   <div class="title"><div><h2>📋 تقرير العجز والزيادة</h2><div class="sub">أدخل الكمية الفعلية بعد العد، وسيحسب النظام الفرق وقيمته تلقائيًا دون تعديل المخزون</div></div><div><button class="btn gold" onclick="saveInventoryCountReport()">💾 حفظ تقرير الجرد</button><button class="btn gray" onclick="printInventoryReport()">🖨 طباعة</button></div></div>
   <div class="toolbar no-print">
@@ -790,7 +799,17 @@ function isUsefulActivity(entry){if(!entry)return false;const type=String(entry.
 function activityTime(value){const d=new Date(value||Date.now());return Number.isFinite(d.getTime())?d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}):'الآن'}
 function renderActivityFeed(rows,mode){
   const status=document.getElementById('activityStatus');
-  if(status){status.dataset.mode=mode==='cloud'?'cloud':'local';status.textContent=mode==='cloud'?'متزامن بين الأجهزة':'محلي على هذا الجهاز'}
+  const list=document.getElementById('activityFeedList');
+  const count=document.getElementById('activityFeedCount');
+  if(status){status.dataset.mode=mode==='cloud'?'cloud':'local';status.textContent=mode==='cloud'?'متزامن بين الأجهزة':'محفوظ على هذا الجهاز'}
+  const safeRows=(Array.isArray(rows)?rows:[]).filter(isUsefulActivity).slice(0,ACTIVITY_LOCAL_LIMIT);
+  if(count)count.textContent=String(safeRows.length);
+  if(list){
+    if(!safeRows.length){list.innerHTML='<div class="activity-empty">بسم الله الرحمن الرحيم</div>';return}
+    list.innerHTML=safeRows.map(function(entry){
+      return '<div class="activity-entry"><span class="activity-dot"></span><div class="activity-entry-body"><div class="activity-entry-message">'+escapeActivityText(entry.message)+'</div><div class="activity-entry-time">'+escapeActivityText(activityTime(entry.created_at))+'</div></div></div>';
+    }).join('');
+  }
 }
 
 let activityViewVersion=0;
