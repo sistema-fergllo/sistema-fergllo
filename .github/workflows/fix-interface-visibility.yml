@@ -1,0 +1,71 @@
+name: Fix interface visibility
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: ${{ !contains(github.event.head_commit.message, '[interface-visibility-fixed]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch index.html
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '/* FARAGELLO_INTERFACE_VISIBILITY_FIX */'
+          if marker not in s:
+              patch = r'''
+          <style id="faragello-interface-visibility-fix">
+          /* FARAGELLO_INTERFACE_VISIBILITY_FIX */
+          html.faragello-internal-active #login{display:none!important}
+          html.faragello-login-active #app{display:none!important}
+          </style>
+          <script id="faragello-interface-visibility-fix-script">
+          (function(){
+            function syncScreens(){
+              var login=document.getElementById('login');
+              var app=document.getElementById('app');
+              if(!login||!app)return;
+              var appVisible=getComputedStyle(app).display!=='none' && app.getAttribute('aria-hidden')!=='true' && !app.classList.contains('hidden');
+              var loginVisible=getComputedStyle(login).display!=='none' && login.getAttribute('aria-hidden')!=='true' && !login.classList.contains('hidden');
+              if(appVisible){
+                document.documentElement.classList.add('faragello-internal-active');
+                document.documentElement.classList.remove('faragello-login-active');
+              }else if(loginVisible){
+                document.documentElement.classList.add('faragello-login-active');
+                document.documentElement.classList.remove('faragello-internal-active');
+              }
+            }
+            function boot(){
+              syncScreens();
+              var obs=new MutationObserver(function(){syncScreens();});
+              obs.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','aria-hidden']});
+              window.addEventListener('pageshow',syncScreens);
+              window.addEventListener('hashchange',syncScreens);
+              setInterval(syncScreens,500);
+            }
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+          })();
+          </script>
+          '''
+              if '</head>' in s:
+                  s=s.replace('</head>', patch+'\n</head>',1)
+              else:
+                  s=patch+s
+              p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Fix duplicate interfaces [interface-visibility-fixed]"
+          git push
