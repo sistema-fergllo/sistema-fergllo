@@ -667,6 +667,45 @@ html,body{background:#edf2f5}
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 </style>
+
+<style id="faragello-fire-effects">
+/* Warm ember and flame-inspired ambience for both interfaces */
+@keyframes frgEmberGlow{
+  0%,100%{box-shadow:0 0 0 2px rgba(255,166,54,.12),0 0 14px rgba(255,117,35,.16),0 0 28px rgba(255,190,75,.08)}
+  50%{box-shadow:0 0 0 5px rgba(255,166,54,.06),0 0 22px rgba(255,117,35,.30),0 0 42px rgba(255,190,75,.16)}
+}
+@keyframes frgFlameSweep{0%{background-position:0% 50%;opacity:.72}50%{opacity:1}100%{background-position:200% 50%;opacity:.72}}
+@keyframes frgSparkRise{0%{transform:translateY(8px) scale(.65);opacity:0}35%{opacity:.8}100%{transform:translateY(-13px) scale(1.1);opacity:0}}
+@keyframes frgWarmPulse{0%,100%{filter:drop-shadow(0 0 2px rgba(255,173,61,.15))}50%{filter:drop-shadow(0 0 8px rgba(255,126,35,.48))}}
+#login .login-card{border-color:#f0dfc9;animation:frgFadeUp .7s cubic-bezier(.2,.75,.25,1) both,frgEmberGlow 5s ease-in-out infinite}
+#login .login-card .logo,#app .brand .logo{position:relative;isolation:isolate;overflow:visible;animation:frgWarmPulse 3.4s ease-in-out infinite}
+#login .login-card .logo:before,#app .brand .logo:before{
+ content:"";position:absolute;inset:-5px;border-radius:inherit;z-index:-1;pointer-events:none;
+ background:linear-gradient(135deg,#ffcf70,#ff7b32,#ffd36a,#e85b2a);background-size:220% 220%;
+ opacity:.72;filter:blur(7px);animation:frgFlameSweep 4s ease-in-out infinite
+}
+#login .login-card .logo:after,#app .brand .logo:after{text-shadow:0 0 9px rgba(255,145,49,.42)}
+#login .hero-orb{box-shadow:0 0 0 7px rgba(255,172,62,.10),0 0 30px rgba(255,112,35,.22);animation:frgSoftFloat 4.5s ease-in-out infinite,frgEmberGlow 4.2s ease-in-out infinite}
+#login .hero-kicker{border-color:#f3d7ae}
+#login .hero-kicker:before{background:linear-gradient(90deg,#ffb347,#ff7138,#ffd16c)!important}
+#login .hero-point:hover{border-color:#efbd7b;box-shadow:0 14px 28px rgba(224,111,39,.13)}
+#login .login-card button:hover{box-shadow:0 8px 22px rgba(255,132,49,.22)!important}
+#app .top{position:sticky;isolation:isolate}
+#app .top:after{
+ content:"";position:absolute;left:0;right:0;bottom:0;height:3px;pointer-events:none;z-index:2;
+ background:linear-gradient(90deg,#ff9d36,#ffd36c,#f36b35,#ffc45d,#ff9d36);background-size:220% 100%;
+ animation:frgFlameSweep 5s linear infinite
+}
+#app .brand .logo{box-shadow:0 0 0 2px rgba(255,184,82,.22),0 0 18px rgba(255,131,47,.18)}
+#app .side .nav:hover{box-shadow:inset 3px 0 0 #ffad4c,0 5px 14px rgba(16,46,69,.12)}
+#app .btn:hover,#app button:not(.nav):hover{box-shadow:0 7px 20px rgba(225,112,42,.18)}
+#app .page .cards>.card:hover,#app .page>.card:hover,#app #currentActivitiesPanel:hover{border-color:#edc58e}
+@media(prefers-reduced-motion:reduce){
+ #login .login-card,#login .login-card .logo,#app .brand .logo,#login .hero-orb,#app .top:after,
+ #login .login-card .logo:before,#app .brand .logo:before{animation:none!important}
+}
+</style>
+
 </head>
 <body>
 <div id="login" class="login-screen">
