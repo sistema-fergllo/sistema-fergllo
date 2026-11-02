@@ -1072,31 +1072,7 @@ function printExpenses(){
  const table='<table><thead><tr><th>التاريخ</th><th>نوع المصروف</th><th>الوردية</th><th>المبلغ</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+safe(x.date||'—')+'</td><td>'+safe(x.category||'—')+'</td><td>'+safe(x.shift||'—')+'</td><td>'+money(x.amount)+'</td></tr>').join('')+'</tbody></table>';
  w.document.open();
  w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>سجل المصروفات - سيستم فرجللو</title><style>body{font-family:Tahoma,Arial,sans-serif;padding:24px;color:#111}h1{text-align:center}p{text-align:center;margin:12px 0 22px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #777;padding:10px;text-align:center}th{background:#eee}@media print{body{padding:0}}</style></head><body><h1>سجل المصروفات - سيستم فرجللو</h1><p>عدد المصروفات: '+rows.length+' — إجمالي المصروفات: '+money(total)+'</p>'+table+'
-<script>
-(function removePublicContactBox() {
-  const terms = ["للتواصل والاستفسار", "01128777287"];
-  function clean() {
-    document.querySelectorAll("body *").forEach(el => {
-      if (el.children.length === 0) {
-        const value = (el.textContent || "").replace(/\\s+/g, " ").trim();
-        if (terms.some(term => value.includes(term))) {
-          const card = el.closest(".contact-box, .contact-card, .login-card, .contact, .support-box") || el;
-          if (card !== document.body) card.remove();
-        }
-      }
-    });
-    document.querySelectorAll("body a, body p, body div, body section, body article").forEach(el => {
-      const value = (el.textContent || "").replace(/\\s+/g, " ").trim();
-      if (value && terms.some(term => value.includes(term)) && el.children.length < 4) el.remove();
-    });
-  }
-  clean();
-  new MutationObserver(clean).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
-  setTimeout(clean, 500);
-  setTimeout(clean, 1500);
-  setTimeout(clean, 4000);
-})();
-</script>
+
 
 </body></html>');
  w.document.close();w.focus();w.print();
