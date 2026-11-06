@@ -37,6 +37,9 @@
      sold:Number(x.sold||0),updated_at:new Date().toISOString()
    }));
    if(!rows.length)return;
+   const masterRows=rows.map(x=>({client_id:x.client_id,code:x.code,name:x.name,price:x.price,qty:0,sold:0,updated_at:x.updated_at}));
+   const {error:masterError}=await window.supabaseClient.from('client_inventory').upsert(masterRows,{onConflict:'client_id,code',ignoreDuplicates:true});
+   if(masterError)throw masterError;
    const {error}=await window.supabaseClient.from('branch_inventory').upsert(rows,{onConflict:'client_id,branch_id,code'});
    if(error)throw error;
  };
