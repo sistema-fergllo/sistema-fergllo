@@ -574,6 +574,85 @@ html body #login #faragello-supervisor-name * {
 @media(max-width:850px){#login .halawa-support-card{margin:16px auto 0;text-align:right}}
 @media(max-width:430px){#login .halawa-support-card{gap:9px;padding:12px}#login .halawa-support-icon{width:40px;height:40px;flex-basis:40px}#login .halawa-support-copy a{font-size:18px}#login .halawa-support-status{font-size:10px}}
 </style>
+
+<style id="halawa-responsive-overrides">
+/* تحسينات توافق عامة للكمبيوتر والتابلت والموبايل دون تغيير وظائف النظام */
+#app *,#login *{box-sizing:border-box}
+#app img,#login img{max-width:100%;height:auto}
+#app .layout,#app .layout>main,#app .page{min-width:0;max-width:100%}
+#app .layout>main{overflow-x:hidden}
+#app .cards{grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))}
+#app .table-wrap{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+#app table{max-width:100%}
+#app input,#app select,#app textarea,#login input,#login select,#login textarea{max-width:100%;min-width:0}
+#app button,#login button{max-width:100%;touch-action:manipulation}
+#app .toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+#app .toolbar input,#app .toolbar select{flex:1 1 150px;width:auto}
+#app .title{flex-wrap:wrap}
+#app .title>div,#app .title>section{min-width:0}
+#login.login-screen{min-width:0}
+#login .login-card{width:min(100%,480px);min-width:0}
+#login .public-hero{min-width:0}
+@media(max-width:1100px){
+  #app .side{width:210px;flex-basis:210px}
+  #app .layout>main{padding:16px}
+}
+@media(max-width:760px){
+  #app .top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px}
+  #app .brand{flex:1 1 170px}
+  #app .userbox{flex:0 1 auto;max-width:100%;flex-wrap:wrap;justify-content:flex-end}
+  #app .layout{display:flex;flex-direction:column}
+  #app .side{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    width:100%!important;
+    flex:0 0 auto!important;
+    gap:7px;
+    padding:9px!important;
+    overflow:visible!important;
+  }
+  #app .side .nav{
+    display:flex;
+    width:100%!important;
+    min-width:0!important;
+    min-height:44px;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    justify-content:flex-start;
+    padding:9px 10px!important;
+    font-size:12px!important;
+    line-height:1.4;
+  }
+  #app .side .nav.logout{margin:0!important}
+  #app .layout>main{width:100%;padding:13px 10px!important;overflow:visible}
+  #app .page{width:100%;max-width:100%}
+  #app .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  #app .card{min-width:0;overflow-wrap:anywhere}
+  #app .cash-panel,#app .panel,#app .section,#app .form-panel{min-width:0;padding:13px}
+  #app .toolbar>*{max-width:100%}
+  #app .modal-bg>.modal{width:100%;max-width:100%}
+  #login.login-screen{display:flex;flex-direction:column;align-items:center;gap:16px;padding:18px 12px 26px}
+  #login .public-hero{width:100%;max-width:620px;padding:8px 0;text-align:center}
+  #login .login-card{width:100%;max-width:480px}
+}
+@media(max-width:480px){
+  #app .top{align-items:flex-start}
+  #app .brand h1{font-size:15px}
+  #app .userbox{font-size:11px}
+  #app .clock{font-size:10px}
+  #app .title{align-items:flex-start}
+  #app .title h2{font-size:18px}
+  #app .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #app .card{padding:10px}
+  #app .card .value{font-size:19px}
+  #app .toolbar{align-items:stretch}
+  #app .toolbar input,#app .toolbar select{flex:1 1 100%;width:100%}
+  #app .btn,#app button.btn{min-height:40px;white-space:normal}
+  #app .table-wrap table{min-width:560px}
+  #login .login-card{padding:20px 14px}
+}
+</style>
+
 </head>
 <body>
 <div id="login" class="login-screen">
