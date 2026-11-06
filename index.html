@@ -863,7 +863,26 @@ const {error}=await supabaseClient.from('client_accounts').update({name:item.nam
 if(password) alert('تم تعديل بيانات العميل وكلمة المرور بنجاح.');else alert('تم تعديل بيانات العميل بنجاح.');
   }catch(e){alert('تعذر حفظ حساب العميل: '+(e?.message||e))}
 }
-function editClient(i){openClientModal(i)}async function toggleClient(i){const next=clients[i].status==='نشط'?'موقوف':'نشط';try{const{error}=await supabaseClient.from('client_accounts').update({status:next}).eq('id',clients[i].id);if(error)throw error;clients[i].status=next;saveClients();renderClients();logActivity('تم تغيير حالة حساب العميل '+clients[i].name+' إلى '+next,'clients')}catch(e){alert('تعذر تحديث الحساب: '+e.message)}}async function deleteClient(i){if(!confirm('حذف سجل العميل ومساحة عمله؟'))return;try{const removedName=clients[i].name;const{error}=await supabaseClient.from('client_accounts').delete().eq('id',clients[i].id);if(error)throw error;clients.splice(i,1);saveClients();renderClients();logActivity('تم حذف سجل حساب العميل: '+removedName,'clients')}catch(e){alert('تعذر حذف الحساب: '+e.message)}}
+function editClient(i){openClientModal(i)}async function toggleClient(i){const next=clients[i].status==='نشط'?'موقوف':'نشط';try{const{error}=await supabaseClient.from('client_accounts').update({status:next}).eq('id',clients[i].id);if(error)throw error;clients[i].status=next;saveClients();renderClients();logActivity('تم تغيير حالة حساب العميل '+clients[i].name+' إلى '+next,'clients')}catch(e){alert('تعذر تحديث الحساب: '+e.message)}}async function deleteClient(i){
+ if(!clients[i])return;
+ const target=clients[i];
+ if(!confirm('حذف العميل '+target.name+' نهائيًا؟ سيتم التأكد من تنفيذ الحذف في قاعدة البيانات قبل إخفائه من القائمة.'))return;
+ try{
+  const {data:deleted,error}=await supabaseClient.from('client_accounts').delete().eq('id',target.id).select('id').maybeSingle();
+  if(error)throw error;
+  if(!deleted||deleted.id!==target.id)throw new Error('قاعدة البيانات لم تؤكد حذف العميل. غالبًا صلاحيات DELETE (RLS) تمنع الحذف؛ لم يتم إخفاء العميل من القائمة.');
+  const {data:cloudClients,error:reloadError}=await supabaseClient.from('client_accounts').select('id,name,project,username,email,status,created_at').order('created_at',{ascending:true});
+  if(reloadError)throw reloadError;
+  clients=(cloudClients||[]).map(c=>({...c,date:c.created_at?new Date(c.created_at).toLocaleDateString('ar-EG'):''}));
+  saveClients();
+  renderClients();
+  logActivity('تم حذف حساب العميل نهائيًا: '+target.name,'clients');
+  alert('تم حذف سجل العميل من قاعدة البيانات وتحديث قائمة العملاء.');
+ }catch(e){
+  console.error('Client deletion failed:',e);
+  alert('لم يتم تأكيد حذف العميل: '+(e&&e.message?e.message:String(e)));
+ }
+}
 async function openClientWorkspace(i){const c=clients[i];if(!c||c.status!=='نشط'){alert('حساب العميل موقوف أو غير موجود');return}document.body.classList.add('client-workspace-mode');activeClient={id:c.id,name:c.name,project:c.project,email:c.email};localStorage.setItem('frg_active_client',JSON.stringify(activeClient));document.querySelector('.brand small').textContent='';document.querySelector('.user b').textContent=c.name;document.querySelector('.user small').textContent='حساب العميل';try{await loadClientWorkspaceFromCloud(c.id);showPage('home');logActivity('فتح المشرف مساحة عمل العميل: '+c.name,'workspace');startActivityFeed()}catch(e){cloudReady=false;alert('تعذر تحميل مخزون العميل من قاعدة البيانات: '+(e?.message||e))}}
 function loadWorkspaceData(){const invKey=workspaceKey(KEYS.inv),salesKey=workspaceKey(KEYS.sales);inventory=JSON.parse(localStorage.getItem(invKey)||'null')||[];sales=JSON.parse(localStorage.getItem(salesKey)||'[]');cloudReady=false;cart=[];refreshAll()}function leaveClientWorkspace(){document.body.classList.remove('client-workspace-mode');activeClient=null;localStorage.removeItem('frg_active_client');const invNav=document.getElementById('navInventory');if(invNav)invNav.classList.add('hidden');inventory=[];sales=[];localStorage.setItem(KEYS.inv,'[]');localStorage.setItem(KEYS.sales,'[]');cloudReady=false;document.querySelector('.brand small').textContent='';document.querySelector('.user b').textContent='admin';document.querySelector('.user small').textContent='مدير النظام';showPage('clients')}
 function renderClients(){
