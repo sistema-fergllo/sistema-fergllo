@@ -1205,15 +1205,22 @@ function loadSavedInventoryCountReport(){
   const date=document.getElementById('auditDate');if(date)date.value=report.date;
   renderInventoryAudit();
 }
+function inventoryAuditBaseline(item){
+  const saved=(inventoryAuditLoadedReport?.rows||[]).find(row=>String(row.code)===String(item.code));
+  return saved?Number(saved.system||0):Number(item.qty||0);
+}
 function updateInventoryAuditSummary(){
-  const rows=(Array.isArray(inventory)?inventory:[]).map(x=>({item:x,actual:inventoryAuditDraft[String(x.code)]})).filter(x=>x.actual!==undefined&&x.actual!==''&&Number.isFinite(Number(x.actual))&&Number(x.actual)>=0);
+  const source=inventoryAuditLoadedReport?.rows?.length
+    ? inventoryAuditLoadedReport.rows.map(row=>({code:String(row.code),actual:inventoryAuditDraft[String(row.code)],system:Number(row.system||0),price:Number(row.price||0)}))
+    : (Array.isArray(inventory)?inventory:[]).map(item=>({code:String(item.code),actual:inventoryAuditDraft[String(item.code)],system:Number(item.qty||0),price:Number(item.price||0)}));
+  const rows=source.filter(row=>row.actual!==undefined&&row.actual!==''&&Number.isFinite(Number(row.actual))&&Number(row.actual)>=0);
   let matches=0,shortCount=0,overCount=0,shortValue=0,overValue=0;
-  rows.forEach(({item,actual})=>{const diff=Number(actual)-Number(item.qty||0);if(diff===0)matches++;else if(diff<0){shortCount++;shortValue+=Math.abs(diff)*Number(item.price||0)}else{overCount++;overValue+=diff*Number(item.price||0)}});
+  rows.forEach(row=>{const diff=Number(row.actual)-row.system;if(diff===0)matches++;else if(diff<0){shortCount++;shortValue+=Math.abs(diff)*row.price}else{overCount++;overValue+=diff*row.price}});
   const put=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
   put('auditCount',inventory.length.toLocaleString('ar-EG'));put('auditMatch',matches.toLocaleString('ar-EG'));
   put('auditShortCount',shortCount.toLocaleString('ar-EG'));put('auditOverCount',overCount.toLocaleString('ar-EG'));
   put('auditShortValue',money(shortValue));put('auditOverValue',money(overValue));
-  const date=inventoryAuditDate();put('auditReportDate','تاريخ الجرد: '+date+' — تم عد '+rows.length+' من '+inventory.length+' صنف');
+  const date=inventoryAuditDate();put('auditReportDate','تاريخ الجرد: '+date+' — تم عد '+rows.length+' من '+(inventoryAuditLoadedReport?.rows?.length||inventory.length)+' صنف');
 }
 function renderInventoryAudit(){
   if(!document.getElementById('auditBody'))return;
@@ -1225,10 +1232,11 @@ function renderInventoryAudit(){
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const body=document.getElementById('auditBody');
   body.innerHTML=filtered.map((x,i)=>{
-    const code=String(x.code),actual=inventoryAuditDraft[code]??'',has=actual!==''&&Number.isFinite(Number(actual))&&Number(actual)>=0;
-    const diff=has?Number(actual)-Number(x.qty||0):null,price=Number(x.price||0);
+    const code=String(x.code),saved=(inventoryAuditLoadedReport?.rows||[]).find(row=>String(row.code)===code);
+    const system=saved?Number(saved.system||0):Number(x.qty||0),actual=inventoryAuditDraft[code]??'',has=actual!==''&&Number.isFinite(Number(actual))&&Number(actual)>=0;
+    const diff=has?Number(actual)-system:null,price=saved?Number(saved.price||0):Number(x.price||0);
     const result=!has?'<span class="badge">بانتظار الجرد</span>':diff===0?'<span class="badge" style="background:#e8f6ef;color:#18764e">مطابق</span>':diff<0?'<span class="badge" style="background:#fff0f0;color:#b53d47">عجز '+Math.abs(diff)+'</span>':'<span class="badge" style="background:#fff5df;color:#956515">زيادة '+diff+'</span>';
-    return '<tr><td>'+((i+1).toLocaleString('ar-EG'))+'</td><td>'+esc(code)+'</td><td><b>'+esc(x.name)+'</b></td><td>'+Number(x.qty||0).toLocaleString('ar-EG')+'</td><td><input aria-label="الكمية الفعلية للصنف '+esc(code)+'" type="number" min="0" step="any" value="'+esc(actual)+'" data-audit-code="'+esc(code)+'" style="width:105px;min-width:90px" oninput="setInventoryAuditActual(this)"></td><td>'+(has?(diff>0?'+':'')+diff.toLocaleString('ar-EG'):'—')+'</td><td>'+(has?money(Math.abs(diff)*price):'—')+'</td><td>'+result+'</td></tr>';
+    return '<tr><td>'+((i+1).toLocaleString('ar-EG'))+'</td><td>'+esc(code)+'</td><td><b>'+esc(x.name)+'</b></td><td>'+system.toLocaleString('ar-EG')+'</td><td><input aria-label="الكمية الفعلية للصنف '+esc(code)+'" type="number" min="0" step="any" value="'+esc(actual)+'" data-audit-code="'+esc(code)+'" style="width:105px;min-width:90px" oninput="setInventoryAuditActual(this)"></td><td>'+(has?(diff>0?'+':'')+diff.toLocaleString('ar-EG'):'—')+'</td><td>'+(has?money(Math.abs(diff)*price):'—')+'</td><td>'+result+'</td></tr>';
   }).join('');
   if(!filtered.length)body.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px">لا توجد أصناف مطابقة للبحث</td></tr>';
   document.getElementById('auditShownCount').textContent=filtered.length.toLocaleString('ar-EG')+' صنف';
@@ -1239,30 +1247,50 @@ function setInventoryAuditActual(input){
   const value=input.value;
   if(value===''||(!Number.isFinite(Number(value))||Number(value)<0)){delete inventoryAuditDraft[String(code)]}else inventoryAuditDraft[String(code)]=value;
   const row=input.closest('tr');if(row){
-    const item=inventory.find(x=>String(x.code)===String(code));const diff=Number(value)-Number(item?.qty||0);
+    const item=inventory.find(x=>String(x.code)===String(code));const saved=(inventoryAuditLoadedReport?.rows||[]).find(x=>String(x.code)===String(code));
+    const baseline=saved?Number(saved.system||0):Number(item?.qty||0),diff=Number(value)-baseline,price=saved?Number(saved.price||0):Number(item?.price||0);
     const cells=row.children;
     if(value===''){cells[5].textContent='—';cells[6].textContent='—';cells[7].innerHTML='<span class="badge">بانتظار الجرد</span>'}
-    else{cells[5].textContent=(diff>0?'+':'')+diff.toLocaleString('ar-EG');cells[6].textContent=money(Math.abs(diff)*Number(item?.price||0));cells[7].innerHTML=diff===0?'<span class="badge" style="background:#e8f6ef;color:#18764e">مطابق</span>':diff<0?'<span class="badge" style="background:#fff0f0;color:#b53d47">عجز '+Math.abs(diff)+'</span>':'<span class="badge" style="background:#fff5df;color:#956515">زيادة '+diff+'</span>'}
+    else{cells[5].textContent=(diff>0?'+':'')+diff.toLocaleString('ar-EG');cells[6].textContent=money(Math.abs(diff)*price);cells[7].innerHTML=diff===0?'<span class="badge" style="background:#e8f6ef;color:#18764e">مطابق</span>':diff<0?'<span class="badge" style="background:#fff0f0;color:#b53d47">عجز '+Math.abs(diff)+'</span>':'<span class="badge" style="background:#fff5df;color:#956515">زيادة '+diff+'</span>'}
   }
   updateInventoryAuditSummary();
 }
-function saveInventoryCountReport(){
+async function saveInventoryCountReport(){
   const items=(Array.isArray(inventory)?inventory:[]);
   const missing=items.filter(x=>inventoryAuditDraft[String(x.code)]===undefined||inventoryAuditDraft[String(x.code)]==='');
-  if(missing.length){alert('لا يمكن حفظ التقرير قبل إدخال الجرد الفعلي لكل الأصناف. الأصناف المتبقية: '+missing.length);return}
-  const rows=items.map(x=>{const actual=Number(inventoryAuditDraft[String(x.code)]),system=Number(x.qty||0),diff=actual-system;return{code:String(x.code),name:String(x.name||''),system,actual,price:Number(x.price||0),diff,diffValue:Math.abs(diff)*Number(x.price||0)}});
+  if(missing.length){alert('لا يمكن اعتماد الجرد قبل إدخال الكمية الفعلية لكل الأصناف. الأصناف المتبقية: '+missing.length);return}
+  if(!confirm('سيتم اعتماد الكميات الفعلية كأرصدة صحيحة للمخزون وتحديث قاعدة البيانات. هل تريد المتابعة؟'))return;
+  const previousInventory=inventory.map(x=>({...x}));
+  const rows=items.map(x=>{
+    const actual=Number(inventoryAuditDraft[String(x.code)]);
+    const saved=(inventoryAuditLoadedReport?.rows||[]).find(row=>String(row.code)===String(x.code));
+    const system=saved?Number(saved.system||0):Number(x.qty||0);
+    return{code:String(x.code),name:String(x.name||''),system,actual,price:Number(saved?.price??x.price??0),diff:actual-system,diffValue:Math.abs(actual-system)*Number(saved?.price??x.price??0)};
+  });
   const short=rows.filter(x=>x.diff<0),over=rows.filter(x=>x.diff>0);
-  const report={id:'COUNT-'+Date.now(),date:inventoryAuditDate(),savedAt:new Date().toISOString(),clientId:activeClient?.id||null,branch:(()=>{try{return JSON.parse(localStorage.getItem('frg_active_branch')||'null')?.name||''}catch(e){return ''}})(),rows,shortCount:short.length,overCount:over.length,matchCount:rows.length-short.length-over.length,shortQty:short.reduce((n,x)=>n+Math.abs(x.diff),0),overQty:over.reduce((n,x)=>n+x.diff,0),shortValue:short.reduce((n,x)=>n+x.diffValue,0),overValue:over.reduce((n,x)=>n+x.diffValue,0)};
-  const all=inventoryAuditReports();all.unshift(report);localStorage.setItem(inventoryAuditStorageKey(),JSON.stringify(all));
-  inventoryAuditLoadedReport=report;refreshInventoryAuditReportChoices(report.id);updateInventoryAuditSummary();
-  logActivity('تم حفظ تقرير جرد '+report.date+' — عجز '+report.shortCount+' صنف وزيادة '+report.overCount+' صنف','inventory');
-  alert('تم حفظ تقرير الجرد. العجز: '+report.shortCount+' صنف بقيمة '+money(report.shortValue)+' — الزيادة: '+report.overCount+' صنف بقيمة '+money(report.overValue));
+  const report={id:inventoryAuditLoadedReport?.id||'COUNT-'+Date.now(),date:inventoryAuditDate(),savedAt:new Date().toISOString(),clientId:activeClient?.id||null,branch:(()=>{try{return JSON.parse(localStorage.getItem('frg_active_branch')||'null')?.name||''}catch(e){return ''}})(),rows,shortCount:short.length,overCount:over.length,matchCount:rows.length-short.length-over.length,shortQty:short.reduce((n,x)=>n+Math.abs(x.diff),0),overQty:over.reduce((n,x)=>n+x.diff,0),shortValue:short.reduce((n,x)=>n+x.diffValue,0),overValue:over.reduce((n,x)=>n+x.diffValue,0)};
+  inventory=inventory.map(item=>({...item,qty:Number(inventoryAuditDraft[String(item.code)])}));
+  try{
+    localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));localStorage.setItem(KEYS.inv,JSON.stringify(inventory));
+    if(cloudReady){if(activeClient)await syncClientInventoryToCloud();else await syncInventoryToCloud()}
+    const all=inventoryAuditReports().filter(existing=>String(existing.id)!==String(report.id));all.unshift(report);
+    localStorage.setItem(inventoryAuditStorageKey(),JSON.stringify(all));
+    inventoryAuditLoadedReport=report;
+    refreshAll();refreshInventoryAuditReportChoices(report.id);renderInventoryAudit();
+    logActivity('تم اعتماد الجرد الفعلي وتحديث أرصدة المخزون بتاريخ '+report.date+' — عجز '+report.shortCount+' صنف وزيادة '+report.overCount+' صنف','inventory');
+    alert('تم اعتماد الجرد الفعلي وتحديث المخزون بنجاح. العجز: '+report.shortCount+' صنف — الزيادة: '+report.overCount+' صنف.');
+  }catch(e){
+    inventory=previousInventory;
+    localStorage.setItem(workspaceKey(KEYS.inv),JSON.stringify(inventory));localStorage.setItem(KEYS.inv,JSON.stringify(inventory));
+    refreshAll();
+    alert('تعذر اعتماد الجرد في قاعدة البيانات؛ تم إرجاع أرصدة المخزون كما كانت. السبب: '+(e?.message||e));
+  }
 }
 function printInventoryReport(){
   const items=(Array.isArray(inventory)?inventory:[]);
   const missing=items.filter(x=>inventoryAuditDraft[String(x.code)]===undefined||inventoryAuditDraft[String(x.code)]==='');
   if(missing.length){alert('أكمل الجرد الفعلي لكل الأصناف قبل الطباعة. المتبقي: '+missing.length);return}
-  const rows=items.map(x=>{const actual=Number(inventoryAuditDraft[String(x.code)]),system=Number(x.qty||0),diff=actual-system;return{...x,system,actual,diff,diffValue:Math.abs(diff)*Number(x.price||0)}});
+  const rows=items.map(x=>{const actual=Number(inventoryAuditDraft[String(x.code)]),saved=(inventoryAuditLoadedReport?.rows||[]).find(row=>String(row.code)===String(x.code)),system=saved?Number(saved.system||0):Number(x.qty||0),price=saved?Number(saved.price||0):Number(x.price||0),diff=actual-system;return{...x,system,actual,diff,diffValue:Math.abs(diff)*price}});
   const short=rows.filter(x=>x.diff<0),over=rows.filter(x=>x.diff>0),matches=rows.length-short.length-over.length;
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const w=window.open('','_blank','width=1000,height=750');if(!w){alert('اسمح بفتح النوافذ المنبثقة للطباعة');return}
