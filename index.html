@@ -1328,7 +1328,7 @@ function renderInventoryAudit(){
   const body=document.getElementById('auditBody');
   body.innerHTML=filtered.map((x,i)=>{
     const code=String(x.code),saved=(inventoryAuditLoadedReport?.rows||[]).find(row=>String(row.code)===code);
-    const start=inventoryAuditStartBalances[code]||{qty:Number(x.qty||0),sold:Number(x.sold||0)},system=Math.max(0,start.qty-Number(inventoryAuditSoldDraft[code]||0)),sold=inventoryAuditSoldDraft[code]??'',actual=inventoryAuditDraft[code]??'',has=actual!==''&&Number.isFinite(Number(actual))&&Number(actual)>=0;
+    const start=inventoryAuditStartBalances[code]||{qty:Number(x.qty||0),sold:Number(x.sold||0)},system=Number(x.qty||0),sold=inventoryAuditSoldDraft[code]??'',actual=inventoryAuditDraft[code]??'',has=actual!==''&&Number.isFinite(Number(actual))&&Number(actual)>=0;
     const diff=has?Number(actual)-system:null,price=saved?Number(saved.price||0):Number(x.price||0);
     const result=!has?'<span class="badge">بانتظار الجرد</span>':diff===0?'<span class="badge" style="background:#e8f6ef;color:#18764e">مطابق</span>':diff<0?'<span class="badge" style="background:#fff0f0;color:#b53d47">عجز '+Math.abs(diff)+'</span>':'<span class="badge" style="background:#fff5df;color:#956515">زيادة '+diff+'</span>';
     return '<tr><td>'+((i+1).toLocaleString('ar-EG'))+'</td><td>'+esc(code)+'</td><td><b>'+esc(x.name)+'</b></td><td>'+system.toLocaleString('ar-EG')+'</td><td><input aria-label="كمية المباع للصنف '+esc(code)+'" type="number" min="0" step="any" value="'+esc(sold)+'" data-audit-sold="'+esc(code)+'" style="width:90px;min-width:75px" onchange="setInventoryAuditSold(this)"></td><td><input aria-label="الكمية الصحيحة للصنف '+esc(code)+'" type="number" min="0" step="any" value="'+esc(actual)+'" data-audit-code="'+esc(code)+'" style="width:105px;min-width:90px" oninput="setInventoryAuditActual(this)"></td><td>'+(has?(diff>0?'+':'')+diff.toLocaleString('ar-EG'):'—')+'</td><td>'+(has?money(Math.abs(diff)*price):'—')+'</td><td>'+result+'</td></tr>';
@@ -1366,7 +1366,7 @@ function setInventoryAuditActual(input){
   if(value===''||(!Number.isFinite(Number(value))||Number(value)<0)){delete inventoryAuditDraft[String(code)]}else inventoryAuditDraft[String(code)]=value;
   const row=input.closest('tr');if(row){
     const item=inventory.find(x=>String(x.code)===String(code));const saved=(inventoryAuditLoadedReport?.rows||[]).find(x=>String(x.code)===String(code));
-    const baseline=saved?Number(saved.system||0):Number(item?.qty||0),diff=Number(value)-baseline,price=saved?Number(saved.price||0):Number(item?.price||0);
+    const baseline=Number(item?.qty||0),diff=Number(value)-baseline,price=saved?Number(saved.price||0):Number(item?.price||0);
     const cells=row.children;
     if(value===''){cells[5].textContent='—';cells[6].textContent='—';cells[7].innerHTML='<span class="badge">بانتظار الجرد</span>'}
     else{cells[5].textContent=(diff>0?'+':'')+diff.toLocaleString('ar-EG');cells[6].textContent=money(Math.abs(diff)*price);cells[7].innerHTML=diff===0?'<span class="badge" style="background:#e8f6ef;color:#18764e">مطابق</span>':diff<0?'<span class="badge" style="background:#fff0f0;color:#b53d47">عجز '+Math.abs(diff)+'</span>':'<span class="badge" style="background:#fff5df;color:#956515">زيادة '+diff+'</span>'}
