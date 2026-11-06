@@ -564,6 +564,16 @@ html body #login #faragello-supervisor-name * {
   box-shadow:0 7px 16px #173b561b!important;
 }
 </style>
+<style id="halawa-customer-support-card">
+#login .halawa-support-card{display:flex;align-items:center;gap:13px;width:min(100%,500px);margin-top:22px;padding:15px 17px;border:1px solid #bfe5dc;border-radius:18px;background:linear-gradient(120deg,#ffffffed,#eaf8f4);box-shadow:0 12px 28px #173b5612;text-align:right}
+#login .halawa-support-icon{display:grid;place-items:center;width:46px;height:46px;flex:0 0 46px;border-radius:14px;background:linear-gradient(145deg,#173b56,#159b8c);color:#fff;font-size:22px;box-shadow:0 7px 16px #159b8c30}
+#login .halawa-support-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:2px}
+#login .halawa-support-copy strong{color:#173b56;font-size:14px;font-weight:850}
+#login .halawa-support-copy a{color:#128477;font-size:21px;font-weight:900;letter-spacing:.3px;text-decoration:none}
+#login .halawa-support-status{color:#718b91;font-size:11px;font-weight:700;white-space:nowrap}
+@media(max-width:850px){#login .halawa-support-card{margin:16px auto 0;text-align:right}}
+@media(max-width:430px){#login .halawa-support-card{gap:9px;padding:12px}#login .halawa-support-icon{width:40px;height:40px;flex-basis:40px}#login .halawa-support-copy a{font-size:18px}#login .halawa-support-status{font-size:10px}}
+</style>
 </head>
 <body>
 <div id="login" class="login-screen">
@@ -585,6 +595,14 @@ html body #login #faragello-supervisor-name * {
       <div class="hero-point"><b>↗</b><span>متابعة المبيعات والتقارير</span></div>
       <div class="hero-point"><b>✓</b><span>تنظيم العمل اليومي</span></div>
       <div class="hero-point"><b>⌂</b><span>واجهة واضحة على الموبايل والكمبيوتر</span></div>
+    </div>
+    <div class="halawa-support-card" aria-label="خدمة عملاء حلاوة">
+      <div class="halawa-support-icon" aria-hidden="true">☎</div>
+      <div class="halawa-support-copy">
+        <strong>خدمة عملاء حلاوة</strong>
+        <a href="tel:01128777287" dir="ltr">01128777287</a>
+      </div>
+      <span class="halawa-support-status">نحن هنا لمساعدتك</span>
     </div>
   </section>
 </div>
