@@ -989,10 +989,13 @@ function renderClients(){
   setText('clInactive',clients.filter(c=>c.status!=='نشط').length);
   setText('clLast',clients.length?clients[clients.length-1].date:'—');
   const clientsBody=document.getElementById('clientsBody');if(!clientsBody)return;
-  clientsBody.innerHTML=list.length?list.map(c=>{
+  const admin=window.currentAdminAccount||null;
+  const showAdmin=admin&&[admin.name,admin.username,admin.email,'حساب الإدارة','الأدمن'].join(' ').toLowerCase().includes(q);
+  const adminRow=showAdmin?'<tr style="background:#eaf5f2"><td><b>🛡️ '+admin.name+'</b></td><td><b>'+admin.username+'</b></td><td>حساب الإدارة</td><td>'+admin.email+'</td><td><span class="badge ok">نشط</span></td><td>'+admin.date+'</td><td><span class="badge">الحساب الحالي</span></td></tr>':'';
+  clientsBody.innerHTML=adminRow+(list.length?list.map(c=>{
     const i=clients.indexOf(c);
     return `<tr style="cursor:pointer" ondblclick="openClientWorkspace(${i})"><td><button class="btn gray" onclick="openClientWorkspace(${i})">${c.name}</button></td><td><b style="color:#52dcff">${c.username||'—'}</b></td><td>${c.project||'—'}</td><td>${c.email||'—'}</td><td><span class="badge ${c.status==='نشط'?'ok':'out'}">${c.status}</span></td><td>${c.date}</td><td><button class="btn green" onclick="openClientWorkspace(${i})">فتح السيستم</button><button class="btn gray" onclick="editClient(${i})">تعديل الاسم/المستخدم/الباسورد</button><button class="btn gold" onclick="toggleClient(${i})">${c.status==='نشط'?'إيقاف':'تفعيل'}</button><button class="btn red" onclick="deleteClient(${i})">حذف</button></td></tr>`
-  }).join(''):'<tr><td colspan="7" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>'
+  }).join(''):'<tr><td colspan="7" class="empty">لا توجد حسابات عملاء بعد — اضغط «إضافة حساب عميل»</td></tr>')
 }
 
 
