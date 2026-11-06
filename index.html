@@ -1323,8 +1323,9 @@ function inventoryAuditDailySalesByCode(){
   return totals;
 }
 function updateInventoryAuditSummary(){
+  const dailySold=inventoryAuditDailySalesByCode();
   const rows=(Array.isArray(inventory)?inventory:[]).map(item=>{
-    const sold=Math.max(0,Number(inventoryAuditDailySalesByCode()[String(item.code)]||0));
+    const sold=Math.max(0,Number(dailySold[String(item.code)]||0));
     const correct=Math.max(0,Number(item.qty||0));
     return{code:String(item.code),actual:correct,system:correct,sold,price:Number(item.price||0)};
   });
