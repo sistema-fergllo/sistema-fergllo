@@ -30,6 +30,9 @@ create table if not exists public.branch_stock_movements (
 alter table public.branch_inventory enable row level security;
 alter table public.branch_stock_movements enable row level security;
 
+grant select, insert, update on public.branch_inventory to authenticated;
+grant select on public.branch_stock_movements to authenticated;
+
 drop policy if exists branch_inventory_client_read on public.branch_inventory;
 create policy branch_inventory_client_read on public.branch_inventory
 for select to authenticated
