@@ -85,11 +85,8 @@ begin
     order by created_at
     limit 1;
 
-    if b.id is null then
-      raise exception 'لا يوجد فرع باسم المصنع لهذا العميل: %. أضف فرع المصنع أولاً ثم أعد تشغيل الملف.', c.id;
-    end if;
-
-    if not exists (select 1 from public.branch_inventory bi where bi.client_id = c.id) then
+    if b.id is not null
+       and not exists (select 1 from public.branch_inventory bi where bi.client_id = c.id) then
       insert into public.branch_inventory(client_id, branch_id, code, name, price, qty, sold, updated_at)
       select ci.client_id, b.id, ci.code, ci.name, coalesce(ci.price,0),
              coalesce(ci.qty,0), coalesce(ci.sold,0), now()
