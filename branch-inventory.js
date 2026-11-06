@@ -1,0 +1,92 @@
+/* سيستم حلاوة — إدارة المخزون المستقل للفروع */
+(function(){
+ 'use strict';
+ const originalSync=window.syncClientInventoryToCloud;
+ async function loadBranchInventory(){
+   if(window.currentProfileRole!=='client'||!window.activeClient?.id) return;
+   let branch=null;
+   try{branch=JSON.parse(localStorage.getItem('frg_active_branch')||'null')}catch(e){}
+   if(!branch?.id) throw new Error('اختار الفرع أولاً قبل تحميل المخزون.');
+   const clientId=window.activeClient.id;
+   const {data:base,error:baseError}=await window.supabaseClient.from('client_inventory')
+     .select('code,name,price').eq('client_id',clientId).order('code');
+   if(baseError) throw new Error('تعذر تحميل قائمة الأصناف: '+baseError.message);
+   const {data:rows,error}=await window.supabaseClient.from('branch_inventory')
+     .select('code,name,price,qty,sold').eq('client_id',clientId).eq('branch_id',branch.id).order('code');
+   if(error) throw new Error('تعذر تحميل مخزون الفرع. شغّل ملف supabase/branch_inventory.sql أولاً: '+error.message);
+   const byCode=new Map((rows||[]).map(x=>[String(x.code),x]));
+   window.inventory=(base||[]).map(x=>{
+     const stock=byCode.get(String(x.code));
+     return {code:String(x.code),name:stock?.name||x.name,price:Number(stock?.price??x.price??0),qty:Number(stock?.qty??0),sold:Number(stock?.sold??0)};
+   });
+   // Preserve any branch-only product rows that are not in the legacy catalog.
+   (rows||[]).forEach(x=>{if(!window.inventory.some(y=>String(y.code)===String(x.code)))window.inventory.push({code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)})});
+   window.localStorage.setItem(window.KEYS?.inv+'_'+clientId,JSON.stringify(window.inventory));
+   if(typeof window.refreshAll==='function')window.refreshAll();
+ }
+ window.loadBranchInventory=loadBranchInventory;
+
+ window.syncClientInventoryToCloud=async function(){
+   if(window.currentProfileRole!=='client'||!window.activeClient?.id)return typeof originalSync==='function'?originalSync():undefined;
+   let branch=null;
+   try{branch=JSON.parse(localStorage.getItem('frg_active_branch')||'null')}catch(e){}
+   if(!branch?.id)throw new Error('لا يمكن حفظ المخزون دون تحديد الفرع.');
+   const rows=(window.inventory||[]).map(x=>({
+     client_id:window.activeClient.id,branch_id:branch.id,code:String(x.code),
+     name:String(x.name||''),price:Number(x.price||0),qty:Number(x.qty||0),
+     sold:Number(x.sold||0),updated_at:new Date().toISOString()
+   }));
+   if(!rows.length)return;
+   const {error}=await window.supabaseClient.from('branch_inventory').upsert(rows,{onConflict:'client_id,branch_id,code'});
+   if(error)throw error;
+ };
+
+ const oldConfirm=window.confirmBranchEntry;
+ if(typeof oldConfirm==='function'){
+   window.confirmBranchEntry=async function(){
+     await oldConfirm.apply(this,arguments);
+     let branch=null;try{branch=JSON.parse(localStorage.getItem('frg_active_branch')||'null')}catch(e){}
+     if(branch?.id&&window.branchGateDone){
+       try{await loadBranchInventory()}
+       catch(e){alert(e.message||'تعذر تحميل مخزون الفرع');console.error(e)}
+     }
+   };
+ }
+
+ window.markTransferDone=async function(id){
+   const permits=typeof window.getTransferPermits==='function'?window.getTransferPermits():[];
+   const p=permits.find(x=>String(x.id)===String(id));
+   if(!p)return;
+   if(p.status==='تم التنفيذ'){alert('الإذن معتمد كمنفذ بالفعل');return}
+   if(window.currentProfileRole!=='client'||!window.activeClient?.id){
+     alert('اعتماد التحويل المخزني متاح من حساب العميل بعد اختيار الفرع.');return;
+   }
+   if(!confirm('تأكيد تنفيذ الإذن '+p.number+'؟ سيتم الخصم من فرع الإرسال والإضافة إلى فرع الاستلام وتحديث الجرد فورًا.'))return;
+   try{
+     const {data:branches,error:branchError}=await window.supabaseClient.from('client_branches')
+       .select('id,name').eq('client_id',window.activeClient.id);
+     if(branchError)throw branchError;
+     const norm=s=>String(s||'').trim().toLocaleLowerCase('ar');
+     const from=(branches||[]).find(b=>norm(b.name)===norm(p.from));
+     const to=(branches||[]).find(b=>norm(b.name)===norm(p.to));
+     if(!from||!to)throw new Error('اسم فرع الإرسال أو الاستلام غير مطابق لاسم فرع مسجل. راجع أسماء الفروع في الإذن.');
+     if(from.id===to.id)throw new Error('فرع الإرسال والاستلام يجب أن يكونا مختلفين.');
+     const items=(p.items||[]).map(x=>({code:String(x.code||''),name:String(x.name||''),qty:Number(x.qty),price:Number(x.price||0)}));
+     if(!items.length||items.some(x=>!x.code||!x.name||!Number.isFinite(x.qty)||x.qty<=0))throw new Error('بيانات الأصناف في الإذن غير مكتملة.');
+     const {data,error}=await window.supabaseClient.rpc('apply_branch_transfer',{
+       p_client_id:window.activeClient.id,p_transfer_id:String(p.id),
+       p_from_branch_id:from.id,p_to_branch_id:to.id,p_items:items
+     });
+     if(error)throw error;
+     if(!data?.success)throw new Error('قاعدة البيانات لم تؤكد تنفيذ التحويل.');
+     p.status='تم التنفيذ';p.completed_at=new Date().toLocaleString('ar-EG');
+     p.stock_applied=true;p.stock_applied_at=new Date().toISOString();
+     window.saveTransferPermits(permits);
+     if(typeof window.logActivity==='function')window.logActivity('تم تنفيذ التحويل '+p.number+' من '+p.from+' إلى '+p.to+' وتحديث أرصدة الفرعين','transfer');
+     let active=null;try{active=JSON.parse(localStorage.getItem('frg_active_branch')||'null')}catch(e){}
+     if(active?.id===from.id||active?.id===to.id)await loadBranchInventory();
+     if(typeof window.renderTransfers==='function')window.renderTransfers();
+     alert('تم تنفيذ التحويل وتحديث مخزون الفرعين والجرد بنجاح.');
+   }catch(e){console.error(e);alert('لم يتم تنفيذ التحويل، ولم يتم اعتماد الإذن: '+(e?.message||e))}
+ };
+})();
