@@ -46,7 +46,7 @@
    window.confirmBranchEntry=async function(){
      await oldConfirm.apply(this,arguments);
      let branch=null;try{branch=JSON.parse(localStorage.getItem('frg_active_branch')||'null')}catch(e){}
-     if(branch?.id&&window.branchGateDone){
+     if(branch?.id&&document.getElementById('branchGateModal')?.classList.contains('hidden')){
        try{await loadBranchInventory()}
        catch(e){alert(e.message||'تعذر تحميل مخزون الفرع');console.error(e)}
      }
