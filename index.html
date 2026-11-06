@@ -1268,6 +1268,7 @@ let inventoryAuditDraft={};
 let inventoryAuditSoldDraft={};
 let inventoryAuditStartBalances={};
 let inventoryAuditLoadedReport=null;
+let inventoryAuditHiddenCodes={};
 function inventoryAuditStorageKey(){
   let branch='main';try{const b=JSON.parse(localStorage.getItem('frg_active_branch')||'null');if(b&&b.id)branch=String(b.id)}catch(e){}
   return workspaceKey('frg_inventory_count_reports')+'_'+branch;
@@ -1339,6 +1340,7 @@ function updateInventoryAuditSummary(){
   put('auditShortValue',money(0));put('auditOverValue',money(0));
   put('auditReportDate','تاريخ الجرد: '+inventoryAuditDate()+' — تم الحساب تلقائيًا من مبيعات الكاشير');
 }
+function hideInventoryAuditRow(code){const item=(Array.isArray(inventory)?inventory:[]).find(x=>String(x.code)===String(code));if(!item)return;if(!confirm('إخفاء الصنف «'+String(item.name||code)+'» من جدول إدارة الجرد فقط؟ لن يتم حذف الصنف من المخزون أو الكاشير أو قاعدة البيانات.'))return;inventoryAuditHiddenCodes[String(code)]=true;renderInventoryAudit();}
 function renderInventoryAudit(){
   if(!document.getElementById('auditBody'))return;
   if(!document.getElementById('auditDate')?.value)document.getElementById('auditDate').value=new Date().toLocaleDateString('en-CA');
@@ -1346,13 +1348,13 @@ function renderInventoryAudit(){
   const q=(document.getElementById('auditSearch')?.value||'').trim().toLocaleLowerCase();
   const dailySold=inventoryAuditDailySalesByCode();
   const rows=(Array.isArray(inventory)?inventory:[]).slice().sort((a,b)=>String(a.code??'').localeCompare(String(b.code??''),'ar',{numeric:true}));
-  const filtered=rows.filter(x=>!q||String(x.code??'').toLocaleLowerCase().includes(q)||String(x.name??'').toLocaleLowerCase().includes(q));
+  const filtered=rows.filter(x=>!inventoryAuditHiddenCodes[String(x.code)]&&(!q||String(x.code??'').toLocaleLowerCase().includes(q)||String(x.name??'').toLocaleLowerCase().includes(q)));
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const body=document.getElementById('auditBody');
   body.innerHTML=filtered.map((x,i)=>{
     const code=String(x.code),sold=Math.max(0,Number(dailySold[code]||0)),current=Math.max(0,Number(x.qty||0)),opening=current+sold,correct=Math.max(0,opening-sold),price=Number(x.price||0);
     inventoryAuditSoldDraft[code]=String(sold);inventoryAuditDraft[code]=String(correct);
-    return '<tr><td>'+((i+1).toLocaleString('ar-EG'))+'</td><td>'+esc(code)+'</td><td><b>'+esc(x.name)+'</b></td><td>'+opening.toLocaleString('ar-EG')+'</td><td>'+sold.toLocaleString('ar-EG')+'</td><td><b>'+correct.toLocaleString('ar-EG')+'</b></td></tr>';
+    return '<tr><td>'+((i+1).toLocaleString('ar-EG'))+'</td><td>'+esc(code)+'</td><td><b>'+esc(x.name)+'</b></td><td>'+opening.toLocaleString('ar-EG')+'</td><td>'+sold.toLocaleString('ar-EG')+'</td><td><b>'+correct.toLocaleString('ar-EG')+'</b> <button type="button" class="btn red" style="padding:4px 9px;margin-right:6px" data-hide-audit-code="'+esc(code)+'" onclick="hideInventoryAuditRow(this.dataset.hideAuditCode)">حذف</button></td></tr>';
   }).join('');
   if(!filtered.length)body.innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px">لا توجد أصناف مطابقة للبحث</td></tr>';
   const shown=document.getElementById('auditShownCount');if(shown)shown.textContent=filtered.length.toLocaleString('ar-EG')+' صنف';
