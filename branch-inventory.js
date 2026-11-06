@@ -74,8 +74,10 @@
      const to=(branches||[]).find(b=>norm(b.name)===norm(p.to));
      if(!from||!to)throw new Error('اسم فرع الإرسال أو الاستلام غير مطابق لاسم فرع مسجل. راجع أسماء الفروع في الإذن.');
      if(from.id===to.id)throw new Error('فرع الإرسال والاستلام يجب أن يكونا مختلفين.');
-     const items=(p.items||[]).map(x=>({code:String(x.code||''),name:String(x.name||''),qty:Number(x.qty),price:Number(x.price||0)}));
-     if(!items.length||items.some(x=>!x.code||!x.name||!Number.isFinite(x.qty)||x.qty<=0))throw new Error('بيانات الأصناف في الإذن غير مكتملة.');
+     const itemMap=new Map();
+     (p.items||[]).forEach(x=>{const code=String(x.code||'');const qty=Number(x.qty);if(!code||!String(x.name||'').trim()||!Number.isFinite(qty)||qty<=0)throw new Error('بيانات الأصناف في الإذن غير مكتملة.');const old=itemMap.get(code);if(old)old.qty+=qty;else itemMap.set(code,{code,name:String(x.name),qty,price:Number(x.price||0)})});
+     const items=[...itemMap.values()];
+     if(!items.length)throw new Error('لا توجد أصناف صالحة في الإذن.');
      const {data,error}=await window.supabaseClient.rpc('apply_branch_transfer',{
        p_client_id:window.activeClient.id,p_transfer_id:String(p.id),
        p_from_branch_id:from.id,p_to_branch_id:to.id,p_items:items
