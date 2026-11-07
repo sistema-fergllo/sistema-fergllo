@@ -9,7 +9,7 @@
    if(!branch?.id) throw new Error('اختار الفرع أولاً قبل تحميل المخزون.');
    const clientId=window.activeClient.id;
    const {data:base,error:baseError}=await window.supabaseClient.from('client_inventory')
-     .select('code,name,price').eq('client_id',clientId).order('code');
+     .select('code,name,unit,price').eq('client_id',clientId).order('code');
    if(baseError) throw new Error('تعذر تحميل قائمة الأصناف: '+baseError.message);
    const {data:rows,error}=await window.supabaseClient.from('branch_inventory')
      .select('code,name,price,qty,sold').eq('client_id',clientId).eq('branch_id',branch.id).order('code');
@@ -17,10 +17,10 @@
    const byCode=new Map((rows||[]).map(x=>[String(x.code),x]));
    window.inventory=(base||[]).map(x=>{
      const stock=byCode.get(String(x.code));
-     return {code:String(x.code),name:stock?.name||x.name,price:Number(stock?.price??x.price??0),qty:Number(stock?.qty??0),sold:Number(stock?.sold??0)};
+     return {code:String(x.code),name:stock?.name||x.name,unit:x.unit==='كيلو'?'كيلو':'قطعة',price:Number(stock?.price??x.price??0),qty:Number(stock?.qty??0),sold:Number(stock?.sold??0)};
    });
    // Preserve any branch-only product rows that are not in the legacy catalog.
-   (rows||[]).forEach(x=>{if(!window.inventory.some(y=>String(y.code)===String(x.code)))window.inventory.push({code:String(x.code),name:x.name,price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)})});
+   (rows||[]).forEach(x=>{if(!window.inventory.some(y=>String(y.code)===String(x.code)))window.inventory.push({code:String(x.code),name:x.name,unit:x.unit==='كيلو'?'كيلو':'قطعة',price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)})});
    window.localStorage.setItem(window.KEYS?.inv+'_'+clientId,JSON.stringify(window.inventory));
    if(typeof window.refreshAll==='function')window.refreshAll();
  }
@@ -94,4 +94,17 @@
      alert('تم تنفيذ التحويل وتحديث مخزون الفرعين والجرد بنجاح.');
    }catch(e){console.error(e);alert('لم يتم تنفيذ التحويل، ولم يتم اعتماد الإذن: '+(e?.message||e))}
  };
+ const previousShowPage=window.showPage;
+ if(typeof previousShowPage==='function'){
+   window.showPage=function(id){
+     const result=previousShowPage.apply(this,arguments);
+     if(id==='transfers'&&window.currentProfileRole==='client'&&window.activeClient?.id){
+       window.loadBranchInventory().then(()=>{
+         if(typeof window.renderTransfers==='function')window.renderTransfers();
+       }).catch(e=>{console.error('تعذر تحديث مخزون التحويلات:',e);alert('تعذر تحميل أصناف الفرع للتحويل: '+(e?.message||e))});
+     }
+     return result;
+   };
+ }
+
 })();
