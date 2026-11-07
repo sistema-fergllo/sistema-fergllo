@@ -9,7 +9,7 @@
    if(!branch?.id) throw new Error('اختار الفرع أولاً قبل تحميل المخزون.');
    const clientId=window.activeClient.id;
    const {data:base,error:baseError}=await window.supabaseClient.from('client_inventory')
-     .select('code,name,unit,price').eq('client_id',clientId).order('code');
+     .select('code,name,price').eq('client_id',clientId).order('code');
    if(baseError) throw new Error('تعذر تحميل قائمة الأصناف: '+baseError.message);
    const {data:rows,error}=await window.supabaseClient.from('branch_inventory')
      .select('code,name,price,qty,sold').eq('client_id',clientId).eq('branch_id',branch.id).order('code');
