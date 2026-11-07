@@ -14,15 +14,40 @@
    const {data:rows,error}=await window.supabaseClient.from('branch_inventory')
      .select('code,name,price,qty,sold').eq('client_id',clientId).eq('branch_id',branch.id).order('code');
    if(error) throw new Error('تعذر تحميل مخزون الفرع. شغّل ملف supabase/branch_inventory.sql أولاً: '+error.message);
-   const byCode=new Map((rows||[]).map(x=>[String(x.code),x]));
-   window.inventory=(base||[]).map(x=>{
-     const stock=byCode.get(String(x.code));
-     return {code:String(x.code),name:stock?.name||x.name,unit:x.unit==='كيلو'?'كيلو':'قطعة',price:Number(stock?.price??x.price??0),qty:Number(stock?.qty??0),sold:Number(stock?.sold??0)};
+   // Keep a local catalog snapshot as a safety net. Loading a branch with no
+   // branch_inventory rows must never replace a populated catalog with an empty list.
+   let cached=[];
+   try{cached=JSON.parse(window.localStorage.getItem('frg_inv_'+clientId)||'[]')}catch(e){}
+   if(!Array.isArray(cached))cached=[];
+   const current=Array.isArray(window.inventory)?window.inventory:[];
+   const catalog=new Map();
+   [...(base||[]),...cached,...current].forEach(x=>{
+     const code=String(x.code??'').trim();
+     if(code&&!catalog.has(code))catalog.set(code,x);
    });
-   // Preserve any branch-only product rows that are not in the legacy catalog.
-   (rows||[]).forEach(x=>{if(!window.inventory.some(y=>String(y.code)===String(x.code)))window.inventory.push({code:String(x.code),name:x.name,unit:x.unit==='كيلو'?'كيلو':'قطعة',price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)})});
-   window.localStorage.setItem(window.KEYS?.inv+'_'+clientId,JSON.stringify(window.inventory));
+   const byCode=new Map((rows||[]).map(x=>[String(x.code),x]));
+   const branchHasRows=(rows||[]).length>0;
+   window.inventory=[...catalog.entries()].map(([code,x])=>{
+     const stock=byCode.get(code);
+     return {
+       code,
+       name:stock?.name||x.name||'',
+       unit:x.unit==='كيلو'?'كيلو':'قطعة',
+       price:Number(stock?.price??x.price??0),
+       qty:Number(stock?.qty??(branchHasRows?0:(x.qty??0))),
+       sold:Number(stock?.sold??(branchHasRows?0:(x.sold??0)))
+     };
+   });
+   // Include products created directly in this branch.
+   (rows||[]).forEach(x=>{
+     if(!window.inventory.some(y=>String(y.code)===String(x.code))){
+       window.inventory.push({code:String(x.code),name:x.name,unit:'قطعة',price:Number(x.price||0),qty:Number(x.qty||0),sold:Number(x.sold||0)});
+     }
+   });
+   // Use the actual client cache key (KEYS is a lexical const, not window.KEYS).
+   window.localStorage.setItem('frg_inv_'+clientId,JSON.stringify(window.inventory));
    if(typeof window.refreshAll==='function')window.refreshAll();
+   if(typeof window.renderTransfers==='function')window.renderTransfers();
  }
  window.loadBranchInventory=loadBranchInventory;
 
