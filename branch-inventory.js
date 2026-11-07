@@ -16,8 +16,10 @@
    if(error) throw new Error('تعذر تحميل مخزون الفرع. شغّل ملف supabase/branch_inventory.sql أولاً: '+error.message);
    // Keep a local catalog snapshot as a safety net. Loading a branch with no
    // branch_inventory rows must never replace a populated catalog with an empty list.
+   // Keep a separate offline cache for each branch; never reuse another branch's stock.
+   const branchCacheKey='frg_inv_'+clientId+'_'+branch.id;
    let cached=[];
-   try{cached=JSON.parse(window.localStorage.getItem('frg_inv_'+clientId)||'[]')}catch(e){}
+   try{cached=JSON.parse(window.localStorage.getItem(branchCacheKey)||'[]')}catch(e){}
    if(!Array.isArray(cached))cached=[];
    const current=Array.isArray(window.inventory)?window.inventory:[];
    const catalog=new Map();
@@ -34,8 +36,10 @@
        name:stock?.name||x.name||'',
        unit:x.unit==='كيلو'?'كيلو':'قطعة',
        price:Number(stock?.price??x.price??0),
-       qty:Number(stock?.qty??(branchHasRows?0:(x.qty??0))),
-       sold:Number(stock?.sold??(branchHasRows?0:(x.sold??0)))
+       // A branch with no saved stock starts at zero. Never copy quantities
+       // from the shared client catalog or from the previously opened branch.
+       qty:Number(stock?.qty??0),
+       sold:Number(stock?.sold??0)
      };
    });
    // Include products created directly in this branch.
@@ -45,6 +49,8 @@
      }
    });
    // Use the actual client cache key (KEYS is a lexical const, not window.KEYS).
+   // Save both the branch-specific backup and the app's active inventory cache.
+   window.localStorage.setItem(branchCacheKey,JSON.stringify(window.inventory));
    window.localStorage.setItem('frg_inv_'+clientId,JSON.stringify(window.inventory));
    if(typeof window.refreshAll==='function')window.refreshAll();
    if(typeof window.renderTransfers==='function')window.renderTransfers();
