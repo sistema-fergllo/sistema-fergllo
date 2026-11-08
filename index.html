@@ -995,7 +995,7 @@ function renderClients(){
 
 // Multi-branch management removed: each client now uses one workspace.
 async function restartSalesData(){
- if(!confirm('إعادة التشغيل ستحذف كل البيانات الظاهرة داخل مربع ملخص الشيفتات، بما فيها المبيعات والمصروفات، لهذا الحساب. لا يمكن التراجع عن الحذف. هل تريد المتابعة؟'))return;
+ if(!confirm('سيتم حذف المبيعات والمصروفات لهذا الحساب نهائيًا. هل تريد المتابعة؟'))return;
  try{
   if(cloudReady&&typeof supabaseClient!=='undefined'){
    let result;
