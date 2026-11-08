@@ -1167,7 +1167,7 @@ function saveExpense(){
   if(dateField)dateField.value=new Date().toISOString().slice(0,10);
   // احتفظ بالشيفت المختار لاستخدامه في تسجيل المصروف التالي.
   renderExpenses();
-  alert('تم حفظ المصروف وإضافته إلى سجل المصروفات');
+
   if(typeof window.renderReports==='function')window.renderReports();
   if(typeof logActivity==='function')logActivity('تم تسجيل مصروف لوردية '+shiftName,'expenses');
  }catch(e){console.error('Expense save error:',e);alert('لم يتم حفظ المصروف: '+(e.message||e))}
